@@ -7,14 +7,15 @@ Módulos 3, 4 y 5 quedan como tarjetas "pendiente" en el índice.
 ## Decisiones técnicas
 | Tema | Decisión | Motivo (guía §3) |
 |---|---|---|
-| Stack | HTML + CSS + JS clásico, sin build, sin servidor | Sin servidor/BD; abre con doble clic (`file://`) |
-| Módulos JS | Patrón UMD (`window.X` en navegador, `module.exports` en Node) | `type="module"` falla en `file://` |
-| Gráficos | SVG propio (`assets/js/plot.js`) | Cero dependencias, funciona offline |
-| Separación | `motor` (datos → resultado, pasos, estado, mensaje) vs `ui` | La guía exige que la UI solo muestre la salida |
-| Entrada | Funciones predefinidas, nunca `eval` de texto libre | Evita ampliar alcance y riesgos |
-| Referencia independiente | Python stdlib (`fractions`, `decimal`) en `referencia/` | Octave/numpy no instalados; no comparte código con JS |
-| Pruebas | `node --test` (motor JS) + `unittest` (referencia) | Sin dependencias npm |
-| Publicación | Git local ahora; GitHub Pages después (rutas relativas) | Remoto aún no definido |
+| Stack | Vite + React + TypeScript | 5 módulos comparten componentes; el tipado fija el contrato de los motores |
+| Ejecución sin servidor | `vite-plugin-singlefile` + `HashRouter`, `base: './'` | `dist/index.html` abre con doble clic (`file://`) y en GitHub Pages; verificado con Playwright |
+| Gráficos | Plotly.js (`plotly.js-basic-dist-min`), empaquetado | Funciona offline, sin CDN |
+| Fórmulas | KaTeX | Teoría con notación matemática |
+| Separación | `src/core/<modulo>` (motor puro, sin React) vs componentes | La UI solo muestra la salida del motor |
+| Entrada | Funciones predefinidas, nunca `eval` de texto libre | Alcance acotado |
+| Referencia independiente | Python + numpy/scipy en `referencia/` (Octave no instalado) | No comparte código con el motor TS |
+| Pruebas | Vitest (motores y componentes), Playwright (e2e), unittest (referencia) | ≥8 pruebas por módulo |
+| Commits | Los hace el usuario al cerrar cada hito probado | Acordado |
 
 ## Contrato del motor
 `metodo(entrada) -> { estado, mensaje, resultado, pasos[] }`
@@ -22,14 +23,16 @@ Módulos 3, 4 y 5 quedan como tarjetas "pendiente" en el índice.
 
 ## Estructura
 ```
-index.html                 portal (índice de módulos)
-assets/css|js/             estilos, util (formato, CSV), plot (SVG), nav
-modulos/m1-no-lineales/    index.html, motor.js, ui.js, datos.js
-modulos/m2-sistemas-lineales/
-referencia/                m1.py, m2.py + test_*.py
-tests/                     *.test.js (≥8 pruebas por módulo)
-docs/                      PLAN, matrices de prueba, fichas, informe
+src/core/        motores numéricos puros (TS) + tipos del contrato
+src/components/  Calculadora, TablaPasos, Grafico, Quiz, Ejercicio, Layout
+src/modules/     m1-no-lineales/, m2-sistemas-lineales/ (contenido + página)
+src/pages/       Inicio (portal)
+e2e/             Playwright (incluye prueba file://)
+referencia/      scripts Python + test_*.py
+docs/            PLAN, matrices de prueba, fichas, informe
 ```
+
+Comandos: `npm run dev | build | test | typecheck | test:e2e | test:ref`.
 
 ## Hitos
 1. **Cimientos**: repo, portal, CSS, util, plot, enlace de retorno.
@@ -44,6 +47,4 @@ docs/                      PLAN, matrices de prueba, fichas, informe
 - M2: solución (1,2,3); GS iter 1 ≈ (2.25, 2.35, 2.7333333333); fallo: [[1,2],[2,4]]·x=(3,6) singular.
 
 ## Herramientas sugeridas
-- Skill `webapp-testing`/Chrome MCP: verificar las páginas en navegador real (ya disponible).
-- Skills de diseño (`frontend-design`) opcionales para pulir la UI.
-- No hace falta ningún MCP adicional.
+- Playwright para verificar en navegador real; ningún MCP adicional necesario.

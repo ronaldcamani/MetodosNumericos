@@ -1,0 +1,61 @@
+{
+  "casos": [
+    {
+      "modelo": "calibracion",
+      "objetivo": 2.0,
+      "raiz": 1.5213797068045682,
+      "intervalo": [
+        1.0,
+        2.0
+      ],
+      "raiz_scipy": 1.5213797068045736,
+      "iter_biseccion_tol1e-6": 20
+    },
+    {
+      "modelo": "calibracion",
+      "objetivo": 0.5,
+      "raiz": 1.1914878839531176,
+      "intervalo": [
+        1.0,
+        2.0
+      ],
+      "raiz_scipy": 1.1914878839531227,
+      "iter_biseccion_tol1e-6": 20
+    },
+    {
+      "modelo": "calibracion",
+      "objetivo": 5.0,
+      "raiz": 1.9041608591349233,
+      "intervalo": [
+        0.0,
+        3.0
+      ],
+      "raiz_scipy": 1.9041608591349224,
+      "iter_biseccion_tol1e-6": 22
+    },
+    {
+      "modelo": "calibracion",
+      "objetivo": 10.0,
+      "raiz": 2.3089073197650904,
+      "intervalo": [
+        0.0,
+        3.0
+      ],
+      "raiz_scipy": 2.308907319765087,
+      "iter_biseccion_tol1e-6": 22
+    },
+    {
+      "modelo": "cubo",
+      "objetivo": 8.0,
+      "raiz": 2.0,
+      "intervalo": [
+        1.0,
+        3.0
+      ],
+      "raiz_scipy": 2.0,
+      "iter_biseccion_tol1e-6": 21
+    }
+  ],
+  "newton_primer_paso": 1.5217391304347827,
+  "newton_primer_paso_fraccion": "35/23"
+}
