@@ -41,7 +41,9 @@ jobs:
           path: dist
 
   deploy:
-    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    # Desactivado hasta definir la publicación: crear la variable de repositorio DEPLOY_PAGES=true
+    # y habilitar Settings → Pages → Source: GitHub Actions.
+    if: vars.DEPLOY_PAGES == 'true' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:

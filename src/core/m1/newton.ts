@@ -32,7 +32,7 @@ export interface SalidaNewton {
 }
 
 export const UMBRAL_DERIVADA = 1e-12
-export const CRITERIO_NEWTON = 'cambio |x_{n+1} − x_n| ≤ tolerancia'
+export const CRITERIO_NEWTON = 'cambio |xₙ₊₁ − xₙ| ≤ tolerancia'
 
 const falla = (estado: ResultadoMetodo<never, never>['estado'], mensaje: string, pasos: PasoNewton[] = []): ResultadoMetodo<SalidaNewton, PasoNewton> => ({ estado, mensaje, resultado: null, pasos })
 

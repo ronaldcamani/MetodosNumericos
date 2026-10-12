@@ -34,10 +34,24 @@ button[type=submit] { background: var(--acento); color: var(--bg); font-weight: 
 .estado { padding: 10px 12px; border-radius: 6px; border: 2px solid; margin: 12px 0; }
 .estado-ok { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); }
 .estado-error { background: var(--error-bg); border-color: var(--error); color: var(--error); }
-.estado-codigo { float: right; font-size: .8rem; }
+.estado-codigo { display: block; text-align: right; font-size: .8rem; }
 .tabla-wrap { overflow-x: auto; margin: 12px 0; }
 table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
 caption { text-align: left; font-weight: 600; padding: 4px 0; }
 th, td { border: 1px solid var(--borde); padding: 4px 8px; text-align: right; } th { background: var(--card); }
 .grafico { margin: 16px 0; } figcaption { color: var(--muted); font-size: .9rem; }
 .retorno { font-weight: 600; }
+select { padding: 8px; font: inherit; border: 1px solid var(--borde); border-radius: 6px; background: var(--bg); color: var(--fg); }
+.formula-bloque { display: block; position: relative; max-width: 100%; overflow-x: auto; overflow-y: hidden; margin: 8px 0; }
+.modulo section { margin: 32px 0; } .modulo h2 { border-bottom: 2px solid var(--borde); padding-bottom: 4px; }
+.aviso { border-left: 4px solid var(--acento); background: var(--card); padding: 8px 12px; margin: 12px 0; }
+.indice { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; }
+.indice a { border: 1px solid var(--borde); border-radius: 6px; padding: 4px 10px; display: inline-block; text-decoration: none; }
+.matriz-editor { display: grid; gap: 6px; align-items: end; }
+.matriz-editor .campo input { width: 100%; }
+.resumen { display: grid; gap: 4px 16px; grid-template-columns: max-content minmax(0, 1fr); margin: 8px 0; }
+.resumen dt { font-weight: 600; } .resumen dd { margin: 0; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.advertencia { border: 2px solid var(--borde); border-left: 6px solid var(--error); padding: 8px 12px; margin: 8px 0; }
+fieldset { min-width: 0; }
+.campo input, .campo select { min-width: 0; width: 100%; }
+main { overflow-x: clip; } .katex { position: relative; }

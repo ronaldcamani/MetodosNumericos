@@ -7,10 +7,12 @@ interface Props {
   onCargarCaso: () => void
   onRestablecer: () => void
   salida?: ReactNode
+  /** Botones adicionales (p. ej. cargar una prueba de fallo). */
+  extras?: ReactNode
 }
 
 /** Estructura común: datos precargados editables, calcular, cargar caso base y restablecer. */
-export default function Calculadora({ titulo, children, onCalcular, onCargarCaso, onRestablecer, salida }: Props) {
+export default function Calculadora({ titulo, children, onCalcular, onCargarCaso, onRestablecer, salida, extras }: Props) {
   const enviar = (e: FormEvent) => {
     e.preventDefault()
     onCalcular()
@@ -24,6 +26,7 @@ export default function Calculadora({ titulo, children, onCalcular, onCargarCaso
           <button type="submit">Calcular</button>
           <button type="button" onClick={onCargarCaso}>Cargar caso base</button>
           <button type="button" onClick={onRestablecer}>Restablecer</button>
+          {extras}
         </div>
       </form>
       <div className="salida" aria-live="polite">{salida}</div>

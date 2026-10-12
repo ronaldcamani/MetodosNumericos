@@ -1,6 +1,8 @@
 import { Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout'
 import Inicio from './pages/Inicio'
+import Modulo1 from './modules/m1/Modulo1'
+import Modulo2 from './modules/m2/Modulo2'
 import './styles.css'
 
 export default function App() {
@@ -8,6 +10,8 @@ export default function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Inicio />} />
+        <Route path="m1" element={<Modulo1 />} />
+        <Route path="m2" element={<Modulo2 />} />
         <Route path="*" element={<p>Página no encontrada.</p>} />
       </Route>
     </Routes>

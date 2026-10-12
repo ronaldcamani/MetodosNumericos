@@ -7,13 +7,16 @@ import Campo from './Campo'
 import MensajeEstado from './MensajeEstado'
 import TablaPasos from './TablaPasos'
 
+vi.mock('./Grafico', () => ({ default: ({ titulo }: { titulo: string }) => <figure aria-label={titulo} /> }))
+
 const irA = (ruta: string) => render(<MemoryRouter initialEntries={[ruta]}><App /></MemoryRouter>)
 
 describe('portal', () => {
   it('lista los 5 módulos', () => {
     irA('/')
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5)
-    expect(screen.getAllByText('Próximamente')).toHaveLength(5)
+    expect(screen.getAllByText('Próximamente')).toHaveLength(3)
+    expect(screen.getAllByRole('link', { name: 'Abrir módulo' }).map((a) => a.getAttribute('href'))).toEqual(['/m1', '/m2'])
   })
   it('fuera del inicio hay enlace de retorno al portal', () => {
     irA('/m1')
