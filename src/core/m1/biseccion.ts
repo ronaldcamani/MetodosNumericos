@@ -1,5 +1,6 @@
 import type { ResultadoMetodo } from '../tipos'
 import { LIMITES } from './modelos'
+import { verificarRaiz, type VerificacionRaiz } from './verificacion'
 
 export interface EntradaBiseccion {
   f: (x: number) => number
@@ -25,6 +26,7 @@ export interface SalidaBiseccion {
   cotaError: number
   residuo: number
   criterio: string
+  verificacion: VerificacionRaiz
 }
 
 export const CRITERIO_BISECCION = 'cota del error (b − a)/2 ≤ tolerancia, o f(medio) = 0'
@@ -55,10 +57,14 @@ export function biseccion({ f, a, b, tol, maxIter }: EntradaBiseccion): Resultad
     pasos.push({ n, a: lo, b: hi, medio, fMedio, cota })
     if (!Number.isFinite(fMedio)) return falla('no_finito', `f no es finita en x = ${medio}.`, pasos)
     if (fMedio === 0 || cota <= tol) {
+      const verificacion = verificarRaiz(f, medio, Math.max(tol, cota))
+      if (!verificacion.verificada) {
+        return falla('no_converge', `No converge a una raíz: el intervalo se redujo a [${lo}, ${hi}] con cambio de signo, pero f(${medio}) = ${fMedio} no verifica ser raíz (posible discontinuidad o polo).`, pasos)
+      }
       return {
         estado: 'convergio',
         mensaje: `Criterio de parada alcanzado en ${n} iteraciones: ${CRITERIO_BISECCION}.`,
-        resultado: { raiz: medio, iteraciones: n, cotaError: cota, residuo: Math.abs(fMedio), criterio: CRITERIO_BISECCION },
+        resultado: { raiz: medio, iteraciones: n, cotaError: cota, residuo: Math.abs(fMedio), criterio: CRITERIO_BISECCION, verificacion },
         pasos,
       }
     }

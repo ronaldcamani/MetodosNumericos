@@ -135,3 +135,30 @@ describe('Contraste con la referencia independiente (Python: numpy/scipy)', () =
     expect(referencia.newton_primer_paso_fraccion).toBe('35/23')
   })
 })
+
+describe('verificación de la raíz y «no converge»', () => {
+  it('raíces verdaderas quedan verificadas (bisección y Newton)', () => {
+    const m = crearModelo('calibracion', 2)
+    expect(biseccion({ f: m.f, a: 1, b: 2, tol: 1e-6, maxIter: 100 }).resultado?.verificacion.verificada).toBe(true)
+    expect(newton({ f: m.f, df: m.df, x0: 1.5, tol: 1e-6, maxIter: 100 }).resultado?.verificacion.verificada).toBe(true)
+  })
+  it('Newton con paso pequeño pero f grande (e^{100x}, tol 0.1) NO converge', () => {
+    const r = newton({ f: (x) => Math.exp(100 * x), df: (x) => 100 * Math.exp(100 * x), x0: 0, tol: 0.1, maxIter: 50 })
+    expect(r.estado).toBe('no_converge')
+    expect(r.resultado).toBeNull()
+  })
+  it('bisección sobre un polo (1/x en [−1, 2]) no se declara raíz', () => {
+    const r = biseccion({ f: (x) => 1 / x, a: -1, b: 2, tol: 1e-6, maxIter: 100 })
+    expect(r.estado).toBe('no_converge')
+    expect(r.resultado).toBeNull()
+  })
+  it('una raíz doble sigue siendo raíz verificada', () => {
+    const r = newton({ f: (x) => (x - 1) ** 2, df: (x) => 2 * (x - 1), x0: 3, tol: 1e-6, maxIter: 100 })
+    expect(r.estado).toBe('convergio')
+  })
+  it('f sin raíz real (x² + 1): Newton no declara convergencia', () => {
+    const r = newton({ f: (x) => x * x + 1, df: (x) => 2 * x, x0: 1, tol: 1e-8, maxIter: 100 })
+    expect(['max_iter', 'no_converge', 'derivada_nula']).toContain(r.estado)
+    expect(r.resultado).toBeNull()
+  })
+})

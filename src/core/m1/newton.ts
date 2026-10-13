@@ -1,5 +1,6 @@
 import type { ResultadoMetodo } from '../tipos'
 import { LIMITES } from './modelos'
+import { verificarRaiz, type VerificacionRaiz } from './verificacion'
 
 export interface EntradaNewton {
   f: (x: number) => number
@@ -29,6 +30,7 @@ export interface SalidaNewton {
   ultimoCambio: number
   residuo: number
   criterio: string
+  verificacion: VerificacionRaiz
 }
 
 export const UMBRAL_DERIVADA = 1e-12
@@ -59,10 +61,14 @@ export function newton({ f, df, x0, tol, maxIter, umbralDerivada = UMBRAL_DERIVA
     pasos.push({ n, x, fx, dfx, siguiente, cambio, residuo })
     x = siguiente
     if (cambio <= tol) {
+      const verificacion = verificarRaiz(f, x, tol)
+      if (!verificacion.verificada) {
+        return falla('no_converge', `No converge: el cambio entre iteraciones es ≤ tolerancia, pero x = ${x} no verifica ser raíz (|f(x)| = ${Math.abs(verificacion.fRaiz)} no es mínimo local ni cruza el cero). Probablemente f no tiene raíz cerca.`, pasos)
+      }
       return {
         estado: 'convergio',
         mensaje: `Criterio de parada alcanzado en ${n} iteraciones: ${CRITERIO_NEWTON}.`,
-        resultado: { raiz: x, iteraciones: n, ultimoCambio: cambio, residuo, criterio: CRITERIO_NEWTON },
+        resultado: { raiz: x, iteraciones: n, ultimoCambio: cambio, residuo, criterio: CRITERIO_NEWTON, verificacion },
         pasos,
       }
     }

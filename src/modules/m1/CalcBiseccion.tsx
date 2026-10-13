@@ -55,6 +55,7 @@ export default function CalcBiseccion() {
               <dt>Iteraciones</dt><dd>{r.iteraciones}</dd>
               <dt>Cota del error</dt><dd>{fmt(r.cotaError, 8)}</dd>
               <dt>Residuo |f(raíz)|</dt><dd>{fmt(r.residuo, 8)} (no es el error de la raíz)</dd>
+              <dt>Verificación de la raíz</dt><dd>{r.verificacion.verificada ? '✔ ' : '✖ '}|f(r)| = {fmt(r.verificacion.fRaiz, 3)} frente a f(r−δ) = {fmt(r.verificacion.fMenos, 3)} y f(r+δ) = {fmt(r.verificacion.fMas, 3)} (δ = {fmt(r.verificacion.delta, 3)}): f cruza el cero y |f| es mínimo en r</dd>
               <dt>Criterio de parada</dt><dd>{r.criterio}</dd>
             </dl>
           )}

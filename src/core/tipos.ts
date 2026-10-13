@@ -3,6 +3,7 @@ export type Estado =
   | 'ok' // método directo terminado correctamente
   | 'convergio' // método iterativo alcanzó el criterio de parada
   | 'max_iter' // se agotó el límite: NO implica convergencia
+  | 'no_converge' // el criterio de parada se cumplió pero la raíz candidata no se verifica
   | 'invalido' // entrada inválida
   | 'singular'
   | 'no_finito'
