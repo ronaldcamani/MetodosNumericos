@@ -1,11 +1,12 @@
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom'
+import SelectorTema, { ProveedorTema } from './SelectorTema'
 import { MODULOS } from '../modules/registro'
 
 export default function Layout() {
   const { pathname } = useLocation()
   const enModulo = pathname !== '/'
   return (
-    <>
+    <ProveedorTema>
       <a className="saltar" href="#contenido">Saltar al contenido</a>
       <header className="cabecera">
         <Link to="/" className="marca">Métodos Numéricos</Link>
@@ -18,6 +19,7 @@ export default function Layout() {
             ))}
           </ul>
         </nav>
+        <SelectorTema />
       </header>
       <main id="contenido" tabIndex={-1}>
         {enModulo && (
@@ -28,6 +30,6 @@ export default function Layout() {
         <Outlet />
       </main>
       <footer className="pie">UNSA · Ingeniería de Sistemas · Laboratorio de Métodos Numéricos</footer>
-    </>
+    </ProveedorTema>
   )
 }
