@@ -1,8 +1,8 @@
 # Plan del proyecto — Portal de Métodos Numéricos
 
 Fuente: `docs/guia-laboratorio.pdf` (12 semanas, 5 módulos, 2 métodos por módulo).
-Alcance actual: portal común + **Módulo 1** (no lineales) + **Módulo 2** (sistemas lineales).
-Módulos 3, 4 y 5 quedan como tarjetas "pendiente" en el índice.
+Alcance actual: portal común + **Módulos 1, 2 y 3** (no lineales, sistemas lineales, interpolación y ajuste).
+Módulos 4 y 5 quedan como tarjetas "pendiente" en el índice.
 
 ## Decisiones técnicas
 | Tema | Decisión | Motivo (guía §3) |

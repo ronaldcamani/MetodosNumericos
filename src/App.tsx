@@ -3,6 +3,7 @@ import Layout from './components/Layout'
 import Inicio from './pages/Inicio'
 import Modulo1 from './modules/m1/Modulo1'
 import Modulo2 from './modules/m2/Modulo2'
+import Modulo3 from './modules/m3/Modulo3'
 import './styles.css'
 
 export default function App() {
@@ -12,6 +13,7 @@ export default function App() {
         <Route index element={<Inicio />} />
         <Route path="m1" element={<Modulo1 />} />
         <Route path="m2" element={<Modulo2 />} />
+        <Route path="m3" element={<Modulo3 />} />
         <Route path="*" element={<p>Página no encontrada.</p>} />
       </Route>
     </Routes>

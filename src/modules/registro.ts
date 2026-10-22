@@ -36,7 +36,7 @@ export const MODULOS: InfoModulo[] = [
     titulo: "Interpolación y ajuste de curvas",
     descripcion: "Distingue pasar por los datos de aproximar una tendencia.",
     metodos: ["Interpolación de Lagrange", "Regresión lineal"],
-    disponible: false,
+    disponible: true,
   },
   {
     id: "m4",

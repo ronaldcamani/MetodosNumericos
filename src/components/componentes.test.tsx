@@ -15,8 +15,8 @@ describe('portal', () => {
   it('lista los 5 módulos', () => {
     irA('/')
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5)
-    expect(screen.getAllByText('Próximamente')).toHaveLength(3)
-    expect(screen.getAllByRole('link', { name: 'Abrir módulo' }).map((a) => a.getAttribute('href'))).toEqual(['/m1', '/m2'])
+    expect(screen.getAllByText('Próximamente')).toHaveLength(2)
+    expect(screen.getAllByRole('link', { name: 'Abrir módulo' }).map((a) => a.getAttribute('href'))).toEqual(['/m1', '/m2', '/m3'])
   })
   it('fuera del inicio hay enlace de retorno al portal', () => {
     irA('/m1')
