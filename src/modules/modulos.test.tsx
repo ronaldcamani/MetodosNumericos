@@ -125,3 +125,54 @@ describe('Módulo 3', () => {
     expect(within(calc).queryByLabelText('x3')).toBeNull()
   })
 })
+
+describe('Módulo 4', () => {
+  it('trapecio: caso base da 4.75 con 5 nodos', async () => {
+    const u = userEvent.setup()
+    irA('/m4')
+    const calc = screen.getByRole('region', { name: 'Calculadora de trapecio compuesto' })
+    await u.click(within(calc).getByRole('button', { name: 'Calcular' }))
+    expect(within(calc).getByRole('status')).toHaveTextContent('4.75')
+    expect(within(calc).getAllByRole('row')).toHaveLength(6)
+  })
+  it('Simpson: n = 3 se rechaza y explica la paridad', async () => {
+    const u = userEvent.setup()
+    irA('/m4')
+    const calc = screen.getByRole('region', { name: 'Calculadora de Simpson 1/3 compuesto' })
+    await u.click(within(calc).getByRole('button', { name: /n = 3/ }))
+    expect(within(calc).getByRole('alert')).toHaveTextContent(/n par/)
+    expect(within(calc).queryByRole('table')).toBeNull()
+  })
+  it('n = 0 se rechaza en ambos métodos', async () => {
+    const u = userEvent.setup()
+    irA('/m4')
+    for (const nombre of ['Calculadora de trapecio compuesto', 'Calculadora de Simpson 1/3 compuesto']) {
+      const calc = screen.getByRole('region', { name: nombre })
+      await u.click(within(calc).getByRole('button', { name: /n = 0/ }))
+      expect(within(calc).getByRole('alert')).toHaveTextContent(/entero positivo/)
+    }
+  })
+  it('comparación con n impar: Simpson falla y el trapecio se conserva', async () => {
+    const u = userEvent.setup()
+    irA('/m4')
+    const calc = screen.getByRole('region', { name: /Comparación: trapecio/ })
+    await u.click(within(calc).getByRole('button', { name: /n = 3/ }))
+    expect(within(calc).getAllByRole('alert')).toHaveLength(1)
+    expect(within(calc).getAllByRole('status')).toHaveLength(1)
+  })
+  it('tasa negativa avisa de que no es un volumen físico', async () => {
+    const u = userEvent.setup()
+    irA('/m4')
+    const calc = screen.getByRole('region', { name: 'Calculadora de trapecio compuesto' })
+    await u.click(within(calc).getByRole('button', { name: /tasa negativa/ }))
+    expect(within(calc).getByRole('note')).toHaveTextContent(/negativa/)
+  })
+  it('campo no numérico marca el error y no calcula', async () => {
+    const u = userEvent.setup()
+    irA('/m4')
+    const calc = screen.getByRole('region', { name: 'Calculadora de trapecio compuesto' })
+    await u.clear(within(calc).getByLabelText('Subintervalos n'))
+    await u.click(within(calc).getByRole('button', { name: 'Calcular' }))
+    expect(within(calc).getByText(/Ingresa un número/)).toBeInTheDocument()
+  })
+})

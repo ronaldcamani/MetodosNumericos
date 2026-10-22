@@ -8,6 +8,8 @@ import { PREGUNTAS_M1, EJERCICIOS_M1 } from './m1/practica'
 import { PREGUNTAS_M2, EJERCICIOS_M2 } from './m2/practica'
 import { PREGUNTAS_M3, EJERCICIOS_M3 } from './m3/practica'
 import { lagrange, regresionLineal } from '../core/m3'
+import { PREGUNTAS_M4, EJERCICIOS_M4 } from './m4/practica'
+import { integrarTasa, reglaCompuesta, derivacionCentral } from '../core/m4'
 
 describe('respuestas de práctica verificadas con los motores', () => {
   const f = crearModelo('calibracion', 2)
@@ -62,9 +64,42 @@ describe('M3: respuestas de práctica verificadas con los motores', () => {
   })
 })
 
+describe('M4: respuestas de práctica verificadas con los motores', () => {
+  const t = { a: 1, b: 0, c: 1 }
+  it('ejercicio 1: trapecio n = 4 → 4.75 MB, error 1/12', () => {
+    const r = integrarTasa('trapecio', { tasa: t, inicio: 0, fin: 2, n: 4 }).resultado!
+    expect(r.integral).toBeCloseTo(4.75, 12)
+    expect(r.errorAbs).toBeCloseTo(1 / 12, 12)
+  })
+  it('ejercicio 2: Simpson 36, trapecio 37, exacta 36', () => {
+    const e = { tasa: { a: 3, b: 2, c: 1 }, inicio: 1, fin: 3, n: 2 }
+    expect(integrarTasa('simpson', e).resultado!.integral).toBeCloseTo(36, 12)
+    expect(integrarTasa('trapecio', e).resultado!.integral).toBeCloseTo(37, 12)
+    expect(integrarTasa('trapecio', e).resultado!.exacta).toBeCloseTo(36, 12)
+  })
+  it('ejercicio 3: t⁴ con Simpson n = 2 y 4 (0.208333, 0.200521; cociente 16)', () => {
+    const f = (x: number) => x ** 4
+    const s2 = reglaCompuesta('simpson', f, 0, 1, 2).integral
+    const s4 = reglaCompuesta('simpson', f, 0, 1, 4).integral
+    expect(s2).toBeCloseTo(0.208333, 6)
+    expect(s4).toBeCloseTo(0.200521, 6)
+    expect((s2 - 0.2) / (s4 - 0.2)).toBeCloseTo(16, 8)
+    expect(reglaCompuesta('trapecio', f, 0, 1, 2).integral).toBeCloseTo(0.28125, 12)
+  })
+  it('ejercicio 4: n = 116 es el menor con error ≤ 1e-4', () => {
+    const err = (n: number) => integrarTasa('trapecio', { tasa: t, inicio: 0, fin: 2, n }).resultado!.errorAbs
+    expect(err(116)).toBeLessThanOrEqual(1e-4)
+    expect(err(115)).toBeGreaterThan(1e-4)
+  })
+  it('preguntas 3 y 5', () => {
+    expect(integrarTasa('trapecio', { tasa: t, inicio: 0, fin: 2, n: 2 }).resultado!.integral).toBeCloseTo(5, 12)
+    expect(derivacionCentral((x) => x * x + 1, 1, 0.1)).toBeCloseTo(2, 10)
+  })
+})
+
 describe('componentes', () => {
   it('cada módulo tiene 4 ejercicios y 6 preguntas de los tres tipos', () => {
-    for (const [e, q] of [[EJERCICIOS_M1, PREGUNTAS_M1], [EJERCICIOS_M2, PREGUNTAS_M2], [EJERCICIOS_M3, PREGUNTAS_M3]] as const) {
+    for (const [e, q] of [[EJERCICIOS_M1, PREGUNTAS_M1], [EJERCICIOS_M2, PREGUNTAS_M2], [EJERCICIOS_M3, PREGUNTAS_M3], [EJERCICIOS_M4, PREGUNTAS_M4]] as const) {
       expect(e).toHaveLength(4)
       expect(e.filter((x) => x.nivel === 'Intermedio')).toHaveLength(2)
       expect(q).toHaveLength(6)

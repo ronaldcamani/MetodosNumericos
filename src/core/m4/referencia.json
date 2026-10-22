@@ -1,0 +1,105 @@
+{
+  "casos": {
+    "base_n2": {
+      "a": 1,
+      "b": 0,
+      "c": 1,
+      "alfa": 0,
+      "beta": 2,
+      "n": 2,
+      "exacta": 4.666666666666666,
+      "trapecio": 5.0,
+      "simpson": 4.666666666666666,
+      "min_tasa": 1.0
+    },
+    "base_n4": {
+      "a": 1,
+      "b": 0,
+      "c": 1,
+      "alfa": 0,
+      "beta": 2,
+      "n": 4,
+      "exacta": 4.666666666666666,
+      "trapecio": 4.75,
+      "simpson": 4.666666666666666,
+      "min_tasa": 1.0
+    },
+    "base_n8": {
+      "a": 1,
+      "b": 0,
+      "c": 1,
+      "alfa": 0,
+      "beta": 2,
+      "n": 8,
+      "exacta": 4.666666666666666,
+      "trapecio": 4.6875,
+      "simpson": 4.666666666666666,
+      "min_tasa": 1.0
+    },
+    "general": {
+      "a": 0.5,
+      "b": -1,
+      "c": 3,
+      "alfa": 1,
+      "beta": 3,
+      "n": 6,
+      "exacta": 6.333333333333334,
+      "trapecio": 6.351851851851851,
+      "simpson": 6.333333333333333,
+      "min_tasa": 2.5
+    },
+    "ejercicio2": {
+      "a": 3,
+      "b": 2,
+      "c": 1,
+      "alfa": 1,
+      "beta": 3,
+      "n": 2,
+      "exacta": 36.0,
+      "trapecio": 37.0,
+      "simpson": 36.0,
+      "min_tasa": 6.0
+    },
+    "tasa_negativa": {
+      "a": 1,
+      "b": -3,
+      "c": 1,
+      "alfa": 0,
+      "beta": 3,
+      "n": 6,
+      "exacta": -1.5,
+      "trapecio": -1.375,
+      "simpson": -1.5,
+      "min_tasa": -1.25
+    },
+    "n_grande": {
+      "a": 1,
+      "b": 0,
+      "c": 1,
+      "alfa": 0,
+      "beta": 2,
+      "n": 116,
+      "exacta": 4.666666666666666,
+      "trapecio": 4.666765755053507,
+      "simpson": 4.666666666666665,
+      "min_tasa": 1.0
+    }
+  },
+  "cuartica": {
+    "2": {
+      "trapecio": 0.28125,
+      "simpson": 0.20833333333333331,
+      "exacta": 0.2
+    },
+    "4": {
+      "trapecio": 0.220703125,
+      "simpson": 0.20052083333333331,
+      "exacta": 0.2
+    }
+  },
+  "derivada_central": {
+    "t": 1,
+    "h": 0.1,
+    "valor": 1.9999999999999996
+  }
+}

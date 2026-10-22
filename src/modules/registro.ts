@@ -46,7 +46,7 @@ export const MODULOS: InfoModulo[] = [
     descripcion:
       "Estima una cantidad acumulada y observa el efecto de refinar la partición.",
     metodos: ["Trapecio compuesto", "Simpson compuesto"],
-    disponible: false,
+    disponible: true,
   },
   {
     id: "m5",
