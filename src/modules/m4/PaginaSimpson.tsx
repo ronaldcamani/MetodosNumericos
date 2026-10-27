@@ -63,7 +63,7 @@ export default function PaginaSimpson() {
             </p>
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarlo</h4>
+                <h3>Cuándo usarlo</h3>
                 <ul>
                   <li>Tasa suave y n par.</li>
                   <li>Alta precisión con pocos nodos.</li>
@@ -71,7 +71,7 @@ export default function PaginaSimpson() {
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>n impar impuesto.</li>
                   <li>Tasa con saltos o picos (la cuarta derivada es grande).</li>

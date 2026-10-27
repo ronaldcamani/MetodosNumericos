@@ -59,7 +59,7 @@ export default function Decisor<R extends Record<string, string>>({ problemas, p
         {problemas.map((p) => (
           <div key={p.id} className="problema">
             <span className="etiqueta">Problema</span>
-            <h4>{p.titulo}</h4>
+            <h3>{p.titulo}</h3>
             {p.enunciado}
             <button type="button" aria-pressed={elegido === p.id} onClick={() => { setElegido(p.id); setR(p.respuestas) }}>Analizar este problema</button>
           </div>

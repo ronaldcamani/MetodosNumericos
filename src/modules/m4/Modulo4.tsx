@@ -121,7 +121,7 @@ export default function Modulo4() {
 
           <section id="mapa" aria-labelledby="h-mapa">
             <h2 id="h-mapa">Mapa de métodos</h2>
-            <div className="tabla-wrap">
+            <div className="tabla-wrap" tabIndex={0}>
               <table className="tabla-metodos">
                 <caption>Resumen de las reglas</caption>
                 <thead><tr><th scope="col">Regla</th><th scope="col">Aproxima con</th><th scope="col">Necesita</th><th scope="col">Error</th><th scope="col">Riesgo principal</th></tr></thead>

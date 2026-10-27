@@ -53,11 +53,11 @@ export default function MetodosAbiertos() {
             </p>
             <div className="dos-columnas">
               <div>
-                <h4>Newton</h4>
+                <h3>Newton</h3>
                 <p>Usa la <em>tangente</em> en <M tex="x_n" />: necesita <M tex="f'" />. Convergencia cuadrática: las cifras correctas se duplican.</p>
               </div>
               <div>
-                <h4>Secante</h4>
+                <h3>Secante</h3>
                 <p>Usa la recta por los <em>dos últimos puntos</em>: reemplaza <M tex="f'" /> por una pendiente aproximada. Orden ≈ 1.62.</p>
               </div>
             </div>
@@ -84,7 +84,7 @@ export default function MetodosAbiertos() {
             <p>El algoritmo es igual al de Newton cambiando <M tex="f'(x_n)" /> por la pendiente <M tex="\frac{f(x_n)-f(x_{n-1})}{x_n-x_{n-1}}" />.</p>
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarlos</h4>
+                <h3>Cuándo usarlos</h3>
                 <ul>
                   <li>Hay un buen punto inicial (o ya se acotó la raíz).</li>
                   <li>Se busca velocidad.</li>
@@ -92,7 +92,7 @@ export default function MetodosAbiertos() {
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>No se tiene idea de dónde está la raíz.</li>
                   <li>f′ se anula cerca de la raíz (raíces dobles).</li>

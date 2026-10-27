@@ -58,7 +58,7 @@ export default function PaginaEstabilidad() {
             </p>
             <M bloque tex="y_{n+1}=(1-k\,h)\,y_n\quad\Rightarrow\quad |1-k\,h|<1\ \Leftrightarrow\ 0<k\,h<2\ \Leftrightarrow\ h<\frac2k" />
             <p>Con <M tex="k=0.5" />, la condición es <M tex="0<h<4" /> min. Según el valor de <M tex="k\,h" /> hay cuatro comportamientos:</p>
-            <div className="tabla-wrap">
+            <div className="tabla-wrap" tabIndex={0}>
               <table className="tabla-metodos">
                 <caption>Comportamiento de Euler según k·h</caption>
                 <thead><tr><th scope="col">k·h</th><th scope="col">h (k = 0.5)</th><th scope="col">Factor 1 − k·h</th><th scope="col">Qué ocurre</th><th scope="col">¿Físicamente válida?</th></tr></thead>

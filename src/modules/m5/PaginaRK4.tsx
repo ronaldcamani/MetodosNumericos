@@ -79,7 +79,7 @@ export default function PaginaRK4() {
             </p>
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarlo</h4>
+                <h3>Cuándo usarlo</h3>
                 <ul>
                   <li>Se necesita buena precisión.</li>
                   <li>El paso es grande o se quiere pocos pasos.</li>
@@ -87,7 +87,7 @@ export default function PaginaRK4() {
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>Solo se quiere una idea rápida de la forma de la curva.</li>
                   <li>Con <M tex="k\,h" /> grande también puede ser inestable (límite ≈ 2.785).</li>
@@ -113,7 +113,7 @@ export default function PaginaRK4() {
             <TablaPasos titulo="RK4, h = 0.5" pasos={rk.pasos} columnas={[
               { clave: "t", titulo: "t (min)", valor: (q) => q.t }, { clave: "T", titulo: "T calculada (°C)", valor: (q) => q.T }, { clave: "e", titulo: "T exacta (°C)", valor: (q) => q.exacta }, { clave: "er", titulo: "error (°C)", valor: (q) => q.error },
             ]} />
-            <div className="tabla-wrap">
+            <div className="tabla-wrap" tabIndex={0}>
               <table>
                 <caption>Error máximo sobre los nodos hasta t = 2 min</caption>
                 <thead><tr><th scope="col">Método</th><th scope="col">h = 0.5</th><th scope="col">h = 0.25</th><th scope="col">Cociente</th><th scope="col">Evaluaciones de f (h = 0.5)</th></tr></thead>

@@ -124,7 +124,7 @@ export default function Modulo3() {
 
           <section id="mapa" aria-labelledby="h-mapa">
             <h2 id="h-mapa">Mapa de métodos</h2>
-            <div className="tabla-wrap">
+            <div className="tabla-wrap" tabIndex={0}>
               <table className="tabla-metodos">
                 <caption>Resumen de los modelos</caption>
                 <thead><tr><th scope="col">Modelo</th><th scope="col">Pasa por los datos</th><th scope="col">Necesita</th><th scope="col">Útil cuando</th><th scope="col">Riesgo principal</th></tr></thead>

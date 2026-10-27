@@ -20,7 +20,7 @@ export default function TablaPasos<P>({ titulo, columnas, pasos, archivoCSV }: P
   // Las columnas de texto se alinean a la izquierda y las numéricas a la derecha.
   const esTexto = columnas.map((c) => pasos.length > 0 && typeof c.valor(pasos[0]) === 'string')
   return (
-    <div className="tabla-wrap">
+    <div className="tabla-wrap" tabIndex={0}>
       <table>
         <caption>{titulo}</caption>
         <thead>

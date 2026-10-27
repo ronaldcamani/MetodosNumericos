@@ -66,7 +66,7 @@ export default function MetodosDirectos() {
             <M bloque tex="x_i=\frac{1}{a_{ii}}\Bigl(b_i-\sum_{j>i}a_{ij}x_j\Bigr)" />
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarlo</h4>
+                <h3>Cuándo usarlo</h3>
                 <ul>
                   <li>Sistemas pequeños o medianos y densos.</li>
                   <li>No se sabe si la matriz es dominante.</li>
@@ -74,7 +74,7 @@ export default function MetodosDirectos() {
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>Sistemas enormes y dispersos: el costo <M tex="\sim\tfrac23n^3" /> y el relleno pesan.</li>
                   <li>Cuando basta una aproximación y la convergencia está garantizada.</li>

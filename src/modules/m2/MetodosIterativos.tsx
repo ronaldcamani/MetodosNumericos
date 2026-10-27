@@ -64,14 +64,14 @@ export default function MetodosIterativos() {
             </p>
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarlo</h4>
+                <h3>Cuándo usarlo</h3>
                 <ul>
                   <li>Sistemas grandes y con diagonal dominante.</li>
                   <li>Una aproximación con residuo pequeño es suficiente.</li>
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>No se sabe si converge y no se puede comprobar la dominancia.</li>
                   <li>El sistema es singular o casi singular.</li>

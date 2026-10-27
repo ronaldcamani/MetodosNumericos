@@ -148,7 +148,7 @@ export default function Modulo5() {
 
           <section id="mapa" aria-labelledby="h-mapa">
             <h2 id="h-mapa">Mapa de métodos</h2>
-            <div className="tabla-wrap">
+            <div className="tabla-wrap" tabIndex={0}>
               <table className="tabla-metodos">
                 <caption>Resumen de los métodos</caption>
                 <thead><tr><th scope="col">Método</th><th scope="col">Idea</th><th scope="col">Evaluaciones por paso</th><th scope="col">Orden (error global)</th><th scope="col">Estable si (k = 0.5)</th></tr></thead>

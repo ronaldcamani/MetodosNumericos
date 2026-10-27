@@ -60,7 +60,7 @@ export default function PaginaRegresion() {
             </ol>
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarla</h4>
+                <h3>Cuándo usarla</h3>
                 <ul>
                   <li>Datos con ruido y tendencia aproximadamente lineal.</li>
                   <li>Hay abscisas repetidas (réplicas).</li>
@@ -68,7 +68,7 @@ export default function PaginaRegresion() {
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>La relación claramente no es lineal.</li>
                   <li>Se necesita pasar exactamente por los datos.</li>

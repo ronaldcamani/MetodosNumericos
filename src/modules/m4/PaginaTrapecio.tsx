@@ -62,7 +62,7 @@ export default function PaginaTrapecio() {
             </ol>
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarlo</h4>
+                <h3>Cuándo usarlo</h3>
                 <ul>
                   <li>Se impone un n impar.</li>
                   <li>La tasa no es suave.</li>
@@ -70,7 +70,7 @@ export default function PaginaTrapecio() {
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>La tasa es suave y se quiere alta precisión con pocos nodos: Simpson rinde más.</li>
                 </ul>

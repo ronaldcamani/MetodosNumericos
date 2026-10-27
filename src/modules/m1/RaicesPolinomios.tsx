@@ -100,7 +100,7 @@ export default function RaicesPolinomios() {
           <section id="ejemplos" aria-labelledby="h-ejemplos">
             <h2 id="h-ejemplos">Ejemplos resueltos</h2>
             <h3>Ejemplo 1: Horner de x³ − x − 2 en x = 2</h3>
-            <div className="tabla-wrap">
+            <div className="tabla-wrap" tabIndex={0}>
               <table>
                 <caption>Esquema de Horner para p(x) = {polinomioTexto(COEF_BASE)} en r = 2</caption>
                 <thead>

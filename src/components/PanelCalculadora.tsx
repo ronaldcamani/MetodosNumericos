@@ -46,9 +46,11 @@ export function ConPanelCalculadora({ herramientas, children }: { herramientas: 
     requestAnimationFrame(() => boton.current?.focus())
   }, [])
 
-  const abrir = useCallback((p: PresetCalculadora) => {
-    setActiva(p.herramienta)
-    setPreset((previo) => ({ ...p, n: (previo?.n ?? 0) + 1 }))
+  const abrir = useCallback((p?: PresetCalculadora) => {
+    if (p) {
+      setActiva(p.herramienta)
+      setPreset((previo) => ({ ...p, n: (previo?.n ?? 0) + 1 }))
+    }
     setAbierto(true)
     // el foco pasa al panel para que teclado y lector de pantalla encuentren el resultado
     requestAnimationFrame(() => panel.current?.focus())
@@ -64,7 +66,7 @@ export function ConPanelCalculadora({ herramientas, children }: { herramientas: 
   }, [abierto, cerrar])
 
   return (
-    <Contexto.Provider value={{ abrir }}>
+    <Contexto.Provider value={{ abrir: (p) => abrir(p) }}>
       <div className="con-panel" data-abierto={abierto}>
         <div className="con-panel-contenido">{children}</div>
         <aside ref={panel} id="panel-calculadora" className="panel-calculadora" aria-label="Panel de calculadora" tabIndex={-1} aria-hidden={!abierto} inert={!abierto}>
@@ -84,7 +86,7 @@ export function ConPanelCalculadora({ herramientas, children }: { herramientas: 
             <div key={h.id} hidden={h.id !== activa}>{h.render(preset)}</div>
           ))}
         </aside>
-        <button ref={boton} type="button" className="panel-boton" aria-expanded={abierto} aria-controls="panel-calculadora" onClick={() => setAbierto(!abierto)}>
+        <button ref={boton} type="button" className="panel-boton" aria-expanded={abierto} aria-controls="panel-calculadora" onClick={() => (abierto ? cerrar() : abrir())}>
           {abierto ? 'Ocultar calculadora' : 'Abrir calculadora'}
         </button>
       </div>

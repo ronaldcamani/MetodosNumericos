@@ -53,11 +53,11 @@ export default function MetodosCerrados() {
             </p>
             <div className="dos-columnas">
               <div>
-                <h4>Bisección</h4>
+                <h3>Bisección</h3>
                 <p>Toma el punto medio. Ignora los valores de <M tex="f" />: es lenta pero totalmente predecible.</p>
               </div>
               <div>
-                <h4>Falsa posición</h4>
+                <h3>Falsa posición</h3>
                 <p>Toma el corte de la cuerda que une los extremos. Usa los valores de <M tex="f" />, así que suele ser más rápida, pero puede estancarse.</p>
               </div>
             </div>
@@ -89,7 +89,7 @@ export default function MetodosCerrados() {
             </ol>
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarlos</h4>
+                <h3>Cuándo usarlos</h3>
                 <ul>
                   <li>Conoces un intervalo con cambio de signo.</li>
                   <li>Necesitas una garantía de convergencia.</li>
@@ -98,7 +98,7 @@ export default function MetodosCerrados() {
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>No hay cambio de signo (raíces dobles, <M tex="f" /> que solo toca el eje).</li>
                   <li><M tex="f" /> es discontinua en el intervalo.</li>

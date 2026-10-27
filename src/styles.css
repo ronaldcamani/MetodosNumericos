@@ -148,7 +148,7 @@ button:active:not(:disabled) { transform: scale(0.97); }
 .idea > :first-child, .cuidado > :first-child { margin-top: 0; } .idea > :last-child, .cuidado > :last-child { margin-bottom: 0; }
 .dos-columnas { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin: 14px 0; }
 .dos-columnas > div { background: var(--card); border: 1px solid var(--borde); border-radius: 8px; padding: 10px 14px; }
-.dos-columnas h4 { margin: 0 0 4px; } .dos-columnas ul { margin: 4px 0; padding-left: 18px; }
+.dos-columnas h3 { margin: 0 0 4px; font-size: 1.05rem; } .dos-columnas ul { margin: 4px 0; padding-left: 18px; }
 .algoritmo { counter-reset: paso; list-style: none; padding: 0; margin: 12px 0; }
 .algoritmo li { counter-increment: paso; position: relative; padding: 6px 0 6px 40px; }
 .algoritmo li::before { content: counter(paso); position: absolute; left: 0; top: 6px; width: 26px; height: 26px; border-radius: 50%; background: var(--acento); color: var(--bg); font-weight: 700; display: grid; place-items: center; font-size: .9rem; }
@@ -180,3 +180,10 @@ th.txt, td.txt { text-align: left; }
 .explorador h3 { margin-top: 8px; }
 .explorador .acciones { align-items: end; }
 @media (max-width: 600px) { .glosario { grid-template-columns: 1fr; } .glosario dd { margin-bottom: 6px; } }
+
+.tabla-wrap:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+.problema h3 { font-size: 1.05rem; }
+
+.formula-bloque:focus-visible { outline: 3px solid var(--acento); outline-offset: 2px; }
+.tarjeta ul a { display: inline-block; padding: 4px 2px; min-height: 24px; }
+.tarjeta .metodos { margin: 4px 0; }

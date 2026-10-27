@@ -61,7 +61,7 @@ export default function PaginaLagrange() {
             <p>Cada base cumple <M tex="L_i(x_k)=1" /> si <M tex="k=i" /> y <M tex="0" /> en los demás nodos, y <M tex="\sum_iL_i(x)=1" />.</p>
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarla</h4>
+                <h3>Cuándo usarla</h3>
                 <ul>
                   <li>Datos exactos y valor entre nodos.</li>
                   <li>Pocos nodos (grado bajo).</li>
@@ -69,7 +69,7 @@ export default function PaginaLagrange() {
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>Datos con ruido de medición.</li>
                   <li>Muchos nodos equiespaciados (oscilación).</li>

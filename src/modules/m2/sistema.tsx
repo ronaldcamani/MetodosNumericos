@@ -91,7 +91,7 @@ function FilaEditor({ i, idx, valores, errores, set }: Props & { i: number; idx:
 export function MatrizTabla({ titulo, M }: { titulo: string; M: Matriz }) {
   const n = M.length
   return (
-    <div className="tabla-wrap">
+    <div className="tabla-wrap" tabIndex={0}>
       <table>
         <caption>{titulo}</caption>
         <thead>

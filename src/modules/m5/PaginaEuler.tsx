@@ -79,7 +79,7 @@ export default function PaginaEuler() {
             </p>
             <div className="dos-columnas">
               <div>
-                <h4>Cuándo usarlo</h4>
+                <h3>Cuándo usarlo</h3>
                 <ul>
                   <li>Para entender el problema o hacer una primera exploración.</li>
                   <li>Precisión moderada con un paso pequeño.</li>
@@ -87,7 +87,7 @@ export default function PaginaEuler() {
                 </ul>
               </div>
               <div>
-                <h4>Cuándo no</h4>
+                <h3>Cuándo no</h3>
                 <ul>
                   <li>Se necesita un error muy pequeño (hacen falta miles de pasos).</li>
                   <li>El paso es grande o <M tex="k\,h\ge2" />: inestable.</li>

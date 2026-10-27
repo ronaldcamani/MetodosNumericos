@@ -57,17 +57,17 @@ export default function ModuloErrores() {
             <div className="dos-columnas">
               <div className="problema">
                 <span className="etiqueta">Situación 1</span>
-                <h4>La suma que no cuadra</h4>
+                <h3>La suma que no cuadra</h3>
                 <p>En doble precisión <code>0.1 + 0.2</code> da <code>{String(0.1 + 0.2)}</code>, no 0.3. ¿Es un error del programa?</p>
               </div>
               <div className="problema">
                 <span className="etiqueta">Situación 2</span>
-                <h4>La resta que lo pierde todo</h4>
+                <h3>La resta que lo pierde todo</h3>
                 <p>Al restar <M tex="0.12345-0.12341" /> con 4 cifras significativas se obtiene {fmt(canc.calculado, 4)}, pero el valor correcto es 0.00004. ¿Qué pasó?</p>
               </div>
               <div className="problema">
                 <span className="etiqueta">Situación 3</span>
-                <h4>La serie que se corta</h4>
+                <h3>La serie que se corta</h3>
                 <p>Se estima <M tex="e" /> con los primeros 5 términos de su serie y sale 2.7083, no 2.7183. ¿De dónde viene la diferencia?</p>
               </div>
             </div>
@@ -78,10 +78,10 @@ export default function ModuloErrores() {
             <h2 id="h-teoria">Teoría</h2>
             <h3>Tipos de error según su origen</h3>
             <div className="dos-columnas">
-              <div><h4>De entrada (inherente)</h4><p>Los datos ya vienen con incertidumbre (mediciones, constantes aproximadas).</p></div>
-              <div><h4>De redondeo</h4><p>Un número no cabe en las cifras disponibles (<M tex="0.1" /> no es exacto en binario).</p></div>
-              <div><h4>De truncamiento</h4><p>Se corta un proceso infinito: una serie, una iteración que se detiene, un paso de integración.</p></div>
-              <div><h4>De propagación</h4><p>Los errores previos se arrastran y pueden amplificarse en las operaciones siguientes.</p></div>
+              <div><h3>De entrada (inherente)</h3><p>Los datos ya vienen con incertidumbre (mediciones, constantes aproximadas).</p></div>
+              <div><h3>De redondeo</h3><p>Un número no cabe en las cifras disponibles (<M tex="0.1" /> no es exacto en binario).</p></div>
+              <div><h3>De truncamiento</h3><p>Se corta un proceso infinito: una serie, una iteración que se detiene, un paso de integración.</p></div>
+              <div><h3>De propagación</h3><p>Los errores previos se arrastran y pueden amplificarse en las operaciones siguientes.</p></div>
             </div>
             <h3>Cómo se mide el error</h3>
             <p>Si <M tex="x" /> es el valor verdadero y <M tex="\tilde x" /> su aproximación:</p>
