@@ -1,6 +1,7 @@
 import Calculadora from '../../components/Calculadora'
 import MensajeEstado from '../../components/MensajeEstado'
 import TablaPasos from '../../components/TablaPasos'
+import { useAplicarPreset, type PresetActivo } from '../../components/PanelCalculadora'
 import { useCalculadora } from '../../components/useCalculadora'
 import { fmt } from '../../core/formato'
 import { eliminacionGauss } from '../../core/m2'
@@ -15,8 +16,9 @@ function ejecutar(v: FSistema) {
   return { salida: { res: eliminacionGauss(s), A: s.A, b: s.b } }
 }
 
-export default function CalcGauss() {
+export default function CalcGauss({ preset = null }: { preset?: PresetActivo | null }) {
   const c = useCalculadora<FSistema, Salida>(CASO_SISTEMA, ejecutar)
+  useAplicarPreset('gauss', preset, (valores) => c.cargarYCalcular({ ...CASO_SISTEMA, ...valores }))
   const s = c.salida
   const r = s?.res.resultado
   return (

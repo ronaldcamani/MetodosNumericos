@@ -46,6 +46,19 @@ def caso(a, b, c, lo, hi, n):
     }
 
 
+def derivadas():
+    """Diferencias finitas de e^t en t = 1 y de sen t en t = 1 con numpy; error frente a la derivada exacta."""
+    out = {}
+    for nombre, f, df in (("exponencial", np.exp, np.exp), ("seno", np.sin, np.cos)):
+        filas = []
+        for h in (0.5, 0.1, 0.01, 1e-5, 1e-12):
+            central = float((f(1 + h) - f(1 - h)) / (2 * h))
+            progresiva = float((f(1 + h) - f(1)) / h)
+            filas.append({"h": h, "central": central, "progresiva": progresiva, "error_central": abs(central - float(df(1.0))), "error_progresiva": abs(progresiva - float(df(1.0)))})
+        out[nombre] = {"exacta": float(df(1.0)), "filas": filas}
+    return out
+
+
 def generar():
     # Integrando de grado 4 (no cuadrático): ∫0^1 x⁴ dx = 1/5; Simpson NO es exacto.
     quartica = {}
@@ -56,6 +69,7 @@ def generar():
         "casos": {k: caso(*v) for k, v in CASOS.items()},
         "cuartica": quartica,
         "derivada_central": {"t": 1, "h": 0.1, "valor": (((1.1) ** 2 + 1) - ((0.9) ** 2 + 1)) / 0.2},
+        "derivadas": derivadas(),
     }
 
 

@@ -44,5 +44,11 @@ export function useCalculadora<F extends Record<string, string>, S>(caso: F, eje
       setErrores({})
       setSalida(null)
     },
+    /** Como restablecer, pero partiendo de otros valores (p. ej. conservar el método elegido). */
+    reiniciar: (v: F) => {
+      setValores(v)
+      setErrores({})
+      setSalida(null)
+    },
   }
 }

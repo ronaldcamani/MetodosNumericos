@@ -2,6 +2,7 @@ import Calculadora from '../../components/Calculadora'
 import Grafico from '../../components/Grafico'
 import MensajeEstado from '../../components/MensajeEstado'
 import TablaPasos from '../../components/TablaPasos'
+import { useAplicarPreset, type PresetActivo } from '../../components/PanelCalculadora'
 import { useCalculadora } from '../../components/useCalculadora'
 import { fmt } from '../../core/formato'
 import { integrarTasa, type EntradaIntegral, type MetodoIntegral } from '../../core/m4'
@@ -12,12 +13,13 @@ type Salida = { res: ReturnType<typeof integrarTasa>; e: EntradaIntegral }
 
 const TITULO = { trapecio: 'Calculadora de trapecio compuesto', simpson: 'Calculadora de Simpson 1/3 compuesto' } as const
 
-export default function CalcIntegral({ metodo }: { metodo: MetodoIntegral }) {
+export default function CalcIntegral({ metodo, preset = null }: { metodo: MetodoIntegral; preset?: PresetActivo | null }) {
   const c = useCalculadora<FTasa, Salida>(CASO_TASA, (v) => {
     const e = leerEntrada(v)
     if ('errores' in e) return { errores: e.errores }
     return { salida: { res: integrarTasa(metodo, e), e } }
   })
+  useAplicarPreset(metodo, preset, (valores) => c.cargarYCalcular({ ...CASO_TASA, ...valores }))
   const s = c.salida
   const r = s?.res.resultado
   const f = metodo === 'trapecio' ? 'h/2' : 'h/3'

@@ -1,229 +1,178 @@
-import { useMemo } from "react";
 import Autoevaluacion from "../../components/Autoevaluacion";
+import Decisor, { type ProblemaPlanteado } from "../../components/Decisor";
 import Ejercicios from "../../components/Ejercicios";
+import Grafico from "../../components/Grafico";
 import ModuloConIndice from "../../components/IndiceLateral";
 import Matematica from "../../components/Matematica";
-import TablaPasos from "../../components/TablaPasos";
-import { fmt } from "../../core/formato";
-import { lagrange, regresionLineal } from "../../core/m3";
-import CalcLagrange from "./CalcLagrange";
-import CalcRegresion from "./CalcRegresion";
+import { ConPanelCalculadora } from "../../components/PanelCalculadora";
+import SubNavegacion from "../../components/SubNavegacion";
+import { Link } from "react-router-dom";
 import Comparacion from "./Comparacion";
-import { EJERCICIOS_M3, PREGUNTAS_M3 } from "./practica";
+import { INICIAL_DATOS, PREGUNTAS_DATOS, recomendarDatos, type RespuestasDatos } from "./decision";
+import { EJE_X, EJE_Y, trazaDatos } from "./graficos";
+import { herramientasInterpolacion, PAGINAS_INTERPOLACION, presetDatos } from "./paginas";
+import { EJERCICIOS_DECISION_INTERP, PREGUNTAS_DECISION_INTERP } from "./practica";
 
-const x = [0, 1, 2, 3];
-const y = [1, 2, 2, 4];
+const M = Matematica;
 const SECCIONES = [
-  ["teoria", "Teoría"],
-  ["ejemplos", "Ejemplos resueltos"],
-  ["lagrange", "Calculadora: Lagrange"],
-  ["regresion", "Calculadora: regresión"],
-  ["comparacion", "Caso aplicado y comparación"],
-  ["limites", "Cuidados al usar cada modelo"],
-  ["ejercicios", "Ejercicios propuestos"],
+  ["problema", "El problema"],
+  ["decide", "Analiza y decide"],
+  ["mapa", "Mapa de métodos"],
+  ["comparacion", "Comparación de los modelos"],
+  ["cuidados", "Cuidados"],
+  ["ejercicios", "Ejercicios: elige tu modelo"],
   ["autoevaluacion", "Autoevaluación"],
 ] as const;
 
+const PROBLEMAS: ProblemaPlanteado<RespuestasDatos>[] = [
+  {
+    id: "carga",
+    titulo: "Carga y latencia de un servicio",
+    enunciado: (
+      <p>
+        La carga normalizada <M tex="x" /> toma los valores 0, 1, 2 y 3 y la latencia <M tex="y" /> mide 1, 2, 2 y 4 ms. Se pregunta
+        qué latencia esperar con carga <M tex="x=1.5" />.
+      </p>
+    ),
+    analisis: (
+      <p>
+        Son cuatro datos sintéticos dentro del intervalo [0, 3]. Si se tratan como exactos, se interpola con Lagrange (1.9375 ms); si
+        se interpretan como mediciones con ruido, se ajusta una recta (2.25 ms). Los dos valores no coinciden y esa diferencia es el
+        punto del tema: <em>pasar por los datos</em> no es lo mismo que <em>aproximar la tendencia</em>.
+      </p>
+    ),
+    respuestas: { datos: "exactos", pasar: "si", cantidad: "pocos", consulta: "dentro", repetidas: "no" },
+  },
+  {
+    id: "ruido",
+    titulo: "Mediciones ruidosas para predecir",
+    enunciado: (
+      <p>
+        Se miden 6 cargas distintas con ruido y se quiere predecir la latencia con una carga mayor que todas las medidas.
+      </p>
+    ),
+    analisis: (
+      <p>
+        Hay ruido, se busca la tendencia y la consulta cae fuera del intervalo. Interpolar con un polinomio de grado 5 reproduciría el
+        ruido y se alejaría rápido al extrapolar; una recta por mínimos cuadrados es la opción razonable, con aviso de extrapolación.
+      </p>
+    ),
+    respuestas: { datos: "ruido", pasar: "no", cantidad: "muchos", consulta: "fuera", repetidas: "no" },
+    valores: presetDatos("regresion", [0, 1, 2, 3, 4, 5], [1, 2.5, 2, 4, 3.5, 6], 6).valores,
+  },
+  {
+    id: "tabla",
+    titulo: "Una tabla exacta de calibración",
+    enunciado: (
+      <p>
+        Un instrumento calibrado entrega seis valores exactos (sin error) de una respuesta suave y se necesita el valor en un punto
+        intermedio entre dos de ellos.
+      </p>
+    ),
+    analisis: (
+      <p>
+        Datos exactos, consulta dentro del intervalo y necesidad de pasar por los puntos: interpolar es lo natural. Con seis nodos
+        equiespaciados hay que vigilar la oscilación (Runge); a menudo basta interpolar con los nodos cercanos.
+      </p>
+    ),
+    respuestas: { datos: "exactos", pasar: "si", cantidad: "muchos", consulta: "dentro", repetidas: "no" },
+    valores: presetDatos("lagrange", [0, 1, 2, 3, 4, 5], [1, 2.5, 2, 4, 3.5, 6], 2.5).valores,
+  },
+];
+
 export default function Modulo3() {
-  const lag = useMemo(() => lagrange({ x, y, consulta: 1.5 }), []);
-  const reg = useMemo(() => regresionLineal({ x, y, consulta: 1.5 }), []);
-  const r = reg.resultado;
   return (
-    <ModuloConIndice secciones={SECCIONES}>
-      <article className="modulo">
-        <h1>Módulo 3: Interpolación y ajuste de curvas</h1>
-        <p>
-          <strong>Objetivo:</strong> distinguir <em>pasar por los datos</em> de{" "}
-          <em>aproximar una tendencia</em>, y elegir entre interpolación y
-          regresión según el propósito.
-        </p>
-        <p> Métodos: interpolación de Lagrange y regresión lineal.</p>
+    <ConPanelCalculadora herramientas={herramientasInterpolacion()}>
+      <ModuloConIndice secciones={SECCIONES}>
+        <article className="modulo">
+          <h1>Interpolación y ajuste de curvas</h1>
+          <SubNavegacion enlaces={PAGINAS_INTERPOLACION} etiqueta="Páginas de interpolación y ajuste de curvas" />
+          <p>
+            <strong>Objetivo:</strong> distinguir <em>pasar por los datos</em> de <em>aproximar una tendencia</em> y{" "}
+            <em>decidir</em> entre interpolación y regresión según el propósito.
+          </p>
 
-        <section id="teoria" aria-labelledby="h-teoria">
-          <h2 id="h-teoria">Teoría</h2>
-          <p>
-            <strong>Caso aplicado (datos sintéticos).</strong> Carga y latencia
-            de un servicio: la carga normalizada <Matematica tex="x" /> (sin
-            unidades) toma los valores 0, 1, 2 y 3 y la latencia{" "}
-            <Matematica tex="y" /> mide 1, 2, 2 y 4 milisegundos. Se pregunta
-            qué latencia esperar con carga <Matematica tex="x=1.5" />.
-          </p>
-          <h3>Interpolación de Lagrange</h3>
-          <p>
-            Dados <Matematica tex="n" /> nodos con abscisas{" "}
-            <strong>distintas</strong> (entre 2 y 6), existe un único polinomio
-            de grado <Matematica tex="\le n-1" /> que pasa por todos:
-          </p>
-          <Matematica
-            bloque
-            tex="P(x)=\sum_{i=0}^{n-1}y_i\,L_i(x),\qquad L_i(x)=\prod_{j\ne i}\frac{x-x_j}{x_i-x_j}"
-          />
-          <p>
-            Cada base cumple <Matematica tex="L_i(x_k)=1" /> si{" "}
-            <Matematica tex="k=i" /> y <Matematica tex="0" /> en los demás
-            nodos, y <Matematica tex="\sum_iL_i(x)=1" />. La calculadora
-            muestra la contribución <Matematica tex="y_iL_i(x)" /> de cada nodo.
-          </p>
-          <p>
-            <em>Limitaciones:</em> exige abscisas distintas (si no, aparece una
-            división entre cero); reproduce también el ruido de medición; y un
-            grado alto puede oscilar entre los nodos (fenómeno de Runge).
-          </p>
-          <h3>Regresión lineal por mínimos cuadrados</h3>
-          <p>
-            Se busca la recta <Matematica tex="\hat y=b_0+b_1x" /> que minimiza
-            la suma de cuadrados de los residuos{" "}
-            <Matematica tex="r_i=y_i-\hat y_i" />:
-          </p>
-          <Matematica
-            bloque
-            tex="b_1=\frac{S_{xy}}{S_{xx}}=\frac{\sum(x_i-\bar x)(y_i-\bar y)}{\sum(x_i-\bar x)^2},\qquad b_0=\bar y-b_1\bar x,\qquad \mathrm{SSE}=\sum r_i^2"
-          />
-          <p>
-            <em>Limitaciones:</em> necesita variación en <Matematica tex="x" />{" "}
-            (si <Matematica tex="S_{xx}=0" /> la pendiente no existe) y supone
-            una tendencia lineal; extrapolar fuera de los datos no está
-            respaldado. El coeficiente{" "}
-            <Matematica tex="R^2=1-\mathrm{SSE}/\sum(y_i-\bar y)^2" /> mide qué
-            parte de la variación explica la recta.
-          </p>
-          <p className="aviso">
-            <strong>¿Cuál elegir?</strong> Si los datos son exactos y se
-            necesita un valor <em>entre</em> nodos, interpolar. Si los datos
-            tienen ruido y se busca la tendencia o predecir, ajustar. En el
-            caso base ambos dan resultados distintos, y eso es esperable.
-          </p>
-        </section>
+          <section id="problema" aria-labelledby="h-problema">
+            <h2 id="h-problema">El problema</h2>
+            <p>
+              <strong>Caso aplicado (datos sintéticos).</strong> Carga y latencia de un servicio: la carga normalizada <M tex="x" /> (sin unidades) toma
+              los valores 0, 1, 2 y 3 y la latencia <M tex="y" /> mide 1, 2, 2 y 4 milisegundos. Se pregunta qué latencia esperar con carga{" "}
+              <M tex="x=1.5" />.
+            </p>
+            <Grafico titulo="El problema: latencia frente a carga" ejeX={EJE_X} ejeY={EJE_Y} datos={[trazaDatos({ x: [0, 1, 2, 3], y: [1, 2, 2, 4] })]}
+              descripcion="Cuatro mediciones sintéticas. ¿Qué curva dibujarías para estimar la latencia en x = 1.5: una que pase por los cuatro puntos o una que resuma su tendencia?" />
+            <div className="idea">
+              <p><strong>Antes de elegir un modelo, pregúntate:</strong></p>
+              <ul>
+                <li>¿Los datos son exactos o tienen ruido de medición?</li>
+                <li>¿Necesito que la curva pase por todos los puntos o busco la tendencia?</li>
+                <li>¿Cuántos puntos hay y qué tan grande sería el grado del polinomio?</li>
+                <li>¿El valor consultado está dentro del intervalo de los datos?</li>
+                <li>¿Hay abscisas repetidas (réplicas)?</li>
+              </ul>
+            </div>
+          </section>
 
-        <section id="ejemplos" aria-labelledby="h-ejemplos">
-          <h2 id="h-ejemplos">Ejemplos resueltos</h2>
-          <h3>Ejemplo 1: Lagrange en x = 1.5</h3>
-          <p>
-            Con nodos <Matematica tex="0,1,2,3" />, por ejemplo{" "}
-            <Matematica tex="L_1(1.5)=\dfrac{(1.5-0)(1.5-2)(1.5-3)}{(1-0)(1-2)(1-3)}=\dfrac{1.125}{2}=0.5625" />
-            . Las cuatro bases y sus contribuciones (calculadas por el motor):
-          </p>
-          <TablaPasos
-            titulo="Bases de Lagrange en x = 1.5"
-            pasos={lag.pasos}
-            columnas={[
-              { clave: "i", titulo: "i", valor: (p) => p.i },
-              { clave: "x", titulo: "xᵢ", valor: (p) => p.xi },
-              { clave: "y", titulo: "yᵢ", valor: (p) => p.yi },
-              { clave: "L", titulo: "Lᵢ(1.5)", valor: (p) => p.base },
-              { clave: "c", titulo: "yᵢ · Lᵢ(1.5)", valor: (p) => p.contribucion },
-            ]}
-          />
-          <p>
-            Suma: <Matematica tex="P(1.5)=" /> {fmt(lag.resultado?.valor, 10)}{" "}
-            (las bases suman 1).
-          </p>
-          <h3>Ejemplo 2: regresión lineal</h3>
-          {r && (
-            <>
-              <p>
-                <Matematica
-                  tex={`\\bar x=${fmt(r.xMedia)},\\;\\bar y=${fmt(r.yMedia)},\\;S_{xx}=${fmt(r.sxx)},\\;S_{xy}=${fmt(r.sxy)}`}
-                />
-                , luego <Matematica tex={`b_1=${fmt(r.pendiente)}`} /> y{" "}
-                <Matematica tex={`b_0=${fmt(r.intercepto)}`} />: la recta es{" "}
-                <Matematica
-                  tex={`\\hat y=${fmt(r.intercepto)}+${fmt(r.pendiente)}x`}
-                />
-                . En <Matematica tex="x=1.5" /> predice{" "}
-                <Matematica tex={`\\hat y=${fmt(r.prediccion)}`} />.
-              </p>
-              <TablaPasos
-                titulo="Residuos de la recta"
-                pasos={reg.pasos}
-                columnas={[
-                  { clave: "x", titulo: "xᵢ", valor: (p) => p.x },
-                  { clave: "y", titulo: "yᵢ", valor: (p) => p.y },
-                  { clave: "a", titulo: "ŷᵢ", valor: (p) => p.yAjustada },
-                  { clave: "r", titulo: "residuo", valor: (p) => p.residuo },
-                  { clave: "r2", titulo: "residuo²", valor: (p) => p.residuo2 },
-                ]}
-              />
-              <p>
-                Suma de cuadrados de los residuos: {fmt(r.sse, 10)}. Los
-                residuos suman 0 y la recta pasa por{" "}
-                <Matematica tex="(\bar x,\bar y)" />.
-              </p>
-            </>
-          )}
-        </section>
+          <section id="decide" aria-labelledby="h-decide">
+            <h2 id="h-decide">Analiza y decide</h2>
+            <p>
+              Elige uno de los problemas planteados para ver cómo se analiza, o describe el tuyo. El portal explica qué modelo
+              conviene y por qué; tú decides cuál probar en la calculadora lateral.
+            </p>
+            <Decisor problemas={PROBLEMAS} preguntas={PREGUNTAS_DATOS} inicial={INICIAL_DATOS} recomendar={recomendarDatos} />
+          </section>
 
-        <section id="lagrange" aria-labelledby="h-lag">
-          <h2 id="h-lag">Calculadora: interpolación de Lagrange</h2>
-          <CalcLagrange />
-        </section>
-        <section id="regresion" aria-labelledby="h-reg">
-          <h2 id="h-reg">Calculadora: regresión lineal</h2>
-          <CalcRegresion />
-        </section>
-        <section id="comparacion" aria-labelledby="h-c">
-          <h2 id="h-c">Caso aplicado y comparación</h2>
-          <p>
-            Con la carga en <Matematica tex="x=1.5" />, Lagrange estima{" "}
-            <strong>{fmt(lag.resultado?.valor, 4)} ms</strong> y la recta{" "}
-            <strong>{fmt(r?.prediccion, 4)} ms</strong>. No coinciden porque
-            Lagrange obliga a la curva a pasar por los cuatro puntos (residuo
-            0), mientras que la recta acepta una suma de cuadrados de{" "}
-            {fmt(r?.sse, 2)} a cambio de una tendencia estable. Si los datos
-            tienen ruido, la interpolación reproduce ese ruido.
-          </p>
-          <Comparacion />
-        </section>
-        <section id="limites" aria-labelledby="h-l">
-          <h2 id="h-l">Cuidados al usar cada modelo</h2>
-          <ul>
-            <li>
-              <strong>Nodos repetidos.</strong> Si una abscisa se repite con
-              valores distintos, Lagrange rechaza la entrada y no elimina
-              ningún nodo en silencio. La regresión sí admite réplicas en{" "}
-              <Matematica tex="x" />.
-            </li>
-            <li>
-              <strong>Sin variación en x.</strong> Si todas las{" "}
-              <Matematica tex="x" /> son iguales, <Matematica tex="S_{xx}=0" /> y
-              no hay recta que ajustar.
-            </li>
-            <li>
-              <strong>Fuera del intervalo.</strong> Una consulta fuera de{" "}
-              <Matematica tex="[\min x,\max x]" /> es extrapolación; el portal
-              calcula pero muestra un aviso.
-            </li>
-            <li>
-              <strong>Grado alto.</strong> Con 5 o 6 nodos el polinomio puede
-              oscilar; el botón «Ejemplo de oscilación» lo muestra con{" "}
-              <Matematica tex="1/(1+25x^2)" />.
-            </li>
-            <li>
-              <strong>Interpolar no elimina el error de medición</strong>: lo
-              traslada a la curva.
-            </li>
-          </ul>
-        </section>
+          <section id="mapa" aria-labelledby="h-mapa">
+            <h2 id="h-mapa">Mapa de métodos</h2>
+            <div className="tabla-wrap">
+              <table className="tabla-metodos">
+                <caption>Resumen de los modelos</caption>
+                <thead><tr><th scope="col">Modelo</th><th scope="col">Pasa por los datos</th><th scope="col">Necesita</th><th scope="col">Útil cuando</th><th scope="col">Riesgo principal</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row"><Link to="/interpolacion/lagrange">Interpolación de Lagrange</Link></th><td>Sí, exactamente</td><td>2 a 6 abscisas distintas</td><td>Datos exactos y valor entre nodos</td><td>Oscila con grado alto; reproduce el ruido; extrapola mal</td></tr>
+                  <tr><th scope="row"><Link to="/interpolacion/regresion">Regresión lineal</Link></th><td>No (deja residuos)</td><td>Variación en x</td><td>Datos con ruido y tendencia lineal</td><td>Supone linealidad; extrapolar no tiene respaldo</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-        <section id="ejercicios" aria-labelledby="h-ejer">
-          <h2 id="h-ejer">Ejercicios propuestos</h2>
-          <p>
-            Intenta cada ejercicio antes de abrir su solución. Dos son de nivel
-            intermedio y dos avanzados.
-          </p>
-          <Ejercicios items={EJERCICIOS_M3} />
-        </section>
+          <section id="comparacion" aria-labelledby="h-c">
+            <h2 id="h-c">Comparación de los modelos</h2>
+            <p>
+              Con la carga en <M tex="x=1.5" />, Lagrange estima <strong>1.9375 ms</strong> y la recta <strong>2.25 ms</strong>. No coinciden porque
+              Lagrange obliga a la curva a pasar por los cuatro puntos (residuo 0), mientras que la recta acepta una suma de cuadrados de 0.70 a
+              cambio de una tendencia estable. Si los datos tienen ruido, la interpolación reproduce ese ruido.
+            </p>
+            <Comparacion />
+          </section>
 
-        <section id="autoevaluacion" aria-labelledby="h-auto">
-          <h2 id="h-auto">Autoevaluación</h2>
-          <p>
-            Seis preguntas: opción múltiple, verdadero/falso y numéricas con
-            tolerancia. La corrección y su explicación aparecen al pulsar
-            «Comprobar».
-          </p>
-          <Autoevaluacion preguntas={PREGUNTAS_M3} />
-        </section>
-      </article>
-    </ModuloConIndice>
+          <section id="cuidados" aria-labelledby="h-l">
+            <h2 id="h-l">Cuidados</h2>
+            <ul>
+              <li><strong>Nodos repetidos.</strong> Lagrange rechaza una abscisa repetida con valores distintos y no elimina ningún nodo en silencio; la regresión sí admite réplicas.</li>
+              <li><strong>Sin variación en x.</strong> Si todas las <M tex="x" /> son iguales, <M tex="S_{xx}=0" /> y no hay recta que ajustar.</li>
+              <li><strong>Fuera del intervalo.</strong> Es extrapolación; el portal calcula pero avisa.</li>
+              <li><strong>Grado alto.</strong> Con 5 o 6 nodos el polinomio puede oscilar.</li>
+              <li><strong>Interpolar no elimina el error de medición</strong>: lo traslada a la curva. Ver <Link to="/errores">Errores y aritmética de computador</Link>.</li>
+            </ul>
+          </section>
+
+          <section id="ejercicios" aria-labelledby="h-ejer">
+            <h2 id="h-ejer">Ejercicios: elige tu modelo</h2>
+            <p>
+              Cada ejercicio parte de un problema: <strong>decide primero cómo lo resolverás</strong> y recibe retroalimentación sobre tu plan.
+              Después puedes pedir una pista, probarlo en la calculadora y, al final, ver la solución.
+            </p>
+            <Ejercicios items={EJERCICIOS_DECISION_INTERP} />
+          </section>
+
+          <section id="autoevaluacion" aria-labelledby="h-auto">
+            <h2 id="h-auto">Autoevaluación</h2>
+            <p>Cuatro preguntas: opción múltiple, verdadero/falso y numérica con tolerancia. Al comprobar verás la explicación y, si quieres, «Profundiza».</p>
+            <Autoevaluacion preguntas={PREGUNTAS_DECISION_INTERP} />
+          </section>
+        </article>
+      </ModuloConIndice>
+    </ConPanelCalculadora>
   );
 }

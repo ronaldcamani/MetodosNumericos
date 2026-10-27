@@ -1,14 +1,12 @@
 import { test, expect } from '@playwright/test'
-import { pathToFileURL } from 'node:url'
-import path from 'node:path'
+import { base, calculadora } from './ayudas'
 
-const url = pathToFileURL(path.resolve('dist/index.html')).href + '#/m2'
-const gauss = (page: import('@playwright/test').Page) => page.getByRole('region', { name: 'Calculadora de eliminación con pivoteo parcial' })
-const gs = (page: import('@playwright/test').Page) => page.getByRole('region', { name: 'Calculadora de Gauss-Seidel' })
+const GAUSS = 'Calculadora de eliminación con pivoteo parcial'
+const GS = 'Calculadora de Gauss-Seidel'
 
 test('ejercicio 1: eliminación de Gauss da (7, 7, 25)', async ({ page }) => {
-  await page.goto(url)
-  const c = gauss(page)
+  await page.goto(base + '#/sistemas/directos')
+  const c = await calculadora(page, GAUSS, 'gauss')
   await c.getByRole('button', { name: 'Ejercicio 1 (3×3)' }).click()
   const sol = c.getByRole('table', { name: /Solución/ })
   await expect(sol.getByRole('row').nth(1)).toContainText('7')
@@ -17,8 +15,8 @@ test('ejercicio 1: eliminación de Gauss da (7, 7, 25)', async ({ page }) => {
 })
 
 test('ejercicio 2: sistema 4×4 da (31, 37, −34, 19)', async ({ page }) => {
-  await page.goto(url)
-  const c = gauss(page)
+  await page.goto(base + '#/sistemas/directos')
+  const c = await calculadora(page, GAUSS, 'gauss')
   await c.getByRole('button', { name: 'Ejercicio 2 (4×4)' }).click()
   const filas = c.getByRole('table', { name: /Solución/ }).getByRole('row')
   await expect(filas).toHaveCount(5)
@@ -31,8 +29,8 @@ test('ejercicio 2: sistema 4×4 da (31, 37, −34, 19)', async ({ page }) => {
 })
 
 test('ejercicio 3: x0 = (1,1,1), tol 1e-4 y orden reordenado converge a (1, −2, 3)', async ({ page }) => {
-  await page.goto(url)
-  const c = gs(page)
+  await page.goto(base + '#/sistemas/iterativos')
+  const c = await calculadora(page, GS, 'gs')
   await c.getByRole('button', { name: /^Ejercicio 3 \(x₀/ }).click()
   await expect(c.getByRole('status')).toContainText('convergio')
   await expect(c.locator('dt', { hasText: 'Orden de ecuaciones' })).toBeVisible()
@@ -46,8 +44,8 @@ test('ejercicio 3: x0 = (1,1,1), tol 1e-4 y orden reordenado converge a (1, −2
 })
 
 test('ejercicio 3 sin reordenar: no converge y sugiere reordenar', async ({ page }) => {
-  await page.goto(url)
-  const c = gs(page)
+  await page.goto(base + '#/sistemas/iterativos')
+  const c = await calculadora(page, GS, 'gs')
   await c.getByRole('button', { name: 'Ejercicio 3 sin reordenar' }).click()
   await expect(c.getByRole('alert')).toContainText('reordenar')
   await expect(c.getByRole('alert')).not.toContainText('Correcto')
@@ -55,8 +53,8 @@ test('ejercicio 3 sin reordenar: no converge y sugiere reordenar', async ({ page
 })
 
 test('el vector inicial es editable y descarta el resultado anterior', async ({ page }) => {
-  await page.goto(url)
-  const c = gs(page)
+  await page.goto(base + '#/sistemas/iterativos')
+  const c = await calculadora(page, GS, 'gs')
   await c.getByRole('button', { name: 'Calcular' }).click()
   await expect(c.getByRole('table').first()).toBeVisible()
   await c.getByLabel('Valor inicial de x2').fill('5')

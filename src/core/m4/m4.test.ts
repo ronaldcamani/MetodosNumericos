@@ -138,3 +138,52 @@ describe('Contraste con la referencia independiente (numpy/scipy)', () => {
     }
   })
 })
+
+import { aproximarDerivada, crearDerivable, derivacionProgresiva, derivacionRegresiva } from '.'
+
+describe('Derivación numérica', () => {
+  const tasa = crearDerivable('tasa', { a: 1, b: 0, c: 1 })
+  it('t² + 1 en t = 1, h = 0.1: central 2, progresiva 2.1, regresiva 1.9', () => {
+    const r = aproximarDerivada({ derivable: tasa, t: 1, h: 0.1 }).resultado!
+    expect(r.central).toBeCloseTo(2, 12)
+    expect(r.progresiva).toBeCloseTo(2.1, 12)
+    expect(r.regresiva).toBeCloseTo(1.9, 12)
+    expect(r.exacta).toBe(2)
+  })
+  it('central y progresiva se evalúan con funciones sueltas', () => {
+    expect(derivacionProgresiva((x) => x * x, 1, 0.1)).toBeCloseTo(2.1, 12)
+    expect(derivacionRegresiva((x) => x * x, 1, 0.1)).toBeCloseTo(1.9, 12)
+  })
+  it('e^t en t = 1: el cociente de errores al partir h es ≈ 4 (central) y ≈ 2 (progresiva)', () => {
+    const r = aproximarDerivada({ derivable: crearDerivable('exponencial'), t: 1, h: 0.1 })
+    const p = r.pasos[3]
+    expect(p.razonCentral!).toBeCloseTo(4, 1)
+    expect(p.razonProgresiva!).toBeCloseTo(2, 1)
+    expect(r.pasos[0].razonCentral).toBeNull()
+  })
+  it('h minúsculo: domina el redondeo y se avisa', () => {
+    const r = aproximarDerivada({ derivable: crearDerivable('exponencial'), t: 1, h: 1e-12 })
+    expect(r.resultado!.errorCentral).toBeGreaterThan(1e-5)
+    expect(r.resultado!.advertencias.join(' ')).toMatch(/cancelación/)
+  })
+  it('h = 10⁻⁵ da un error central mínimo frente a h = 0.1 y h = 10⁻¹²', () => {
+    const err = (h: number) => aproximarDerivada({ derivable: crearDerivable('exponencial'), t: 1, h }).resultado!.errorCentral
+    expect(err(1e-5)).toBeLessThan(err(0.1))
+    expect(err(1e-5)).toBeLessThan(err(1e-12))
+  })
+  it('contra la referencia independiente (numpy)', async () => {
+    const ref = (await import('./referencia.json')).default.derivadas
+    for (const [id, datos] of Object.entries(ref) as [string, { exacta: number; filas: { h: number; central: number; progresiva: number; error_central: number }[] }][]) {
+      const d = crearDerivable(id as 'seno' | 'exponencial')
+      for (const fila of datos.filas) {
+        const r = aproximarDerivada({ derivable: d, t: 1, h: fila.h }).resultado!
+        expect(r.exacta).toBeCloseTo(datos.exacta, 12)
+        expect(r.central).toBeCloseTo(fila.central, fila.h < 1e-8 ? 3 : 9)
+        expect(r.progresiva).toBeCloseTo(fila.progresiva, fila.h < 1e-8 ? 3 : 9)
+      }
+    }
+  })
+  it.each([[NaN, 0.1], [1, 0], [1, 11], [1, 1e-13], [2000, 0.1]])('inválido: t = %s, h = %s', (t, h) => {
+    expect(aproximarDerivada({ derivable: tasa, t, h }).estado).toBe('invalido')
+  })
+})

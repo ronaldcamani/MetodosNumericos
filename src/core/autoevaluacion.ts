@@ -1,9 +1,14 @@
 import { parseNumero } from './entrada'
 
+/** Explicación adicional opcional: `profundiza` amplía el porqué y el error típico; `porOpcion[k]` explica qué pasa si se elige la opción k. */
+interface Extra {
+  profundiza?: string
+}
+
 export type Pregunta =
-  | { id: string; tipo: 'opcion'; enunciado: string; opciones: string[]; correcta: number; explicacion: string }
-  | { id: string; tipo: 'vf'; enunciado: string; correcta: boolean; explicacion: string }
-  | { id: string; tipo: 'numerica'; enunciado: string; correcta: number; tolerancia: number; explicacion: string }
+  | ({ id: string; tipo: 'opcion'; enunciado: string; opciones: string[]; correcta: number; explicacion: string; porOpcion?: string[] } & Extra)
+  | ({ id: string; tipo: 'vf'; enunciado: string; correcta: boolean; explicacion: string } & Extra)
+  | ({ id: string; tipo: 'numerica'; enunciado: string; correcta: number; tolerancia: number; explicacion: string } & Extra)
 
 export type Respuesta = number | boolean | string | undefined
 

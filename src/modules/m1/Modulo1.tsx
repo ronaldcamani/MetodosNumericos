@@ -1,213 +1,237 @@
-import { useMemo } from "react";
+import { Link } from "react-router-dom";
 import Autoevaluacion from "../../components/Autoevaluacion";
 import Ejercicios from "../../components/Ejercicios";
+import Grafico from "../../components/Grafico";
 import ModuloConIndice from "../../components/IndiceLateral";
 import Matematica from "../../components/Matematica";
-import TablaPasos from "../../components/TablaPasos";
-import { biseccion, crearModelo, newton } from "../../core/m1";
-import CalcBiseccion from "./CalcBiseccion";
-import CalcNewton from "./CalcNewton";
+import { ConPanelCalculadora } from "../../components/PanelCalculadora";
+import SubNavegacion from "../../components/SubNavegacion";
+import { crearModelo } from "../../core/m1";
 import Comparacion from "./Comparacion";
-import { EJERCICIOS_M1, PREGUNTAS_M1 } from "./practica";
+import Decisor, { type ProblemaPlanteado } from "../../components/Decisor";
+import { INICIAL, PREGUNTAS, recomendarMetodos, type Respuestas } from "./decision";
+import { datosProblema } from "./graficos";
+import { herramientasRaices, PAGINAS_M1 } from "./paginas";
+import { EJERCICIOS_DECISION, PREGUNTAS_DECISION } from "./practicaDecision";
 
 const SECCIONES = [
-  ["teoria", "Teoría"],
-  ["ejemplos", "Ejemplos resueltos"],
-  ["biseccion", "Calculadora: bisección"],
-  ["newton", "Calculadora: Newton"],
-  ["comparacion", "Caso aplicado y comparación"],
-  ["errores", "Errores y tolerancia"],
-  ["ejercicios", "Ejercicios propuestos"],
+  ["problema", "El problema"],
+  ["decide", "Analiza y decide"],
+  ["mapa", "Mapa de métodos"],
+  ["comparacion", "Comparación de los métodos"],
+  ["errores", "Errores y verificación"],
+  ["ejercicios", "Ejercicios: elige tu método"],
   ["autoevaluacion", "Autoevaluación"],
 ] as const;
 
-export default function Modulo1() {
-  const base = useMemo(() => crearModelo("calibracion", 2), []);
-  const bis = useMemo(
-    () => biseccion({ f: base.f, a: 1, b: 2, tol: 1e-6, maxIter: 100 }),
-    [base],
-  );
-  const nw = useMemo(
-    () => newton({ f: base.f, df: base.df, x0: 1.5, tol: 1e-6, maxIter: 100 }),
-    [base],
-  );
-  return (
-    <ModuloConIndice secciones={SECCIONES}>
-      <article className="modulo">
-        <h1>Módulo 1: Ecuaciones no lineales y errores</h1>
+const M = Matematica;
+
+const PROBLEMAS: ProblemaPlanteado<Respuestas>[] = [
+  {
+    id: "calibracion",
+    titulo: "Calibrar un parámetro",
+    enunciado: (
+      <p>
+        Una respuesta normalizada se modela con <M tex="g(x)=x^3-x" />. Se busca
+        el <M tex="x>0" /> para el que <M tex="g(x)=2" />. Se conoce la fórmula
+        de <M tex="g" /> y es fácil de derivar.
+      </p>
+    ),
+    analisis: (
+      <>
         <p>
-          <strong>Objetivo:</strong> determinar un parámetro de configuración a
-          partir de una ecuación no lineal y explicar cuándo converge cada
-          método.
+          Se resuelve <M tex="f(x)=x^3-x-2=0" />. Observamos: <M tex="f(1)=-2<0" />{" "}
+          y <M tex="f(2)=4>0" /> (hay cambio de signo y f es continua), la
+          derivada <M tex="f'(x)=3x^2-1" /> se escribe sin esfuerzo y x₀ = 1.5 es
+          un buen punto inicial.
         </p>
-        <p>Métodos: bisección y Newton.</p>
+        <p>
+          Con todo eso cualquiera de los cuatro métodos sirve. Si lo importante
+          es la seguridad, bisección; si es la velocidad, Newton desde 1.5.
+        </p>
+      </>
+    ),
+    respuestas: { signo: "si", derivada: "si", inicial: "si", polinomio: "no", prioridad: "garantia" },
+    valores: { modelo: "calibracion", objetivo: "2" },
+  },
+  {
+    id: "simulacion",
+    titulo: "Una simulación costosa",
+    enunciado: (
+      <p>
+        El tiempo de respuesta <M tex="T(c)" /> de un servicio solo se obtiene
+        ejecutando una simulación de 2 minutos; no hay fórmula ni derivada. Se
+        quiere <M tex="c" /> con <M tex="T(c)=200" /> ms y ya se tienen dos
+        simulaciones que dan valores a ambos lados de 200.
+      </p>
+    ),
+    analisis: (
+      <>
+        <p>
+          Hay cambio de signo en <M tex="f(c)=T(c)-200" /> (un valor por debajo
+          y otro por encima), pero <strong>no hay derivada</strong> y cada
+          evaluación es cara. Newton queda descartado; interesan los métodos que
+          reutilizan lo ya simulado y necesitan pocas evaluaciones: falsa
+          posición o secante, con una verificación final.
+        </p>
+        <p>(En la calculadora la función del caso base hace de sustituto de T.)</p>
+      </>
+    ),
+    respuestas: { signo: "si", derivada: "no", inicial: "si", polinomio: "no", prioridad: "velocidad" },
+    valores: { modelo: "calibracion", objetivo: "2" },
+  },
+  {
+    id: "polinomio",
+    titulo: "Estabilidad de un sistema",
+    enunciado: (
+      <p>
+        El polinomio característico de un sistema de control es{" "}
+        <M tex="p(s)=s^4-10s^2+9" />. Para saber si es estable hay que conocer{" "}
+        <strong>todas</strong> sus raíces, no solo una.
+      </p>
+    ),
+    analisis: (
+      <>
+        <p>
+          Es un polinomio y se piden todas las raíces (reales o complejas). Un
+          método de uno en uno exigiría adivinar intervalos o puntos iniciales;
+          la estrategia adecuada es Newton–Horner con deflación, que evalúa p y
+          p′ con Horner y reduce el grado tras cada raíz.
+        </p>
+        <p>
+          Aquí <M tex="p(s)=(s^2-1)(s^2-9)" />: raíces ±1 y ±3. Las positivas
+          indican un sistema inestable.
+        </p>
+      </>
+    ),
+    respuestas: { signo: "si", derivada: "si", inicial: "no", polinomio: "si", prioridad: "garantia" },
+    valores: { modelo: "polinomio", coef: "1, 0, -10, 0, 9", a: "0", b: "2", x0: "5", p0: "0", p1: "2" },
+  },
+];
 
-        <section id="teoria" aria-labelledby="h-teoria">
-          <h2 id="h-teoria">Teoría</h2>
+export default function Modulo1() {
+  const base = crearModelo("calibracion", 2);
+  const grafico = [
+    ...datosProblema(base, 1, 2),
+    { x: [1, 2], y: [base.f(1), base.f(2)], type: "scatter" as const, mode: "markers" as const, name: "f(1) = −2, f(2) = 4", marker: { size: 11, symbol: "square" as const } },
+  ];
+  return (
+    <ConPanelCalculadora herramientas={herramientasRaices(["biseccion", "falsa", "newton", "secante"])}>
+      <ModuloConIndice secciones={SECCIONES}>
+        <article className="modulo">
+          <h1>Ecuaciones no lineales</h1>
+          <SubNavegacion enlaces={PAGINAS_M1} etiqueta="Páginas de ecuaciones no lineales" />
           <p>
-            <strong>Caso aplicado (datos sintéticos).</strong> Una respuesta
-            normalizada se modela con <Matematica tex="g(x)=x^3-x" />. Se busca
-            el <Matematica tex="x>0" /> que alcanza la respuesta objetivo 2, es
-            decir, la raíz de <Matematica tex="f(x)=x^3-x-2" />. Las variables
-            son adimensionales y el modelo no representa mediciones reales.
+            <strong>Objetivo:</strong> determinar un parámetro de configuración
+            a partir de una ecuación no lineal, <em>decidir con qué método
+            resolverlo</em> y explicar cuándo converge cada uno.
           </p>
-          <h3>Bisección</h3>
-          <p>
-            <em>Supuestos:</em> <Matematica tex="f" /> continua en{" "}
-            <Matematica tex="[a,b]" /> y <Matematica tex="f(a)f(b)<0" />{" "}
-            (teorema del valor intermedio).
-          </p>
-          <Matematica
-            bloque
-            tex="c_n=\frac{a_n+b_n}{2},\qquad |c_n-r|\le\frac{b_n-a_n}{2}=\frac{b-a}{2^{n}}"
-          />
-          <ol>
-            <li>
-              Calcular el punto medio <Matematica tex="c_n" /> y{" "}
-              <Matematica tex="f(c_n)" />.
-            </li>
-            <li>
-              Conservar el subintervalo donde <Matematica tex="f" /> cambia de
-              signo.
-            </li>
-            <li>
-              Parar si <Matematica tex="(b_n-a_n)/2\le \text{tol}" /> o{" "}
-              <Matematica tex="f(c_n)=0" />.
-            </li>
-          </ol>
-          <p>
-            <em>Limitaciones:</em> convergencia lenta (una cifra binaria por
-            iteración), no detecta raíces donde <Matematica tex="f" /> toca el
-            eje sin cambiar de signo y requiere un intervalo válido.
-          </p>
-          <h3>Newton</h3>
-          <p>
-            <em>Supuestos:</em> <Matematica tex="f" /> derivable,{" "}
-            <Matematica tex="f'(x_n)\ne 0" /> y un <Matematica tex="x_0" />{" "}
-            suficientemente cercano a la raíz.
-          </p>
-          <Matematica
-            bloque
-            tex="x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)},\qquad f'(x)=3x^2-1"
-          />
-          <p>
-            Parada: <Matematica tex="|x_{n+1}-x_n|\le \text{tol}" />. Cerca de
-            una raíz simple la convergencia es cuadrática.{" "}
-            <em>Limitaciones:</em> falla si la derivada es nula o muy pequeña,
-            puede divergir o saltar a otra raíz según <Matematica tex="x_0" />,
-            y requiere la derivada.
-          </p>
-          <p className="aviso">
-            Agotar el máximo de iteraciones <strong>no</strong> es convergencia:
-            el programa lo informa como «sin convergencia».
-          </p>
-        </section>
 
-        <section id="ejemplos" aria-labelledby="h-ejemplos">
-          <h2 id="h-ejemplos">Ejemplos resueltos</h2>
-          <h3>Ejemplo 1: bisección en [1, 2]</h3>
-          <p>
-            <Matematica tex="f(1)=-2<0" /> y <Matematica tex="f(2)=4>0" />: hay
-            cambio de signo. Primer punto medio <Matematica tex="c_1=1.5" />,{" "}
-            <Matematica tex="f(1.5)=-0.125<0" />, así que la raíz está en{" "}
-            <Matematica tex="[1.5,\,2]" />. Primeras iteraciones (calculadas por
-            el motor):
-          </p>
-          <TablaPasos
-            titulo="Bisección: iteraciones 1 a 4"
-            pasos={bis.pasos.slice(0, 4)}
-            columnas={[
-              { clave: "n", titulo: "n", valor: (p) => p.n },
-              { clave: "a", titulo: "a", valor: (p) => p.a },
-              { clave: "b", titulo: "b", valor: (p) => p.b },
-              { clave: "m", titulo: "medio", valor: (p) => p.medio },
-              { clave: "f", titulo: "f(medio)", valor: (p) => p.fMedio },
-              { clave: "c", titulo: "cota", valor: (p) => p.cota },
-            ]}
-          />
-          <p>
-            Con tolerancia <Matematica tex="10^{-6}" /> se requieren{" "}
-            <Matematica tex="\lceil\log_2((b-a)/\text{tol})\rceil=20" />{" "}
-            iteraciones; la raíz es ≈ {bis.resultado?.raiz.toFixed(7)}{" "}
-            (referencia: 1.5213797068).
-          </p>
-          <h3>Ejemplo 2: Newton desde x₀ = 1.5</h3>
-          <p>
-            <Matematica tex="f(1.5)=-0.125" />,{" "}
-            <Matematica tex="f'(1.5)=5.75" />, por tanto{" "}
-            <Matematica tex="x_1=1.5+\frac{0.125}{5.75}=\frac{35}{23}\approx 1.5217391304" />
-            .
-          </p>
-          <TablaPasos
-            titulo="Newton: iteraciones"
-            pasos={nw.pasos}
-            columnas={[
-              { clave: "n", titulo: "n", valor: (p) => p.n },
-              { clave: "x", titulo: "xₙ", valor: (p) => p.x },
-              { clave: "s", titulo: "xₙ₊₁", valor: (p) => p.siguiente },
-              { clave: "c", titulo: "cambio", valor: (p) => p.cambio },
-              { clave: "r", titulo: "residuo", valor: (p) => p.residuo },
-            ]}
-          />
-        </section>
+          <section id="problema" aria-labelledby="h-problema">
+            <h2 id="h-problema">El problema</h2>
+            <p>
+              <strong>Caso aplicado (datos sintéticos).</strong> Una respuesta
+              normalizada se modela con <M tex="g(x)=x^3-x" />. Se busca el{" "}
+              <M tex="x>0" /> que alcanza la respuesta objetivo 2, es decir, la
+              raíz de <M tex="f(x)=x^3-x-2" />. Las variables son adimensionales
+              y el modelo no representa mediciones reales.
+            </p>
+            <Grafico titulo="El problema: f(x) = x³ − x − 2" ejeX="x (parámetro normalizado)" ejeY="f(x)" datos={grafico}
+              descripcion="La curva cambia de signo entre x = 1 (f = −2) y x = 2 (f = 4): ahí está la raíz. Plantear el problema significa mirar este tipo de pistas antes de elegir un método." />
+            <div className="idea">
+              <p><strong>Antes de elegir un método, pregúntate:</strong></p>
+              <ul>
+                <li>¿Conozco un intervalo donde <M tex="f" /> cambie de signo?</li>
+                <li>¿Puedo escribir <M tex="f'(x)" /> con facilidad?</li>
+                <li>¿Tengo una estimación inicial cercana a la raíz?</li>
+                <li>¿<M tex="f" /> es un polinomio y quiero todas sus raíces?</li>
+                <li>¿Qué me importa más: garantía de convergencia o velocidad?</li>
+              </ul>
+              <p>Las respuestas determinan el método. La sección siguiente las convierte en un análisis.</p>
+            </div>
+          </section>
 
-        <section id="biseccion" aria-labelledby="h-bis">
-          <h2 id="h-bis">Calculadora: bisección</h2>
-          <CalcBiseccion />
-        </section>
-        <section id="newton" aria-labelledby="h-new">
-          <h2 id="h-new">Calculadora: Newton</h2>
-          <CalcNewton />
-        </section>
-        <section id="comparacion" aria-labelledby="h-cmp">
-          <h2 id="h-cmp">Caso aplicado y comparación</h2>
-          <p>
-            Variar la respuesta objetivo y el punto inicial muestra la
-            diferencia entre robustez (bisección, siempre que haya cambio de
-            signo) y velocidad (Newton, sensible a <Matematica tex="x_0" />
-            ). Si un método falla, el otro conserva su salida.
-          </p>
-          <Comparacion />
-        </section>
+          <section id="decide" aria-labelledby="h-decide">
+            <h2 id="h-decide">Analiza y decide</h2>
+            <p>
+              Elige uno de los problemas planteados para ver cómo se analiza, o
+              describe el tuyo. El portal explica qué métodos convienen y por qué;
+              tú decides cuál probar en la calculadora lateral.
+            </p>
+            <Decisor problemas={PROBLEMAS} preguntas={PREGUNTAS} inicial={INICIAL} recomendar={recomendarMetodos} />
+          </section>
 
-        <section id="errores" aria-labelledby="h-err">
-          <h2 id="h-err">Errores y tolerancia</h2>
-          <p>
-            Si <Matematica tex="r" /> es la raíz y <Matematica tex="\tilde r" />{" "}
-            su aproximación:
-          </p>
-          <Matematica
-            bloque
-            tex="E_{abs}=|r-\tilde r|,\qquad E_{rel}=\frac{|r-\tilde r|}{|r|}\ (r\ne0)"
-          />
-          <p>
-            La <strong>tolerancia</strong> es el umbral del criterio de parada.
-            El <strong>residuo</strong> <Matematica tex="|f(\tilde r)|" /> no es
-            el error: con una función muy plana puede ser pequeño aun estando
-            lejos de la raíz. La ficha común de errores del portal se ampliará
-            con el resto de equipos.
-          </p>
-        </section>
+          <section id="mapa" aria-labelledby="h-mapa">
+            <h2 id="h-mapa">Mapa de métodos</h2>
+            <p>Cada familia tiene su página con teoría, ejemplos y ejercicios.</p>
+            <div className="tabla-wrap">
+              <table className="tabla-metodos">
+                <caption>Resumen de los métodos del módulo</caption>
+                <thead>
+                  <tr><th scope="col">Método</th><th scope="col">Familia</th><th scope="col">Necesita</th><th scope="col">Convergencia</th><th scope="col">Riesgo principal</th></tr>
+                </thead>
+                <tbody>
+                  <tr><th scope="row"><Link to="/ecuaciones/cerrados">Bisección</Link></th><td>Cerrado</td><td>Intervalo con cambio de signo</td><td>Garantizada, lineal (÷2 por paso)</td><td>Lenta; un polo parece raíz</td></tr>
+                  <tr><th scope="row"><Link to="/ecuaciones/cerrados">Falsa posición</Link></th><td>Cerrado</td><td>Intervalo con cambio de signo</td><td>Garantizada, suele ser más rápida</td><td>Un extremo se queda fijo y se estanca</td></tr>
+                  <tr><th scope="row"><Link to="/ecuaciones/abiertos">Newton</Link></th><td>Abierto</td><td>f′ y un x₀ cercano</td><td>Cuadrática cerca de una raíz simple</td><td>Derivada nula, ciclos, divergencia</td></tr>
+                  <tr><th scope="row"><Link to="/ecuaciones/abiertos">Secante</Link></th><td>Abierto</td><td>Dos puntos iniciales</td><td>Superlineal (≈ 1.62)</td><td>Pendiente nula; sin garantía</td></tr>
+                  <tr><th scope="row"><Link to="/ecuaciones/polinomios">Newton–Horner</Link></th><td>Polinomios</td><td>Coeficientes</td><td>Todas las raíces, con deflación</td><td>Raíces múltiples; error acumulado</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
 
-        <section id="ejercicios" aria-labelledby="h-ejer">
-          <h2 id="h-ejer">Ejercicios propuestos</h2>
-          <p>
-            Intenta cada ejercicio antes de abrir su solución. Dos son de nivel
-            intermedio y dos avanzados.
-          </p>
-          <Ejercicios items={EJERCICIOS_M1} />
-        </section>
+          <section id="comparacion" aria-labelledby="h-cmp">
+            <h2 id="h-cmp">Comparación de los métodos</h2>
+            <p>
+              Ejecuta los cuatro métodos sobre el mismo problema y observa la
+              diferencia entre robustez y velocidad. Cambia el objetivo, el
+              intervalo o x₀ y mira qué método falla y cuál se mantiene. Si un
+              método falla, los demás conservan su resultado.
+            </p>
+            <Comparacion />
+          </section>
 
-        <section id="autoevaluacion" aria-labelledby="h-auto">
-          <h2 id="h-auto">Autoevaluación</h2>
-          <p>
-            Seis preguntas: opción múltiple, verdadero/falso y numéricas con
-            tolerancia. La corrección y su explicación aparecen al pulsar
-            «Comprobar».
-          </p>
-          <Autoevaluacion preguntas={PREGUNTAS_M1} />
-        </section>
-      </article>
-    </ModuloConIndice>
+          <section id="errores" aria-labelledby="h-err">
+            <h2 id="h-err">Errores y verificación</h2>
+            <p>
+              Si <M tex="r" /> es la raíz y <M tex="\tilde r" /> su aproximación,
+              el error absoluto es <M tex="|r-\tilde r|" />. La <strong>tolerancia</strong>{" "}
+              es el umbral del criterio de parada y el <strong>residuo</strong>{" "}
+              <M tex="|f(\tilde r)|" /> <em>no es</em> el error. Antes de declarar una
+              raíz, el portal la <strong>verifica</strong>: debe ser un mínimo local
+              de <M tex="|f|" /> y f debe cruzar el cero; si no, informa «no
+              converge».
+            </p>
+            <p className="aviso">
+              Los conceptos de error absoluto, relativo, cifras significativas,
+              redondeo y truncamiento tienen su propio módulo:{" "}
+              <Link to="/errores">Errores y aritmética de computador</Link>.
+            </p>
+          </section>
+
+          <section id="ejercicios" aria-labelledby="h-ejer">
+            <h2 id="h-ejer">Ejercicios: elige tu método</h2>
+            <p>
+              Cada ejercicio parte de un problema: <strong>decide primero cómo
+              lo resolverás</strong> y recibe retroalimentación sobre tu plan.
+              Después puedes pedir una pista, probarlo en la calculadora y, al
+              final, ver la solución.
+            </p>
+            <Ejercicios items={EJERCICIOS_DECISION} />
+          </section>
+
+          <section id="autoevaluacion" aria-labelledby="h-auto">
+            <h2 id="h-auto">Autoevaluación</h2>
+            <p>
+              Cuatro preguntas: opción múltiple, verdadero/falso y numérica con
+              tolerancia. Al comprobar verás la explicación, un comentario sobre
+              tu elección y, si quieres, un apartado «Profundiza».
+            </p>
+            <Autoevaluacion preguntas={PREGUNTAS_DECISION} />
+          </section>
+        </article>
+      </ModuloConIndice>
+    </ConPanelCalculadora>
   );
 }

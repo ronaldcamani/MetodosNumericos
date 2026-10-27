@@ -3,6 +3,7 @@ import Campo from '../../components/Campo'
 import Grafico from '../../components/Grafico'
 import MensajeEstado from '../../components/MensajeEstado'
 import TablaPasos, { type Columna } from '../../components/TablaPasos'
+import { useAplicarPreset, type PresetActivo } from '../../components/PanelCalculadora'
 import { useCalculadora, type Errores } from '../../components/useCalculadora'
 import { parseEntero, parseNumero } from '../../core/entrada'
 import { fmt } from '../../core/formato'
@@ -43,8 +44,9 @@ export function columnasGS(n: number): Columna<PasoGaussSeidel>[] {
   ]
 }
 
-export default function CalcGaussSeidel() {
+export default function CalcGaussSeidel({ preset = null }: { preset?: PresetActivo | null }) {
   const c = useCalculadora<F, Salida>(CASO, ejecutar)
+  useAplicarPreset('gs', preset, (valores) => c.cargarYCalcular({ ...CASO, ...valores }))
   const s = c.salida
   const r = s?.res.resultado
   const pasos = s?.res.pasos ?? []

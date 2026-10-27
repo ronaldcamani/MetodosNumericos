@@ -24,6 +24,13 @@ class ValoresDeLaGuia(unittest.TestCase):
         self.assertAlmostEqual(e[0] / e[1], 4, places=9)
         self.assertAlmostEqual(e[1] / e[2], 4, places=9)
 
+    def test_derivadas_exponencial(self):
+        f = {x["h"]: x for x in g.generar()["derivadas"]["exponencial"]["filas"]}
+        self.assertLess(f[1e-5]["error_central"], 1e-9)
+        self.assertGreater(f[1e-12]["error_central"], 1e-5)  # domina el redondeo
+        self.assertAlmostEqual(f[0.1]["error_central"] / f[0.01]["error_central"], 100, delta=1)  # O(h^2)
+        self.assertAlmostEqual(f[0.1]["error_progresiva"] / f[0.01]["error_progresiva"], 10, delta=0.5)  # O(h)
+
     def test_ejercicio2(self):
         self.assertAlmostEqual(self.c["ejercicio2"]["exacta"], 36, places=12)
         self.assertAlmostEqual(self.c["ejercicio2"]["trapecio"], 37, places=12)

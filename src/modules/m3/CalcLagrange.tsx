@@ -2,6 +2,7 @@ import Calculadora from '../../components/Calculadora'
 import Grafico from '../../components/Grafico'
 import MensajeEstado from '../../components/MensajeEstado'
 import TablaPasos from '../../components/TablaPasos'
+import { useAplicarPreset, type PresetActivo } from '../../components/PanelCalculadora'
 import { useCalculadora } from '../../components/useCalculadora'
 import { fmt } from '../../core/formato'
 import { lagrange } from '../../core/m3'
@@ -16,8 +17,9 @@ function ejecutar(v: FDatos) {
   return { salida: { res: lagrange(d), ...d } }
 }
 
-export default function CalcLagrange() {
+export default function CalcLagrange({ preset = null }: { preset?: PresetActivo | null }) {
   const c = useCalculadora<FDatos, Salida>(CASO_DATOS, ejecutar)
+  useAplicarPreset('lagrange', preset, (valores) => c.cargarYCalcular({ ...CASO_DATOS, ...valores }))
   const s = c.salida
   const r = s?.res.resultado
   return (

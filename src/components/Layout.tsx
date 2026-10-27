@@ -10,11 +10,11 @@ export default function Layout() {
       <a className="saltar" href="#contenido">Saltar al contenido</a>
       <header className="cabecera">
         <Link to="/" className="marca">Métodos Numéricos</Link>
-        <nav aria-label="Módulos">
+        <nav aria-label="Temas">
           <ul className="nav-lista">
             {MODULOS.map((m) => (
               <li key={m.id}>
-                <NavLink to={m.ruta}>M{m.equipo}</NavLink>
+                <NavLink to={m.ruta}>{m.etiqueta}</NavLink>
               </li>
             ))}
           </ul>
@@ -29,7 +29,7 @@ export default function Layout() {
         )}
         <Outlet />
       </main>
-      <footer className="pie">UNSA · Ingeniería de Sistemas · Laboratorio de Métodos Numéricos</footer>
+      <footer className="pie">UNSA · Ingeniería de Sistemas · Laboratorio de Métodos Numéricos · <Link to="/recursos">Cómo usar el portal, código de referencia y fuentes</Link></footer>
     </ProveedorTema>
   )
 }

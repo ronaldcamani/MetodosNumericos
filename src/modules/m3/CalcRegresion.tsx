@@ -2,6 +2,7 @@ import Calculadora from '../../components/Calculadora'
 import Grafico from '../../components/Grafico'
 import MensajeEstado from '../../components/MensajeEstado'
 import TablaPasos from '../../components/TablaPasos'
+import { useAplicarPreset, type PresetActivo } from '../../components/PanelCalculadora'
 import { useCalculadora } from '../../components/useCalculadora'
 import { fmt } from '../../core/formato'
 import { regresionLineal } from '../../core/m3'
@@ -16,8 +17,9 @@ function ejecutar(v: FDatos) {
   return { salida: { res: regresionLineal(d), ...d } }
 }
 
-export default function CalcRegresion() {
+export default function CalcRegresion({ preset = null }: { preset?: PresetActivo | null }) {
   const c = useCalculadora<FDatos, Salida>(CASO_DATOS, ejecutar)
+  useAplicarPreset('regresion', preset, (valores) => c.cargarYCalcular({ ...CASO_DATOS, ...valores }))
   const s = c.salida
   const r = s?.res.resultado
   return (

@@ -1,0 +1,244 @@
+{
+  "redondeos": [
+    {
+      "x": 1.005,
+      "t": 3,
+      "modo": "redondeo",
+      "valor": 1.01
+    },
+    {
+      "x": 0.125,
+      "t": 2,
+      "modo": "redondeo",
+      "valor": 0.13
+    },
+    {
+      "x": 2.5,
+      "t": 1,
+      "modo": "redondeo",
+      "valor": 3.0
+    },
+    {
+      "x": 2.5,
+      "t": 1,
+      "modo": "truncamiento",
+      "valor": 2.0
+    },
+    {
+      "x": -2.5,
+      "t": 1,
+      "modo": "redondeo",
+      "valor": -3.0
+    },
+    {
+      "x": 1234.5678,
+      "t": 6,
+      "modo": "redondeo",
+      "valor": 1234.57
+    },
+    {
+      "x": 1234.5678,
+      "t": 6,
+      "modo": "truncamiento",
+      "valor": 1234.56
+    },
+    {
+      "x": 0.000123456,
+      "t": 3,
+      "modo": "redondeo",
+      "valor": 0.000123
+    },
+    {
+      "x": 9.99,
+      "t": 2,
+      "modo": "redondeo",
+      "valor": 10.0
+    },
+    {
+      "x": 9.99,
+      "t": 2,
+      "modo": "truncamiento",
+      "valor": 9.9
+    },
+    {
+      "x": 0.3,
+      "t": 1,
+      "modo": "truncamiento",
+      "valor": 0.3
+    },
+    {
+      "x": 123456,
+      "t": 3,
+      "modo": "redondeo",
+      "valor": 123000.0
+    },
+    {
+      "x": 3.14159265,
+      "t": 4,
+      "modo": "redondeo",
+      "valor": 3.142
+    }
+  ],
+  "operaciones": [
+    {
+      "a": 0.12345,
+      "op": "\u2212",
+      "b": 0.12341,
+      "t": 4,
+      "modo": "redondeo",
+      "aRed": 0.1235,
+      "bRed": 0.1234,
+      "calculado": 0.0001,
+      "exacto": 4e-05
+    },
+    {
+      "a": 0.12345,
+      "op": "\u2212",
+      "b": 0.12341,
+      "t": 4,
+      "modo": "truncamiento",
+      "aRed": 0.1234,
+      "bRed": 0.1234,
+      "calculado": 0.0,
+      "exacto": 4e-05
+    },
+    {
+      "a": 1.5,
+      "op": "+",
+      "b": 2.25,
+      "t": 3,
+      "modo": "redondeo",
+      "aRed": 1.5,
+      "bRed": 2.25,
+      "calculado": 3.75,
+      "exacto": 3.75
+    },
+    {
+      "a": 3.14159,
+      "op": "\u00d7",
+      "b": 2.71828,
+      "t": 4,
+      "modo": "redondeo",
+      "aRed": 3.142,
+      "bRed": 2.718,
+      "calculado": 8.54,
+      "exacto": 8.5397212652
+    },
+    {
+      "a": 1,
+      "op": "\u00f7",
+      "b": 3,
+      "t": 4,
+      "modo": "truncamiento",
+      "aRed": 1.0,
+      "bRed": 3.0,
+      "calculado": 0.3333,
+      "exacto": 0.3333333333333333
+    },
+    {
+      "a": 22,
+      "op": "\u00f7",
+      "b": 7,
+      "t": 5,
+      "modo": "redondeo",
+      "aRed": 22.0,
+      "bRed": 7.0,
+      "calculado": 3.1429,
+      "exacto": 3.142857142857143
+    }
+  ],
+  "sumas": [
+    {
+      "valores": [
+        1000,
+        0.4,
+        0.4
+      ],
+      "t": 4,
+      "modo": "redondeo",
+      "orden": 1000.0,
+      "creciente": 1001.0,
+      "exacta": 1000.8
+    },
+    {
+      "valores": [
+        0.4,
+        0.4,
+        1000
+      ],
+      "t": 4,
+      "modo": "redondeo",
+      "orden": 1001.0,
+      "creciente": 1001.0,
+      "exacta": 1000.8
+    },
+    {
+      "valores": [
+        1,
+        0.0004,
+        0.0004,
+        0.0004
+      ],
+      "t": 4,
+      "modo": "truncamiento",
+      "orden": 1.0,
+      "creciente": 1.001,
+      "exacta": 1.0012
+    }
+  ],
+  "aproximaciones": [
+    {
+      "verdadero": 3.141592653589793,
+      "aproximado": 3.1416,
+      "absoluto": 7.346410206832132e-06,
+      "cifras": 5
+    },
+    {
+      "verdadero": 3.141592653589793,
+      "aproximado": 3.142857142857143,
+      "absoluto": 0.0012644892673496777,
+      "cifras": 3
+    },
+    {
+      "verdadero": 3.141592653589793,
+      "aproximado": 3.14,
+      "absoluto": 0.0015926535897929917,
+      "cifras": 3
+    },
+    {
+      "verdadero": 100.0,
+      "aproximado": 99.5,
+      "absoluto": 0.5,
+      "cifras": 2
+    },
+    {
+      "verdadero": 0.001234,
+      "aproximado": 0.001,
+      "absoluto": 0.00023400000000000005,
+      "cifras": 1
+    },
+    {
+      "verdadero": 1.0,
+      "aproximado": 1.0,
+      "absoluto": 0.0,
+      "cifras": "inf"
+    }
+  ],
+  "serie_exp": {
+    "x": 1.0,
+    "exacto": 2.718281828459045,
+    "sumas": [
+      1.0,
+      2.0,
+      2.5,
+      2.6666666666666665,
+      2.7083333333333335,
+      2.716666666666667,
+      2.7180555555555554,
+      2.7182539682539684,
+      2.71827876984127,
+      2.7182815255731922
+    ]
+  },
+  "epsilon_maquina": 2.220446049250313e-16
+}

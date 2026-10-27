@@ -12,14 +12,14 @@ vi.mock('./Grafico', () => ({ default: ({ titulo }: { titulo: string }) => <figu
 const irA = (ruta: string) => render(<MemoryRouter initialEntries={[ruta]}><App /></MemoryRouter>)
 
 describe('portal', () => {
-  it('lista los 5 módulos', () => {
+  it('lista los seis temas (errores y los cinco temas de la guía), todos disponibles', () => {
     irA('/')
-    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(5)
-    expect(screen.getAllByText('Próximamente')).toHaveLength(1)
-    expect(screen.getAllByRole('link', { name: 'Abrir módulo' }).map((a) => a.getAttribute('href'))).toEqual(['/m1', '/m2', '/m3', '/m4'])
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(6)
+    expect(screen.queryByText('Próximamente')).toBeNull()
+    expect(screen.getAllByRole('link', { name: 'Abrir tema' }).map((a) => a.getAttribute('href'))).toEqual(['/errores', '/ecuaciones', '/sistemas', '/interpolacion', '/integracion', '/diferenciales'])
   })
   it('fuera del inicio hay enlace de retorno al portal', () => {
-    irA('/m1')
+    irA('/ecuaciones')
     expect(screen.getByRole('link', { name: /volver al portal/i })).toHaveAttribute('href', '/')
   })
   it('ofrece salto al contenido para teclado', () => {

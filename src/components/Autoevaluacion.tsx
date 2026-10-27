@@ -38,6 +38,15 @@ export default function Autoevaluacion({ preguntas }: { preguntas: Pregunta[] })
               <div className={`estado ${v.estado === 'correcta' ? 'estado-ok' : 'estado-error'}`} role="status">
                 <strong>{ROTULO[v.estado]}</strong>{v.detalle ? ` ${v.detalle}` : ''}
                 {v.estado !== 'sin_responder' && v.estado !== 'invalida' && <span> {p.explicacion}</span>}
+                {v.estado !== 'sin_responder' && v.estado !== 'invalida' && p.tipo === 'opcion' && p.porOpcion && typeof resp[p.id] === 'number' && (
+                  <p className="por-opcion"><strong>Sobre tu elección:</strong> {p.porOpcion[resp[p.id] as number]}</p>
+                )}
+                {v.estado !== 'sin_responder' && v.estado !== 'invalida' && p.profundiza && (
+                  <details className="profundiza">
+                    <summary>Profundiza</summary>
+                    <p>{p.profundiza}</p>
+                  </details>
+                )}
               </div>
             )}
           </fieldset>

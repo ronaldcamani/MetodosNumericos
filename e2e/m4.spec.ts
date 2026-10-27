@@ -1,21 +1,22 @@
 import { test, expect } from '@playwright/test'
 import { pathToFileURL } from 'node:url'
 import path from 'node:path'
+import { calculadora } from './ayudas'
 
-const url = pathToFileURL(path.resolve('dist/index.html')).href + '#/m4'
+const url = pathToFileURL(path.resolve('dist/index.html')).href + '#/integracion'
 
 test('sin errores de página y con enlace de retorno', async ({ page }) => {
   const errores: string[] = []
   page.on('pageerror', (e) => errores.push(e.message))
   await page.goto(url)
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('Integración numérica')
+  await expect(page.getByRole('heading', { level: 1 })).toContainText('Integración y derivación numérica')
   await expect(page.getByRole('link', { name: /volver al portal/i })).toBeVisible()
   expect(errores).toEqual([])
 })
 
 test('trapecio n = 4: 4.75 MB, error 1/12, tabla de pesos y gráfico', async ({ page }) => {
-  await page.goto(url)
-  const calc = page.getByRole('region', { name: 'Calculadora de trapecio compuesto' })
+  await page.goto(url + '/trapecio')
+  const calc = await calculadora(page, 'Calculadora de trapecio compuesto', 'trapecio')
   await calc.getByRole('button', { name: 'Calcular' }).click()
   await expect(calc.getByRole('status')).toContainText('4.75')
   await expect(calc.locator('dd', { hasText: /^0\.083333/ })).toBeVisible()
@@ -25,8 +26,8 @@ test('trapecio n = 4: 4.75 MB, error 1/12, tabla de pesos y gráfico', async ({ 
 })
 
 test('Simpson n = 4 da 14/3 y n = 3 se rechaza', async ({ page }) => {
-  await page.goto(url)
-  const calc = page.getByRole('region', { name: 'Calculadora de Simpson 1/3 compuesto' })
+  await page.goto(url + '/simpson')
+  const calc = await calculadora(page, 'Calculadora de Simpson 1/3 compuesto', 'simpson')
   await calc.getByRole('button', { name: 'Calcular' }).click()
   await expect(calc.getByRole('status')).toContainText('4.6666666667')
   await calc.getByRole('button', { name: /n = 3/ }).click()
@@ -35,8 +36,8 @@ test('Simpson n = 4 da 14/3 y n = 3 se rechaza', async ({ page }) => {
 })
 
 test('n = 0 se rechaza en el trapecio', async ({ page }) => {
-  await page.goto(url)
-  const calc = page.getByRole('region', { name: 'Calculadora de trapecio compuesto' })
+  await page.goto(url + '/trapecio')
+  const calc = await calculadora(page, 'Calculadora de trapecio compuesto', 'trapecio')
   await calc.getByRole('button', { name: /n = 0/ }).click()
   await expect(calc.getByRole('alert')).toContainText('entero positivo')
 })
@@ -66,17 +67,36 @@ test('comparación: refinar n = 2, 4, 8 y dos gráficos', async ({ page }) => {
   await cmp.screenshot({ path: 'test-results/m4-comparacion.png' })
 })
 
-test('ficha de derivación central: 2 MB/s² con t = 1 y h = 0.1', async ({ page }) => {
-  await page.goto(url)
+test('derivación: ficha con 2 MB/s² en t = 1, h = 0.1 y herramienta con la cancelación para h = 10⁻¹²', async ({ page }) => {
+  await page.goto(url + '/derivacion')
   const tabla = page.getByRole('table', { name: /Diferencia central/ })
   await expect(tabla.getByRole('row').nth(2)).toContainText('0.1')
   await expect(tabla.getByRole('row').nth(2)).toContainText('2')
+  const calc = await calculadora(page, 'Calculadora de derivación numérica', 'derivacion')
+  await calc.getByRole('button', { name: 'Calcular' }).click()
+  await expect(calc.getByText('Central (f(t+h) − f(t−h))/2h').locator('xpath=following-sibling::dd[1]')).toContainText('2')
+  await calc.getByRole('button', { name: /h demasiado pequeño/ }).click()
+  await expect(calc.getByRole('note')).toContainText('cancelación')
+  await expect(calc.locator('.main-svg').first()).toBeVisible()
+  await calc.screenshot({ path: 'test-results/m4-derivacion.png' })
+})
+
+test('analiza y decide: n impar → trapecio; Simpson con n = 5 se rechaza desde el ejercicio con plan', async ({ page }) => {
+  await page.goto(url)
+  await page.getByRole('button', { name: 'Analizar este problema' }).nth(1).click()
+  await expect(page.getByRole('heading', { name: /Trapecio compuesto · ✔ Recomendado/ })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Simpson 1\/3 compuesto · ✖ No recomendado/ })).toBeVisible()
+  const ej = page.locator('#ejercicios')
+  await ej.getByRole('radio', { name: /Simpson con n = 5/ }).check()
+  await ej.getByRole('button', { name: /Probar este método en la calculadora/ }).click()
+  const calc = page.getByRole('region', { name: 'Calculadora de Simpson 1/3 compuesto' })
+  await expect(calc.getByRole('alert')).toContainText('n par')
 })
 
 test('ejercicios con solución oculta y autoevaluación', async ({ page }) => {
-  await page.goto(url)
-  await page.getByRole('button', { name: 'Ver solución del ejercicio 4' }).click()
+  await page.goto(url + '/trapecio')
+  await page.getByRole('button', { name: 'Ver solución del ejercicio 2' }).click()
   await expect(page.locator('#sol-m4-e4')).toContainText('116')
   await page.getByRole('button', { name: /Comprobar respuestas/ }).click()
-  await expect(page.getByText(/Puntaje: 0 de 6/)).toBeVisible()
+  await expect(page.getByText(/Puntaje: 0 de 3/)).toBeVisible()
 })
