@@ -40,3 +40,10 @@ src/components/      calculadora, panel lateral, decisor, ejercicios, autoevalua
 referencia/          scripts Python de referencia y sus pruebas
 e2e/                 pruebas de navegador
 ```
+
+## Práctica y avance del estudiante
+
+- Cada ejercicio resuelto muestra la solución en **tarjetas escondidas** que se revelan paso a paso; no hay pistas.
+- Al final de cada tema, **«Práctica por niveles»** genera problemas al azar (básico, intermedio y avanzado) con respuesta numérica comprobable; «Generar problemas nuevos» crea otros. Los generadores están en `src/core/practica/` (uno por tema, con semilla reproducible y pruebas).
+- El avance (puntos, estrellas por nivel, dominio %) se guarda en `localStorage` del navegador (clave `portal-mn-progreso-v1`); sin servidor ni cuentas. Se puede borrar desde `/recursos`.
+- Reglas: acierto sin abrir el desarrollo = 10/20/30 puntos según nivel; 2 aciertos = 1 estrella (máx. 3 por nivel); dominio = 30 % básico + 35 % intermedio + 35 % avanzado.

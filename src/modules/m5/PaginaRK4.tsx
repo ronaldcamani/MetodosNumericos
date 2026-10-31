@@ -158,7 +158,7 @@ export default function PaginaRK4() {
 
           <section id="ejercicios" aria-labelledby="h-ejer">
             <h2 id="h-ejer">Ejercicios propuestos</h2>
-            <p>Intenta cada ejercicio antes de abrir la pista o la solución. Uno es intermedio y otro avanzado.</p>
+            <p>Intenta cada ejercicio por tu cuenta antes de revelar los pasos de la solución (se muestran uno a uno). Uno es intermedio y otro avanzado.</p>
             <Ejercicios items={EJERCICIOS_RK4} />
           </section>
 

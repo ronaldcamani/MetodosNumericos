@@ -23,7 +23,6 @@ export const EJERCICIOS_DECISION_SISTEMAS: Ejercicio[] = [
         { id: 'inversa', texto: 'Calcular A⁻¹ y multiplicar por b', veredicto: 'inadecuado', razon: 'Calcular la inversa cuesta más que resolver el sistema y acumula más error de redondeo: no es necesario para obtener x.' },
       ],
     },
-    pista: <>¿Qué propiedad de <M tex="A" /> garantiza la convergencia de un método iterativo? Revisa cada fila.</>,
     solucion: (
       <>
         <p><strong>Análisis.</strong> Es un sistema pequeño, no singular y diagonalmente dominante por filas. Ambos métodos sirven.</p>
@@ -47,7 +46,6 @@ export const EJERCICIOS_DECISION_SISTEMAS: Ejercicio[] = [
         { id: 'gauss', texto: 'Eliminación con pivoteo parcial', veredicto: 'adecuado', razon: 'No depende de la dominancia: resuelve el sistema directamente.', preset: { herramienta: 'gauss', valores: { ...EJERCICIO_3.sistema } } },
       ],
     },
-    pista: <>Compara en cada fila el elemento diagonal con la suma de los otros en valor absoluto. ¿Alguna reordenación de las filas lo mejora?</>,
     solucion: (
       <>
         <p>Tal como está, ninguna fila es dominante (por ejemplo, la fila 1 tiene diagonal 0.4 frente a 1.1 + 3.1). Gauss-Seidel diverge.</p>
@@ -128,7 +126,6 @@ export const EJERCICIOS_DIRECTOS: Ejercicio[] = [
   {
     id: 'm2-e4', nivel: 'Avanzado', titulo: 'Sistemas singulares: sin solución o infinitas',
     enunciado: <p>Analiza <M tex="\begin{cases}x+2y=3\\ 2x+4y=b_2\end{cases}" /> para <M tex="b_2=6" /> y para <M tex="b_2=7" />. ¿Qué dicen la eliminación y Gauss-Seidel? ¿Basta mirar el residuo?</p>,
-    pista: <>Reduce el sistema: ¿qué le pasa a la segunda fila tras eliminar? ¿Cuánto vale el segundo pivote?</>,
     verificar: <>Prueba ambos casos en las dos calculadoras: deben avisar de singularidad.</>,
     solucion: <>
       <p>La fila 2 es 2 × la fila 1 en los coeficientes, así que <M tex="\det A=0" />. Eliminando: el segundo pivote es 0.</p>
@@ -163,7 +160,6 @@ export const EJERCICIOS_ITERATIVOS: Ejercicio[] = [
   {
     id: 'm2-e2', nivel: 'Intermedio', titulo: 'Una iteración de Gauss-Seidel',
     enunciado: <p>Para <M tex="\begin{cases}4x+y=9\\ 2x+5y=13\end{cases}" /> haz dos iteraciones de Gauss-Seidel desde <M tex="x_0=(0,0)" /> y calcula el residuo <M tex="\|b-Ax\|_\infty" /> tras la primera.</p>,
-    pista: <>En cada iteración calcula primero <M tex="x" /> y úsalo de inmediato para obtener <M tex="y" />.</>,
     verificar: <>Compruébalo en la calculadora de Gauss-Seidel (2 × 2, tolerancia pequeña).</>,
     solucion: <>
       <p>Iteración 1: <M tex="x=9/4=2.25" />; <M tex="y=(13-2\cdot2.25)/5=1.7" />. Residuo: <M tex="b-Ax=(9-(4\cdot2.25+1.7),\;13-(2\cdot2.25+5\cdot1.7))=(-1.7,\,0)" />, luego <M tex="\|\cdot\|_\infty=1.7" />.</p>

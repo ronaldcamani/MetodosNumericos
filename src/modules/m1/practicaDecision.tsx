@@ -21,7 +21,6 @@ export const EJERCICIOS_DECISION: Ejercicio[] = [
         { id: 'secante', texto: 'Secante con c₀ = 100 y c₁ = 400', veredicto: 'adecuado', razon: 'No necesita derivada y reutiliza las dos simulaciones ya hechas. Es rápida, pero sin la garantía del intervalo: verifique al final con una simulación en el valor encontrado.', preset: { herramienta: 'raices', valores: { metodo: 'secante' } } },
       ],
     },
-    pista: <>Pregúntate qué datos tiene cada método y cuántas simulaciones consumirá: cada evaluación de <M tex="T" /> es cara.</>,
     solucion: (
       <>
         <p><strong>Análisis.</strong> Hay cambio de signo (<M tex="f(100)f(400)<0" />) y no hay derivada; cada evaluación cuesta mucho. Eso descarta Newton y favorece los métodos que reutilizan lo que ya se simuló.</p>
@@ -46,7 +45,6 @@ export const EJERCICIOS_DECISION: Ejercicio[] = [
         { id: 'secante', texto: 'Secante con dos puntos iniciales', veredicto: 'inadecuado', razon: 'Igual que Newton, produce una raíz por ejecución y depende de los puntos iniciales.' },
       ],
     },
-    pista: <>La cota de Cauchy dice dónde buscar: <M tex="|r|\le 1+\max|a_i/a_n|=11" />. Después de hallar una raíz real, ¿qué polinomio queda por resolver?</>,
     solucion: (
       <>
         <p><strong>Análisis.</strong> Es un polinomio de grado 4 y se piden todas las raíces: el problema pide una estrategia que las encuentre en bloque.</p>

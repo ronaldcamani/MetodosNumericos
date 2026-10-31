@@ -22,7 +22,6 @@ export const EJERCICIOS_DECISION_INTEGRAL: Ejercicio[] = [
         { id: 'muchos', texto: 'Trapecio con n = 100', veredicto: 'posible', razon: 'Reduce el error, pero exige 101 evaluaciones para acercarse a lo que Simpson logra exactamente con 3.', preset: presetIntegral('trapecio', 2, 1, 3, 0, 3, 100) },
       ],
     },
-    pista: <>Simpson es exacto para polinomios de grado ≤ 3. ¿De qué grado es esta tasa?</>,
     solucion: (
       <>
         <p>La integral exacta es <M tex="\int_0^3(2t^2+t+3)\,dt=18+4.5+9=31.5" /> MB.</p>
@@ -109,7 +108,6 @@ export const EJERCICIOS_TRAPECIO: Ejercicio[] = [
   {
     id: 'm4-e1', nivel: 'Intermedio', titulo: 'Trapecio con n = 4 a mano',
     enunciado: <p>Para <M tex="r(t)=t^2+1" /> MB/s en <M tex="[0,2]" /> s calcula el volumen con trapecio compuesto y <M tex="n=4" />, y su error absoluto frente a la integral exacta. ¿En qué unidades está el resultado?</p>,
-    pista: <>Con <M tex="h=0.5" /> los nodos son <M tex="0,0.5,1,1.5,2" />; los pesos del trapecio son 1, 2, 2, 2, 1.</>,
     verificar: <>Compruébalo en la calculadora de trapecio (caso base).</>,
     solucion: <>
       <p><M tex="h=0.5" />; tasas <M tex="r(0),\dots,r(2)=1,\,1.25,\,2,\,3.25,\,5" />. Con pesos <M tex="1,2,2,2,1" />:</p>
@@ -160,7 +158,6 @@ export const EJERCICIOS_SIMPSON: Ejercicio[] = [
   {
     id: 'm4-e2', nivel: 'Intermedio', titulo: 'Simpson con n = 2',
     enunciado: <p>Con <M tex="r(t)=3t^2+2t+1" /> en <M tex="[1,3]" /> calcula el volumen con Simpson 1/3 (<M tex="n=2" />) y con trapecio (<M tex="n=2" />). Compara con la integral exacta.</p>,
-    pista: <>Simpson: <M tex="\frac h3(r_0+4r_1+r_2)" />; trapecio: <M tex="\frac h2(r_0+2r_1+r_2)" />. Aquí <M tex="h=1" />.</>,
     verificar: <>Edita los coeficientes (a = 3, b = 2, c = 1) y los extremos (1 y 3) en la calculadora.</>,
     solucion: <>
       <p><M tex="h=1" />; <M tex="r(1)=6,\;r(2)=17,\;r(3)=34" />.</p>
@@ -171,7 +168,6 @@ export const EJERCICIOS_SIMPSON: Ejercicio[] = [
   {
     id: 'm4-e3', nivel: 'Avanzado', titulo: 'Simpson no es exacto en general',
     enunciado: <p>Calcula <M tex="\int_0^1t^4\,dt" /> con Simpson 1/3 usando <M tex="n=2" /> y <M tex="n=4" />, y con trapecio <M tex="n=2" />. ¿Cuánto vale el cociente entre los errores de Simpson al duplicar <M tex="n" />? ¿Qué orden de convergencia sugiere?</p>,
-    pista: <>El valor exacto es 0.2. Calcula el error de cada caso y divide el de <M tex="n=2" /> entre el de <M tex="n=4" />.</>,
     solucion: <>
       <p>Exacta: <M tex="0.2" />. Simpson <M tex="n=2" /> (<M tex="h=0.5" />): <M tex="\frac{0.5}3(0+4\cdot0.0625+1)=0.208333" />, error <M tex="\frac1{120}\approx0.00833" />.</p>
       <p>Simpson <M tex="n=4" /> (<M tex="h=0.25" />): <M tex="\frac{0.25}3(0+4\cdot0.00390625+2\cdot0.0625+4\cdot0.31640625+1)=0.200521" />, error <M tex="\frac1{1920}\approx0.000521" />.</p>
@@ -205,7 +201,6 @@ export const EJERCICIOS_DERIVACION: Ejercicio[] = [
   {
     id: 'der-e1', nivel: 'Intermedio', titulo: 'Tres diferencias para r′(1)',
     enunciado: <p>Para <M tex="r(t)=t^2+1" /> estima <M tex="r'(1)" /> con <M tex="h=0.1" /> usando la diferencia central, la progresiva y la regresiva. Compara con la derivada exacta e indica cuál es más exacta y por qué.</p>,
-    pista: <>Central: <M tex="\frac{r(1.1)-r(0.9)}{0.2}" />; progresiva: <M tex="\frac{r(1.1)-r(1)}{0.1}" />; regresiva: <M tex="\frac{r(1)-r(0.9)}{0.1}" />.</>,
     verificar: <>Compruébalo en la herramienta «Derivación numérica» (t = 1, h = 0.1).</>,
     solucion: <>
       <p><M tex="r(0.9)=1.81,\;r(1)=2,\;r(1.1)=2.21" />. Central: <M tex="(2.21-1.81)/0.2=2" />; progresiva: <M tex="(2.21-2)/0.1=2.1" />; regresiva: <M tex="(2-1.81)/0.1=1.9" />. La derivada exacta es <M tex="r'(1)=2" />.</p>
@@ -223,7 +218,6 @@ export const EJERCICIOS_DERIVACION: Ejercicio[] = [
         { id: 'minimo', texto: 'h = 10⁻¹² (lo más pequeño posible)', veredicto: 'inadecuado', razon: 'f(t + h) y f(t − h) casi coinciden: la resta pierde cifras (cancelación) y el error sube a ≈ 2·10⁻⁴.', preset: { herramienta: 'derivacion', valores: { funcion: 'exponencial', t: '1', h: '1e-12' } } },
       ],
     },
-    pista: <>El error total es la suma de un error de truncamiento (baja con <M tex="h" />) y uno de redondeo (sube cuando <M tex="h" /> es pequeño). ¿Dónde se cruzan?</>,
     solucion: <>
       <p>Errores de la diferencia central para <M tex="e^t" /> en <M tex="t=1" />: <M tex="h=0.5\to0.115" />, <M tex="h=0.1\to4.5\times10^{-3}" />, <M tex="h=10^{-5}\to5.9\times10^{-11}" />, <M tex="h=10^{-12}\to2.1\times10^{-4}" />.</p>
       <p>El error de truncamiento es <M tex="\propto h^2" /> y el de redondeo <M tex="\propto\varepsilon/h" /> (con <M tex="\varepsilon\approx10^{-16}" />). Su suma es mínima para <M tex="h\sim\varepsilon^{1/3}\approx10^{-5}" />. <strong>Reducir h no siempre mejora</strong>: es el mismo fenómeno de cancelación del tema de errores.</p>

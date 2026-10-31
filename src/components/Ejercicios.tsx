@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { Children, Fragment, isValidElement, useState } from 'react'
+import PasosOcultos from './PasosOcultos'
+import { useProgreso } from './useProgreso'
 import { useCalculadoraLateral, type PresetCalculadora } from './PanelCalculadora'
 
 export type Veredicto = 'adecuado' | 'posible' | 'inadecuado'
@@ -24,13 +26,17 @@ export interface Ejercicio {
   nivel: 'Intermedio' | 'Avanzado'
   titulo: string
   enunciado: React.ReactNode
-  /** Plan de solución: elegir el método antes de ver la pista o la solución. */
+  /** Plan de solución: elegir el método antes de ver la solución. */
   plan?: PlanSolucion
-  /** Ayuda intermedia entre el plan y la solución completa. */
-  pista?: React.ReactNode
   /** Verificación opcional con la calculadora del módulo. */
   verificar?: React.ReactNode
+  /** Cada hijo directo del fragmento es un paso que el estudiante revela por separado. */
   solucion: React.ReactNode
+}
+
+function pasosDe(sol: React.ReactNode): React.ReactNode[] {
+  const nodo = isValidElement<{ children?: React.ReactNode }>(sol) && sol.type === Fragment ? Children.toArray(sol.props.children) : [sol]
+  return nodo.filter((x) => !(typeof x === 'string' && x.trim() === ''))
 }
 
 const ROTULO: Record<Veredicto, string> = { adecuado: '✔ Adecuado', posible: '⚠ Posible, con reservas', inadecuado: '✖ No recomendado' }
@@ -59,38 +65,34 @@ function Plan({ id, plan }: { id: string; plan: PlanSolucion }) {
   )
 }
 
-/** Cada ayuda se oculta tras su propio botón: primero el plan, luego la pista y al final la solución. */
+/** El tema se deduce de la ruta (#/ecuaciones/cerrados → «ecuaciones»). */
+const temaActual = () => window.location.hash.split('/')[1]?.split('?')[0] || 'general'
+
+/** Un ejercicio abierto: enunciado, plan, espacio para el desarrollo propio y solución en tarjetas escondidas. */
+function Item({ e, i }: { e: Ejercicio; i: number }) {
+  const { estudiado } = useProgreso(temaActual())
+  const [propio, setPropio] = useState('')
+  return (
+    <li className="ejercicio">
+      <h3>Ejercicio {i + 1} · <span className="nivel">{e.nivel}</span>: {e.titulo}</h3>
+      <div>{e.enunciado}</div>
+      {e.plan && <Plan id={e.id} plan={e.plan} />}
+      {e.verificar && <p className="aviso">{e.verificar}</p>}
+      <label className="campo">
+        Tu desarrollo del ejercicio {i + 1} (opcional; solo tú lo ves)
+        <textarea rows={3} value={propio} onChange={(ev) => setPropio(ev.target.value)} placeholder="Escribe aquí tus pasos y tu resultado antes de revelar la solución." />
+      </label>
+      <h4 className="subtitulo-solucion">Solución paso a paso</h4>
+      <PasosOcultos pasos={pasosDe(e.solucion)} nombre={`ejercicio ${i + 1}`} alCompletar={() => estudiado(e.id)} />
+    </li>
+  )
+}
+
+/** Cada ejercicio se resuelve primero por el estudiante; la solución aparece en tarjetas que se revelan de una en una. */
 export default function Ejercicios({ items }: { items: Ejercicio[] }) {
-  const [visibles, setVisibles] = useState<Record<string, boolean>>({})
-  const alternar = (k: string) => setVisibles((v) => ({ ...v, [k]: !v[k] }))
   return (
     <ol className="ejercicios">
-      {items.map((e, i) => {
-        const abierto = !!visibles[e.id]
-        const pista = !!visibles[`${e.id}-pista`]
-        const idSol = `sol-${e.id}`
-        const idPista = `pista-${e.id}`
-        return (
-          <li key={e.id} className="ejercicio">
-            <h3>Ejercicio {i + 1} · <span className="nivel">{e.nivel}</span>: {e.titulo}</h3>
-            <div>{e.enunciado}</div>
-            {e.plan && <Plan id={e.id} plan={e.plan} />}
-            {e.verificar && <p className="aviso">{e.verificar}</p>}
-            <div className="acciones">
-              {e.pista && (
-                <button type="button" aria-expanded={pista} aria-controls={idPista} onClick={() => alternar(`${e.id}-pista`)}>
-                  {pista ? `Ocultar pista del ejercicio ${i + 1}` : `Ver pista del ejercicio ${i + 1}`}
-                </button>
-              )}
-              <button type="button" aria-expanded={abierto} aria-controls={idSol} onClick={() => alternar(e.id)}>
-                {abierto ? `Ocultar solución del ejercicio ${i + 1}` : `Ver solución del ejercicio ${i + 1}`}
-              </button>
-            </div>
-            {pista && <div id={idPista} className="pista">{e.pista}</div>}
-            {abierto && <div id={idSol} className="solucion">{e.solucion}</div>}
-          </li>
-        )
-      })}
+      {items.map((e, i) => <Item key={e.id} e={e} i={i} />)}
     </ol>
   )
 }

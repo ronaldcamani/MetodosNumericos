@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import PracticaGenerada from "../../components/PracticaGenerada";
 import Autoevaluacion from "../../components/Autoevaluacion";
 import Decisor, { type ProblemaPlanteado } from "../../components/Decisor";
 import Ejercicios from "../../components/Ejercicios";
@@ -24,6 +25,7 @@ const SECCIONES = [
   ["cuidados", "Cuidados"],
   ["ejercicios", "Ejercicios: elige tu método"],
   ["autoevaluacion", "Autoevaluación"],
+  ["practica", "Práctica por niveles"],
 ] as const;
 
 const PROBLEMAS: ProblemaPlanteado<RespuestasEdo>[] = [
@@ -183,7 +185,7 @@ export default function Modulo5() {
           <section id="ejercicios" aria-labelledby="h-ejer">
             <h2 id="h-ejer">Ejercicios: elige tu método</h2>
             <p>
-              Cada ejercicio parte de un problema: <strong>decide primero cómo lo resolverás</strong> y recibe retroalimentación sobre tu plan. Después puedes pedir una pista, probarlo en la calculadora y, al final, ver la solución.
+              Cada ejercicio parte de un problema: <strong>decide primero cómo lo resolverás</strong> y recibe retroalimentación sobre tu plan. Después puedes probarlo en la calculadora y desarrollarlo en el espacio de cada ejercicio; la solución aparece en tarjetas que revelas paso a paso.
             </p>
             <Ejercicios items={EJERCICIOS_DECISION_EDO} />
           </section>
@@ -192,6 +194,17 @@ export default function Modulo5() {
             <h2 id="h-auto">Autoevaluación</h2>
             <p>Cuatro preguntas: opción múltiple, verdadero/falso y numérica con tolerancia. Al comprobar verás la explicación y, si quieres, «Profundiza».</p>
             <Autoevaluacion preguntas={PREGUNTAS_DECISION_EDO} />
+          </section>
+
+          <section id="practica" aria-labelledby="h-practica">
+            <h2 id="h-practica">Práctica por niveles</h2>
+            <p>
+              Elige un nivel, resuelve los problemas por tu cuenta y comprueba tu
+              respuesta. Cada vez que pulses «Generar problemas nuevos» aparecen
+              otros distintos: practica hasta dominar el tema. Tu avance (puntos,
+              estrellas y dominio) se guarda en este navegador.
+            </p>
+            <PracticaGenerada tema="diferenciales" />
           </section>
         </article>
       </ModuloConIndice>

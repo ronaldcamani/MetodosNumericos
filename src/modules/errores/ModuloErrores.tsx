@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import AbrirCalculadora from "../../components/AbrirCalculadora";
+import PracticaGenerada from "../../components/PracticaGenerada";
 import Autoevaluacion from "../../components/Autoevaluacion";
 import Ejercicios from "../../components/Ejercicios";
 import ModuloConIndice from "../../components/IndiceLateral";
@@ -19,6 +20,7 @@ const SECCIONES = [
   ["tolerancia", "Tolerancia, residuo y error"],
   ["ejercicios", "Ejercicios propuestos"],
   ["autoevaluacion", "Autoevaluación"],
+  ["practica", "Práctica por niveles"],
 ] as const;
 
 const HERRAMIENTAS: Herramienta[] = [
@@ -167,7 +169,7 @@ export default function ModuloErrores() {
 
           <section id="ejercicios" aria-labelledby="h-ejer">
             <h2 id="h-ejer">Ejercicios propuestos</h2>
-            <p>Intenta cada ejercicio antes de abrir la pista o la solución. En los que tienen «Tu plan», decide primero cómo lo harías.</p>
+            <p>Intenta cada ejercicio por tu cuenta antes de revelar los pasos de la solución (se muestran uno a uno). En los que tienen «Tu plan», decide primero cómo lo harías.</p>
             <Ejercicios items={EJERCICIOS_ERRORES} />
           </section>
 
@@ -175,6 +177,17 @@ export default function ModuloErrores() {
             <h2 id="h-auto">Autoevaluación</h2>
             <p>Seis preguntas con explicación; abre «Profundiza» para el porqué detrás de cada respuesta.</p>
             <Autoevaluacion preguntas={PREGUNTAS_ERRORES} />
+          </section>
+
+          <section id="practica" aria-labelledby="h-practica">
+            <h2 id="h-practica">Práctica por niveles</h2>
+            <p>
+              Elige un nivel, resuelve los problemas por tu cuenta y comprueba tu
+              respuesta. Cada vez que pulses «Generar problemas nuevos» aparecen
+              otros distintos: practica hasta dominar el tema. Tu avance (puntos,
+              estrellas y dominio) se guarda en este navegador.
+            </p>
+            <PracticaGenerada tema="errores" />
           </section>
         </article>
       </ModuloConIndice>

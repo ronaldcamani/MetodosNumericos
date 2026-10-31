@@ -8,7 +8,6 @@ export const EJERCICIOS_ABIERTOS: Ejercicio[] = [
   {
     id: 'abi-e1', nivel: 'Intermedio', titulo: 'Newton a mano para √2',
     enunciado: <p>Aplica Newton a <M tex="f(x)=x^2-2" /> con <M tex="x_0=1" /> y calcula <M tex="x_1,x_2,x_3" />. ¿Cuántas cifras correctas gana cada paso aproximadamente?</p>,
-    pista: <>Simplifica la fórmula: <M tex="x_{n+1}=x_n-\dfrac{x_n^2-2}{2x_n}=\dfrac{x_n}{2}+\dfrac1{x_n}" />.</>,
     solucion: <>
       <p><M tex="x_{n+1}=x_n-\frac{x_n^2-2}{2x_n}=\frac{x_n}{2}+\frac{1}{x_n}" />.</p>
       <p><M tex="x_1=1.5,\; x_2=1.4166667,\; x_3=1.4142157" /> (y <M tex="x_4=1.4142136" />, ya igual a <M tex="\sqrt2" /> en 8 cifras).</p>
@@ -18,7 +17,6 @@ export const EJERCICIOS_ABIERTOS: Ejercicio[] = [
   {
     id: 'abi-e2', nivel: 'Intermedio', titulo: 'La secante a mano',
     enunciado: <p>Aplica tres iteraciones de la secante a <M tex="f(x)=x^2-2" /> con <M tex="x_0=1" /> y <M tex="x_1=2" />. Compara con Newton: ¿qué dato no necesitaste?</p>,
-    pista: <>La fórmula es <M tex="x_{n+1}=x_n-f(x_n)\dfrac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})}" />. Parte de <M tex="f(1)=-1" /> y <M tex="f(2)=2" />.</>,
     verificar: <>Compruébalo en la calculadora con el método «Secante», polinomio <code>1, 0, -2</code>, x₀ = 1, x₁ = 2.</>,
     solucion: <>
       <p><M tex="x_2=2-2\cdot\dfrac{2-1}{2-(-1)}=\dfrac43\approx1.3333" />. Luego <M tex="f(4/3)=-\dfrac29" /> y <M tex="x_3=\dfrac{7}{5}=1.4" />; y <M tex="x_4=\dfrac{58}{41}\approx1.41463" />.</p>

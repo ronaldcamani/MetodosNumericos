@@ -8,7 +8,6 @@ export const EJERCICIOS_POLINOMIOS: Ejercicio[] = [
   {
     id: 'pol-e1', nivel: 'Intermedio', titulo: 'Horner a mano',
     enunciado: <p>Con el esquema de Horner calcula <M tex="p(3)" /> y <M tex="p'(3)" /> para <M tex="p(x)=2x^3-6x^2+2x-1" />. ¿Qué polinomio es el cociente al dividir por <M tex="(x-3)" />?</p>,
-    pista: <>Primera fila: <M tex="b_0=2,\; b_1=a_1+3b_0,\;\dots" /> Segunda fila: repite el proceso sobre los <M tex="b_i" /> sin el último.</>,
     solucion: <>
       <p>Primera división sintética (coeficientes 2, −6, 2, −1): <M tex="b=(2,\;-6+3\cdot2=0,\;2+3\cdot0=2,\;-1+3\cdot2=5)" />. Luego <strong>p(3) = 5</strong>.</p>
       <p>Segunda (sobre 2, 0, 2): <M tex="c=(2,\;0+3\cdot2=6,\;2+3\cdot6=20)" />. Luego <strong>p′(3) = 20</strong> (comprobación: <M tex="6\cdot9-12\cdot3+2=20" />).</p>
@@ -18,7 +17,6 @@ export const EJERCICIOS_POLINOMIOS: Ejercicio[] = [
   {
     id: 'pol-e2', nivel: 'Intermedio', titulo: 'Deflación y fórmula cuadrática',
     enunciado: <p>Se sabe que <M tex="r=1" /> es raíz de <M tex="p(x)=x^3-6x^2+11x-6" />. Deflaciona y halla las otras raíces.</p>,
-    pista: <>Divide por <M tex="(x-1)" /> con Horner; el cociente es un polinomio de grado 2.</>,
     verificar: <>Compruébalo en la calculadora con el método «Todas las raíces» y coeficientes <code>1, -6, 11, -6</code>.</>,
     solucion: <>
       <p>Horner con <M tex="r=1" />: <M tex="(1,\;-6+1=-5,\;11-5=6,\;-6+6=0)" />. El resto es 0 (confirma que 1 es raíz) y el cociente es <M tex="x^2-5x+6" />.</p>
@@ -28,7 +26,6 @@ export const EJERCICIOS_POLINOMIOS: Ejercicio[] = [
   {
     id: 'pol-e3', nivel: 'Avanzado', titulo: 'Cuántas raíces reales tiene x³ − x − 2',
     enunciado: <p>Para <M tex="p(x)=x^3-x-2" /> acota las raíces con Cauchy, justifica que hay exactamente una raíz real y calcula las otras dos con la deflación.</p>,
-    pista: <>Cauchy: <M tex="|r|\le1+\max|a_i/a_n|" />. Para el número de raíces reales mira <M tex="p(1)" />, <M tex="p(2)" /> y el discriminante <M tex="-4a^3-27b^2" /> de <M tex="x^3+ax+b" />.</>,
     verificar: <>Usa «Todas las raíces» con <code>1, 0, -1, -2</code>.</>,
     solucion: <>
       <p><strong>Cota:</strong> <M tex="|r|\le1+\max(0,1,2)=3" />: todas las raíces están en el disco de radio 3.</p>

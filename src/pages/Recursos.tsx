@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { borrarProgreso } from "../components/useProgreso";
 import { MODULOS } from "../modules/registro";
 
 const INTEGRANTES: [string, string][] = [
@@ -9,6 +11,24 @@ const INTEGRANTES: [string, string][] = [
 ];
 
 /** Guía para estudiantes, código de referencia, fuentes y equipo (sección 3 de la guía: «fuentes, instrucciones de ejecución, código de referencia»). */
+function BorrarAvance() {
+  const [seguro, setSeguro] = useState(false);
+  const [hecho, setHecho] = useState(false);
+  return (
+    <div className="acciones">
+      {!seguro ? (
+        <button type="button" onClick={() => { setSeguro(true); setHecho(false); }}>Borrar mi avance</button>
+      ) : (
+        <>
+          <button type="button" onClick={() => { borrarProgreso(); setSeguro(false); setHecho(true); }}>Sí, borrar todo mi avance</button>
+          <button type="button" onClick={() => setSeguro(false)}>Cancelar</button>
+        </>
+      )}
+      <span role="status">{hecho ? "Avance borrado." : ""}</span>
+    </div>
+  );
+}
+
 export default function Recursos() {
   return (
     <article className="modulo">
@@ -49,8 +69,15 @@ export default function Recursos() {
             más que verlo funcionar.
           </li>
           <li>
-            <strong>Resuelve los ejercicios</strong>: primero tu plan, luego la
-            pista, y la solución solo al final.
+            <strong>Resuelve los ejercicios</strong>: primero tu plan y tu
+            desarrollo; la solución se revela en tarjetas, paso a paso.
+          </li>
+          <li>
+            <strong>Practica por niveles</strong> al final de cada tema: tres
+            problemas nuevos cada vez en nivel básico, intermedio o avanzado. Si
+            fallas, la respuesta no se revela; el desarrollo paso a paso está
+            en tarjetas ocultas. Tus puntos, estrellas y dominio del tema se
+            guardan solo en este navegador.
           </li>
           <li>
             <strong>Comprueba lo aprendido</strong> en la autoevaluación y abre
@@ -62,6 +89,16 @@ export default function Recursos() {
           representan sistemas reales; no se usan para tomar decisiones sobre
           equipos reales.
         </p>
+      </section>
+
+      <section aria-labelledby="h-avance">
+        <h2 id="h-avance">Tu avance</h2>
+        <p>
+          El avance (puntos, estrellas y dominio de cada tema) vive en tu
+          navegador: no se envía a ningún servidor. Si compartes el equipo,
+          puedes borrarlo.
+        </p>
+        <BorrarAvance />
       </section>
 
       <section aria-labelledby="h-mapa">

@@ -95,8 +95,8 @@ test('analiza y decide: n impar → trapecio; Simpson con n = 5 se rechaza desde
 
 test('ejercicios con solución oculta y autoevaluación', async ({ page }) => {
   await page.goto(url + '/trapecio')
-  await page.getByRole('button', { name: 'Ver solución del ejercicio 2' }).click()
-  await expect(page.locator('#sol-m4-e4')).toContainText('116')
+  await page.getByRole('button', { name: /Mostrar todos los pasos de ejercicio 2/ }).click()
+  await expect(page.locator('#ejercicios .pasos').nth(1)).toContainText('116')
   await page.getByRole('button', { name: /Comprobar respuestas/ }).click()
   await expect(page.getByText(/Puntaje: 0 de 3/)).toBeVisible()
 })

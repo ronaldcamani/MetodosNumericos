@@ -82,17 +82,18 @@ test('«Analiza y decide» se maneja solo con teclado: las flechas cambian la re
   await expect(page.getByRole('heading', { name: /Gauss-Seidel · ✖ No recomendado/ })).toBeVisible()
 })
 
-test('plan de solución, pista y solución con teclado, y el resultado se anuncia (role=status)', async ({ page }) => {
+test('plan de solución y pasos de la solución con teclado, y el resultado se anuncia (role=status)', async ({ page }) => {
   await page.goto(`${base}#/diferenciales`)
   const ej = page.locator('#ejercicios')
   const radio = ej.getByRole('radio', { name: /Euler con h = 0\.5$/ }).first()
   await radio.focus()
   await page.keyboard.press('Space')
   await expect(ej.getByRole('status').first()).toBeVisible()
-  const pista = ej.getByRole('button', { name: /Ver pista del ejercicio 1/ })
-  await pista.focus()
+  const paso = ej.getByRole('button', { name: /Mostrar siguiente paso \(1 de \d+\) de ejercicio 1/ })
+  await paso.focus()
   await page.keyboard.press('Enter')
-  await expect(ej.getByRole('button', { name: /Ocultar pista del ejercicio 1/ })).toHaveAttribute('aria-expanded', 'true')
+  await expect(ej.locator('.ejercicio').first().locator('.paso-visible')).toHaveCount(1)
+  await expect(ej.locator('.ejercicio').first().locator('.paso-visible')).toBeFocused()
 })
 
 test('autoevaluación con teclado: Enter en un campo numérico corrige y «Profundiza» se abre con Enter', async ({ page }) => {

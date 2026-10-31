@@ -21,7 +21,6 @@ export const EJERCICIOS_DECISION_INTERP: Ejercicio[] = [
         { id: 'regresion', texto: 'Regresión lineal por mínimos cuadrados', veredicto: 'adecuado', razon: 'Resume la tendencia sin reproducir el ruido: y = 0.15 + 1.94x predice 9.85 ms en x = 5 (hay aviso de extrapolación, pero es coherente con los datos).', preset: presetDatos('regresion', [1, 2, 3, 4], [2.1, 3.9, 6.2, 7.8], 5) },
       ],
     },
-    pista: <>Pregúntate si quieres que la curva pase por cada punto o que capture la tendencia, y qué ocurre fuera del intervalo de los datos.</>,
     solucion: (
       <>
         <p><strong>Análisis.</strong> Los datos tienen ruido y se busca una tendencia para <em>predecir</em>; además <M tex="x=5" /> está fuera de <M tex="[1,4]" /> (extrapolación).</p>
@@ -107,7 +106,6 @@ export const EJERCICIOS_LAGRANGE: Ejercicio[] = [
   {
     id: 'm3-e1', nivel: 'Intermedio', titulo: 'Lagrange con tres nodos',
     enunciado: <p>Con los nodos <M tex="(0,1),\;(1,3),\;(3,2)" /> calcula a mano <M tex="P(2)" /> con las bases de Lagrange y comprueba que las bases suman 1.</p>,
-    pista: <>Cada base vale 1 en su nodo y 0 en los demás: <M tex="L_i(x)=\prod_{j\ne i}\frac{x-x_j}{x_i-x_j}" />.</>,
     verificar: <>Compruébalo en la calculadora de Lagrange con 3 puntos y consulta 2.</>,
     solucion: <>
       <p><M tex="L_0(2)=\frac{(2-1)(2-3)}{(0-1)(0-3)}=-\frac13,\quad L_1(2)=\frac{(2-0)(2-3)}{(1-0)(1-3)}=1,\quad L_2(2)=\frac{(2-0)(2-1)}{(3-0)(3-1)}=\frac13." /></p>
@@ -159,7 +157,6 @@ export const EJERCICIOS_REGRESION: Ejercicio[] = [
   {
     id: 'm3-e2', nivel: 'Intermedio', titulo: 'Recta de mínimos cuadrados',
     enunciado: <p>Ajusta una recta a <M tex="(1,2),\;(2,3),\;(3,5),\;(4,6)" />. Calcula pendiente, intercepto, la suma de cuadrados de los residuos y la predicción en <M tex="x=5" />. ¿Es una interpolación o una extrapolación?</p>,
-    pista: <>Primero <M tex="\bar x,\bar y,S_{xx},S_{xy}" />; luego <M tex="b_1=S_{xy}/S_{xx}" /> y <M tex="b_0=\bar y-b_1\bar x" />.</>,
     verificar: <>Compruébalo en la calculadora de regresión (4 puntos, consulta 5).</>,
     solucion: <>
       <p><M tex="\bar x=2.5,\;\bar y=4,\;S_{xx}=5,\;S_{xy}=(-1.5)(-2)+(-0.5)(-1)+(0.5)(1)+(1.5)(2)=7" />.</p>
@@ -171,7 +168,6 @@ export const EJERCICIOS_REGRESION: Ejercicio[] = [
   {
     id: 'm3-e4', nivel: 'Avanzado', titulo: 'Propiedades de los residuos',
     enunciado: <p>Demuestra que en la recta de mínimos cuadrados <M tex="\sum_i r_i=0" /> y que la recta pasa por <M tex="(\bar x,\bar y)" />. Verifícalo con los datos de la guía <M tex="(0,1),(1,2),(2,2),(3,4)" />.</p>,
-    pista: <>Deriva <M tex="S(b_0,b_1)=\sum(y_i-b_0-b_1x_i)^2" /> respecto de <M tex="b_0" /> e iguala a cero.</>,
     solucion: <>
       <p>Se minimiza <M tex="S(b_0,b_1)=\sum(y_i-b_0-b_1x_i)^2" />. La condición <M tex="\partial S/\partial b_0=-2\sum(y_i-b_0-b_1x_i)=0" /> dice exactamente <M tex="\sum r_i=0" />.</p>
       <p>De ahí <M tex="n\bar y-nb_0-nb_1\bar x=0" />, o sea <M tex="b_0=\bar y-b_1\bar x" />: al evaluar en <M tex="\bar x" /> se obtiene <M tex="\bar y" />, así que la recta pasa por el centro de masa de los datos.</p>

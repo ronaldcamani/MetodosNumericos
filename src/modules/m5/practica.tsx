@@ -22,7 +22,6 @@ export const EJERCICIOS_DECISION_EDO: Ejercicio[] = [
         { id: 'rk05', texto: 'RK4 con h = 0.5', veredicto: 'adecuado', razon: 'Con solo 4 pasos (16 evaluaciones de f) el error máximo es ≈ 0.00089 °C: cumple de sobra.', preset: presetEdo('rk4', { h: '0.5' }) },
       ],
     },
-    pista: <>Euler reduce el error a la mitad al partir <M tex="h" /> por la mitad; RK4, unas 16 veces. ¿Cuál de los dos llega a 0.01 con menos esfuerzo?</>,
     solucion: (
       <>
         <p><strong>Análisis.</strong> Se pide una precisión alta con una ecuación sencilla y paso libre: es el caso típico de RK4.</p>
@@ -47,7 +46,6 @@ export const EJERCICIOS_DECISION_EDO: Ejercicio[] = [
         { id: 'rk1', texto: 'RK4 con h = 1', veredicto: 'adecuado', razon: 'Solo 20 pasos y error máximo ≈ 0.017 °C: lo mejor en precisión por esfuerzo.', preset: presetEdo('rk4', { tf: '20', h: '1' }) },
       ],
     },
-    pista: <>Calcula el factor por paso de Euler, <M tex="1-kh" />, y comprueba si su valor absoluto es menor que 1. Luego mira el gráfico: ¿la temperatura puede ser negativa si el ambiente es 20 °C?</>,
     solucion: (
       <>
         <p><strong>Euler con h = 5.</strong> <M tex="T_{n+1}-20=(1-0.5\cdot5)(T_n-20)=-1.5\,(T_n-20)" />: la distancia a la ambiente se multiplica por −1.5 en cada paso, así que la trayectoria <em>calculada</em> es 80, −70, 155, −182.5, 323.75… <strong>No es una trayectoria física</strong>: un servidor no baja de la temperatura ambiente ni oscila cada vez más.</p>
@@ -113,7 +111,6 @@ export const EJERCICIOS_EULER: Ejercicio[] = [
   {
     id: 'eu-e1', nivel: 'Intermedio', titulo: 'Dos pasos de Euler a mano',
     enunciado: <p>Para <M tex="T'=-0.5(T-20)" />, <M tex="T(0)=80" />, calcula con <M tex="h=0.5" /> las temperaturas en <M tex="t=0.5" /> y <M tex="t=1" />, y sus errores frente a <M tex="T(t)=20+60e^{-0.5t}" />.</p>,
-    pista: <>Cada paso: <M tex="T_{n+1}=T_n+h\cdot f(T_n)" /> con <M tex="f(T)=-0.5(T-20)" />.</>,
     verificar: <>Compruébalo en la calculadora de Euler (caso base): las filas 1 y 2 de la tabla.</>,
     solucion: (
       <>
@@ -126,7 +123,6 @@ export const EJERCICIOS_EULER: Ejercicio[] = [
   {
     id: 'eu-e2', nivel: 'Avanzado', titulo: 'Predecir el error al cambiar el paso',
     enunciado: <p>Con <M tex="h=0.5" /> el error máximo de Euler hasta <M tex="t=2" /> es ≈ 3.088 °C y con <M tex="h=0.25" /> es ≈ 1.456 °C. Predice el error con <M tex="h=0.125" /> y el paso aproximado necesario para bajar de 0.01 °C. ¿Qué dice esto del orden del método?</p>,
-    pista: <>Calcula el cociente 3.088/1.456 y úsalo para el siguiente. Si el error es proporcional a <M tex="h" />, ¿cuánto vale la constante <M tex="C" /> en <M tex="E\approx C\,h" />?</>,
     verificar: <>Prueba h = 0.125 y h = 0.0018 en la calculadora de Euler.</>,
     solucion: (
       <>
@@ -163,7 +159,6 @@ export const EJERCICIOS_RK4: Ejercicio[] = [
   {
     id: 'rk-e1', nivel: 'Intermedio', titulo: 'El primer paso de RK4 a mano',
     enunciado: <p>Para <M tex="T'=-0.5(T-20)" />, <M tex="T(0)=80" /> y <M tex="h=0.5" />, calcula <M tex="k_1,k_2,k_3,k_4" /> y <M tex="T_1" />. Compara con la solución exacta <M tex="T(0.5)=66.7280" />.</p>,
-    pista: <><M tex="k_1=f(T_0)" />; <M tex="k_2=f(T_0+\tfrac h2k_1)" />; <M tex="k_3=f(T_0+\tfrac h2k_2)" />; <M tex="k_4=f(T_0+h\,k_3)" />; <M tex="T_1=T_0+\tfrac h6(k_1+2k_2+2k_3+k_4)" />.</>,
     verificar: <>La calculadora de RK4 muestra la tabla «Las cuatro pendientes del primer paso».</>,
     solucion: (
       <>
@@ -178,7 +173,6 @@ export const EJERCICIOS_RK4: Ejercicio[] = [
   {
     id: 'rk-e2', nivel: 'Avanzado', titulo: '¿Cuánto cuesta igualar a RK4 con Euler?',
     enunciado: <p>RK4 con <M tex="h=0.5" /> hasta <M tex="t=2" /> da un error máximo ≈ <M tex="8.9\times10^{-4}" /> °C con 16 evaluaciones de <M tex="f" />. Estima el paso y el número de pasos que necesitaría Euler para igualar ese error (usa <M tex="E_{Euler}\approx5.5\,h" />). ¿Qué concluyes sobre el coste?</p>,
-    pista: <>Iguala <M tex="5.5\,h=8.9\times10^{-4}" /> y despeja <M tex="h" />; el número de pasos es <M tex="2/h" />.</>,
     solucion: (
       <>
         <p><M tex="h\approx8.9\times10^{-4}/5.5\approx1.6\times10^{-4}" /> min, es decir <M tex="2/1.6\times10^{-4}\approx12\,500" /> pasos y otras tantas evaluaciones de <M tex="f" />.</p>
@@ -213,7 +207,6 @@ export const EJERCICIOS_ESTABILIDAD: Ejercicio[] = [
   {
     id: 'es-e1', nivel: 'Intermedio', titulo: 'Límites de estabilidad para dos valores de k',
     enunciado: <p>Calcula para <M tex="k=0.5" /> y para <M tex="k=2" /> el paso máximo para el que Euler es estable y el factor por paso con <M tex="h=1" />. ¿Qué pasa con el paso permitido cuando el sistema enfría más rápido?</p>,
-    pista: <>Euler es estable si <M tex="|1-kh|<1" />, es decir <M tex="0<kh<2" />.</>,
     verificar: <>Usa el «Explorador de estabilidad» con k = 0.5 y k = 2.</>,
     solucion: (
       <>

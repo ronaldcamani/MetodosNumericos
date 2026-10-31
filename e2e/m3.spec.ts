@@ -82,8 +82,8 @@ test('ejemplo de oscilación: el polinomio toma valores negativos', async ({ pag
 test('ejercicios con solución oculta y autoevaluación', async ({ page }) => {
   await page.goto(url + '/lagrange')
   await expect(page.getByText('10}{3}')).toHaveCount(0)
-  await page.getByRole('button', { name: 'Ver solución del ejercicio 1' }).click()
-  await expect(page.locator('#sol-m3-e1')).toBeVisible()
+  await page.getByRole('button', { name: /Mostrar todos los pasos de ejercicio 1/ }).click()
+  await expect(page.locator('#ejercicios .paso-visible').first()).toBeVisible()
   await page.getByRole('button', { name: /Comprobar respuestas/ }).click()
   await expect(page.getByText(/Puntaje: 0 de 3/)).toBeVisible()
 })

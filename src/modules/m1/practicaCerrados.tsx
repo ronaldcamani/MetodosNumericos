@@ -8,7 +8,6 @@ export const EJERCICIOS_CERRADOS: Ejercicio[] = [
   {
     id: 'cer-e1', nivel: 'Intermedio', titulo: 'Iteraciones necesarias en bisección',
     enunciado: <p>Para <M tex="f(x)=x^3-x-2" /> en <M tex="[1,2]" />, ¿cuántas iteraciones de bisección garantizan una cota de error <M tex="\le 10^{-3}" />? Después, ¿cuál es la cota tras 5 iteraciones?</p>,
-    pista: <>La cota tras <M tex="n" /> iteraciones es <M tex="(b-a)/2^n" />. Despeja <M tex="n" /> con logaritmos y redondea hacia arriba.</>,
     verificar: <>Compruébalo en la calculadora (método bisección) con tolerancia 0.001.</>,
     solucion: <>
       <p>La cota tras <M tex="n" /> iteraciones es <M tex="(b-a)/2^n" />. Se exige <M tex="1/2^n\le 10^{-3}" />, es decir <M tex="n\ge\log_2 1000\approx 9.97" />, así que <strong>n = 10</strong>.</p>
@@ -18,7 +17,6 @@ export const EJERCICIOS_CERRADOS: Ejercicio[] = [
   {
     id: 'cer-e2', nivel: 'Intermedio', titulo: 'Falsa posición a mano',
     enunciado: <p>Aplica dos iteraciones de falsa posición a <M tex="f(x)=x^3-x-2" /> en <M tex="[1,2]" />. Calcula <M tex="c_1" />, <M tex="f(c_1)" />, decide qué extremo se reemplaza y calcula <M tex="c_2" />.</p>,
-    pista: <>La fórmula es <M tex="c=\dfrac{a\,f(b)-b\,f(a)}{f(b)-f(a)}" />. Recuerda <M tex="f(1)=-2" /> y <M tex="f(2)=4" />.</>,
     verificar: <>Compruébalo en la calculadora (falsa posición, a = 1, b = 2) mirando las dos primeras filas.</>,
     solucion: <>
       <p><M tex="c_1=\dfrac{1\cdot4-2\cdot(-2)}{4-(-2)}=\dfrac{8}{6}=\dfrac43\approx1.3333" />. Entonces <M tex="f(c_1)=\dfrac{64}{27}-\dfrac43-2=-\dfrac{26}{27}\approx-0.9630<0" />, igual signo que <M tex="f(1)" />: se reemplaza <strong>a</strong> y el intervalo pasa a <M tex="[4/3,\,2]" />.</p>
@@ -36,7 +34,6 @@ export const EJERCICIOS_CERRADOS: Ejercicio[] = [
         { id: 'newton', texto: 'Newton desde x₀ = 2', veredicto: 'inadecuado', razon: 'f no tiene raíz (1/(x − 1) nunca vale 0): Newton se aleja del polo sin converger.', preset: { herramienta: 'raices', valores: { metodo: 'newton', modelo: 'polo', objetivo: '0', x0: '2' } } },
       ],
     },
-    pista: <>El teorema del valor intermedio exige que <M tex="f" /> sea <em>continua</em> en <M tex="[a,b]" />. ¿Lo es aquí?</>,
     solucion: <>
       <p><M tex="f" /> es discontinua en <M tex="x=1\in[0,3]" />: el cambio de signo se produce por el polo, no por un cruce del eje. La bisección encierra el polo: los puntos medios se acercan a 1 y <M tex="|f|" /> crece sin límite.</p>
       <p>El portal aplica un criterio de verificación independiente: una raíz <M tex="r" /> debe ser un mínimo local de <M tex="|f|" /> y cruzar el cero. Aquí <M tex="|f(r)|" /> es enorme comparado con sus vecinos, así que informa <strong>«no converge»</strong> en lugar de entregar <M tex="r\approx1" /> como raíz.</p>
@@ -47,7 +44,6 @@ export const EJERCICIOS_CERRADOS: Ejercicio[] = [
     id: 'cer-e4', nivel: 'Avanzado', titulo: 'Cuando la falsa posición es más lenta que la bisección',
     enunciado: <p>Con <M tex="f(x)=x^6-1" /> en <M tex="[0,\,1.5]" /> y tolerancia <M tex="10^{-6}" />, compara las iteraciones de bisección y falsa posición. ¿Qué extremo se queda fijo en la falsa posición y por qué?</p>,
     verificar: <>En la calculadora elige «Polinomio», coeficientes <code>1, 0, 0, 0, 0, 0, -1</code>, a = 0, b = 1.5 y compara ambos métodos.</>,
-    pista: <>Mira la columna «ancho b−a» de la tabla de falsa posición: ¿tiende a 0?</>,
     solucion: <>
       <p>La bisección necesita <strong>21</strong> iteraciones (<M tex="1.5/2^{21}\le10^{-6}" />); la falsa posición, <strong>43</strong>. Aquí la falsa posición es más lenta.</p>
       <p>En <M tex="[0,1.5]" /> la función es creciente y convexa, de modo que la cuerda queda siempre <em>por encima</em> de la curva: su corte cae a la izquierda de la raíz, <M tex="f(c)<0" /> y se reemplaza siempre <M tex="a" />. El extremo <M tex="b=1.5" /> permanece fijo y los cortes se acercan a 1 solo por un lado, con convergencia lineal y razón cercana a 1.</p>

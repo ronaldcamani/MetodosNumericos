@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import Autoevaluacion from '../components/Autoevaluacion'
 import Ejercicios from '../components/Ejercicios'
+import { borrarProgreso } from '../components/useProgreso'
 import { biseccion, crearModelo, crearModeloPolinomio, deflacionar, falsaPosicion, newton, raicesPolinomio, secante } from '../core/m1'
 import { cifrasSignificativas, erroresAproximacion, operarConPrecision, serieExponencial, sumaConPrecision } from '../core/errores'
 import { eliminacionGauss, gaussSeidel, normaInf, residuo } from '../core/m2'
@@ -425,18 +426,33 @@ describe('componentes', () => {
     await userEvent.click(screen.getByRole('radio', { name: /Bisección en \[0, 2\]/ }))
     expect(screen.getByRole('status')).toHaveTextContent('Adecuado')
   })
-  it('la pista se muestra solo al pedirla, antes de la solución', async () => {
+  it('los ejercicios ya no ofrecen pista', () => {
     render(<Ejercicios items={EJERCICIOS_CERRADOS.slice(0, 1)} />)
-    expect(screen.queryByText(/Despeja/)).toBeNull()
-    await userEvent.click(screen.getByRole('button', { name: /ver pista/i }))
-    expect(screen.getByText(/Despeja/)).toBeVisible()
-    expect(screen.queryByText(/n = 10/)).toBeNull()
+    expect(screen.queryByRole('button', { name: /pista/i })).toBeNull()
   })
-  it('la solución del ejercicio queda oculta hasta pulsar su botón', async () => {
-    render(<Ejercicios items={[{ id: 'x', nivel: 'Intermedio', titulo: 't', enunciado: <p>enun</p>, solucion: <p>SOL</p> }]} />)
-    expect(screen.queryByText('SOL')).toBeNull()
-    await userEvent.click(screen.getByRole('button', { name: /ver solución/i }))
-    expect(screen.getByText('SOL')).toBeVisible()
+  it('la solución se revela en tarjetas, un paso cada vez, y se puede volver a ocultar', async () => {
+    render(<Ejercicios items={[{ id: 'x', nivel: 'Intermedio', titulo: 't', enunciado: <p>enun</p>, solucion: <><p>PASO-A</p><p>PASO-B</p></> }]} />)
+    expect(screen.queryByText('PASO-A')).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: /mostrar siguiente paso \(1 de 2\)/i }))
+    expect(screen.getByText('PASO-A')).toBeVisible()
+    expect(screen.queryByText('PASO-B')).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: /mostrar siguiente paso \(2 de 2\)/i }))
+    expect(screen.getByText('PASO-B')).toBeVisible()
+    expect(screen.queryByRole('button', { name: /mostrar siguiente/i })).toBeNull()
+    await userEvent.click(screen.getByRole('button', { name: /ocultar los pasos/i }))
+    expect(screen.queryByText('PASO-A')).toBeNull()
+  })
+  it('«Mostrar todos los pasos» revela el desarrollo completo y el ejemplo queda como estudiado', async () => {
+    borrarProgreso()
+    render(<Ejercicios items={[{ id: 'y', nivel: 'Intermedio', titulo: 't', enunciado: <p>enun</p>, solucion: <><p>UNO</p><p>DOS</p><p>TRES</p></> }]} />)
+    await userEvent.click(screen.getByRole('button', { name: /mostrar todos los pasos/i }))
+    for (const t of ['UNO', 'DOS', 'TRES']) expect(screen.getByText(t)).toBeVisible()
+    expect(Object.values(JSON.parse(window.localStorage.getItem('portal-mn-progreso-v1')!)).some((v) => (v as { estudiados: string[] }).estudiados.includes('y'))).toBe(true)
+  })
+  it('cada ejercicio tiene un espacio para que el estudiante escriba su propio desarrollo', async () => {
+    render(<Ejercicios items={EJERCICIOS_CERRADOS.slice(0, 1)} />)
+    await userEvent.type(screen.getByRole('textbox', { name: /tu desarrollo del ejercicio 1/i }), 'f(1)=-2')
+    expect(screen.getByRole('textbox', { name: /tu desarrollo/i })).toHaveValue('f(1)=-2')
   })
   it('autoevaluación: califica numérica con tolerancia y muestra puntaje', async () => {
     render(<Autoevaluacion preguntas={PREGUNTAS_ABIERTOS} />)

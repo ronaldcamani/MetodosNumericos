@@ -186,6 +186,6 @@ test('ejercicio con plan: elegir un método da retroalimentación y abre la calc
   await ej.getByRole('button', { name: /Probar este método en la calculadora/ }).click()
   const calc = page.getByRole('region', { name: 'Calculadora de raíces' })
   await expect(calc.getByRole('alert')).toContainText('derivada_nula')
-  // la pista y la solución siguen ocultas hasta pedirlas
-  await expect(ej.locator('#sol-dec-e3')).toHaveCount(0)
+  // la solución sigue oculta hasta revelar sus pasos
+  await expect(ej.locator('.paso-visible')).toHaveCount(0)
 })

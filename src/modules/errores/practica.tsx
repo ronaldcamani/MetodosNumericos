@@ -8,7 +8,6 @@ export const EJERCICIOS_ERRORES: Ejercicio[] = [
   {
     id: 'err-e1', nivel: 'Intermedio', titulo: 'Error absoluto, relativo y cifras correctas',
     enunciado: <p>Se aproxima <M tex="\pi=3.14159265\ldots" /> por <M tex="22/7\approx3.142857" />. Calcula el error absoluto, el relativo (en %) y las cifras significativas correctas. ¿Y si se hubiera aproximado 100 por 99.5?</p>,
-    pista: <>Error absoluto <M tex="|x-\tilde x|" />, relativo <M tex="|x-\tilde x|/|x|" />. Para las cifras usa el criterio <M tex="E_{abs}<0.5\cdot10^{m-n+1}" /> con <M tex="m" /> el exponente de la primera cifra.</>,
     verificar: <>Compruébalo con la herramienta «Error de una aproximación».</>,
     solucion: <>
       <p><M tex="E_{abs}=|3.14159265-3.14285714|\approx1.2645\times10^{-3}" />; <M tex="E_{rel}=1.2645\times10^{-3}/3.14159\approx4.025\times10^{-4}" />, es decir <strong>0.04025 %</strong>.</p>
@@ -36,7 +35,6 @@ export const EJERCICIOS_ERRORES: Ejercicio[] = [
         { id: 'mas', texto: 'Usar más cifras (t = 12)', veredicto: 'posible', razon: 'Mejora el resultado, pero solo posterga el problema: con x mayor la cancelación reaparece. Es mejor reformular la expresión.', preset: { herramienta: 'operacion', valores: { a: '100.00499987500625', op: '−', b: '100', t: '12', modo: 'redondeo' } } },
       ],
     },
-    pista: <>Multiplica y divide por <M tex="\sqrt{x+1}+\sqrt{x}" />: <M tex="(a-b)(a+b)=a^2-b^2" />.</>,
     solucion: <>
       <p><strong>Directo.</strong> Con 4 cifras, <M tex="\sqrt{10001}\to100.0" /> y <M tex="\sqrt{10000}=100.0" />: la resta da <M tex="0" />, error relativo <strong>100 %</strong>. Se perdieron todas las cifras significativas.</p>
       <p><strong>Reformulado.</strong> <M tex="\sqrt{x+1}-\sqrt x=\dfrac{1}{\sqrt{x+1}+\sqrt x}" />. Con 4 cifras el denominador es <M tex="100.0+100.0=200.0" /> y el resultado <M tex="1/200.0=0.005000" />, con error relativo <M tex="\approx2.5\times10^{-5}" />: <strong>cuatro cifras correctas</strong> en lugar de ninguna.</p>
