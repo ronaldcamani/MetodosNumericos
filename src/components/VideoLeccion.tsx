@@ -43,6 +43,38 @@ function detenerVoz(): void {
   }
 }
 
+function soportaPausaVoz(): boolean {
+  return (
+    tieneSpeech() &&
+    typeof window.speechSynthesis.pause === 'function' &&
+    typeof window.speechSynthesis.resume === 'function'
+  )
+}
+
+function pausarVoz(): boolean {
+  if (!soportaPausaVoz()) {
+    detenerVoz()
+    return false
+  }
+  try {
+    window.speechSynthesis.pause()
+    return true
+  } catch {
+    detenerVoz()
+    return false
+  }
+}
+
+function reanudarVoz(): boolean {
+  if (!soportaPausaVoz()) return false
+  try {
+    window.speechSynthesis.resume()
+    return true
+  } catch {
+    return false
+  }
+}
+
 function hablarNarracion(texto: string, velocidad: number, onEnd?: () => void): void {
   if (!tieneSpeech()) return
   try {
@@ -106,10 +138,32 @@ function VideoLeccionReproductor({ modulo }: { modulo: ModuloVideoId }) {
   const transicionTimerRef = useRef<number | null>(null)
   const escenaIdxRef = useRef(escenaIdx)
   const contenedorRef = useRef<HTMLElement>(null)
+  const ultimaSrcCargadaRef = useRef<string | null>(null)
+  const haReproducidoRef = useRef(false)
+  const vozPausadaRef = useRef(false)
+  const vozIniciadaEscenaRef = useRef<string | null>(null)
+  const estadoRef = useRef({
+    reproduciendo,
+    enPausaTransicion,
+    velocidad,
+    audioActivo,
+    modoAudio,
+    escenaActual,
+    srcAudio,
+  })
 
   useEffect(() => {
+    estadoRef.current = {
+      reproduciendo,
+      enPausaTransicion,
+      velocidad,
+      audioActivo,
+      modoAudio,
+      escenaActual,
+      srcAudio,
+    }
     escenaIdxRef.current = escenaIdx
-  }, [escenaIdx])
+  })
 
   const { duracionTotal, iniciosEscena } = useMemo(() => {
     const inicios: number[] = []
@@ -165,30 +219,35 @@ function VideoLeccionReproductor({ modulo }: { modulo: ModuloVideoId }) {
 
   const intentarReproducirAudio = useCallback(() => {
     const audio = audioRef.current
-    if (!audio || modoAudio !== 'mp3' || !srcAudio) return
+    const {
+      modoAudio: modoActual,
+      srcAudio: srcActual,
+      velocidad: velActual,
+      audioActivo: activoActual,
+      escenaActual: escActual,
+    } = estadoRef.current
+    if (!audio || modoActual !== 'mp3' || !srcActual) return
     try {
-      audio.playbackRate = velocidad
-      audio.muted = !audioActivo
+      audio.playbackRate = velActual
+      audio.muted = !activoActual
       const d = audio.duration
       if (seekPendienteRef.current !== null && Number.isFinite(d) && d > 0) {
         audio.currentTime = seekPendienteRef.current * d
         seekPendienteRef.current = null
       }
-      if (audio.paused) {
-        const promesa = audio.play()
-        if (promesa && typeof promesa.catch === 'function') {
-          promesa.catch((err: unknown) => {
-            const nombre = err instanceof Error ? err.name : ''
-            if (nombre === 'NotSupportedError') {
-              marcarFalloMp3(escenaActual.id)
-            }
-          })
-        }
+      const promesa = audio.play()
+      if (promesa && typeof promesa.catch === 'function') {
+        promesa.catch((err: unknown) => {
+          const nombre = err instanceof Error ? err.name : ''
+          if (nombre === 'NotSupportedError') {
+            marcarFalloMp3(escActual.id)
+          }
+        })
       }
     } catch {
       // Mantiene estabilidad si el navegador/jsdom no soporta reproducción directa.
     }
-  }, [audioActivo, escenaActual.id, marcarFalloMp3, modoAudio, srcAudio, velocidad])
+  }, [marcarFalloMp3])
 
   useEffect(() => {
     if (typeof document === 'undefined') return
@@ -199,55 +258,132 @@ function VideoLeccionReproductor({ modulo }: { modulo: ModuloVideoId }) {
     return () => document.removeEventListener('fullscreenchange', onFullscreen)
   }, [])
 
+  // Sincroniza velocidad y silencio sin reiniciar la pista ni tocar currentTime
   useEffect(() => {
     const audio = audioRef.current
-    if (!audio) return
-    audio.playbackRate = velocidad
-    audio.muted = !audioActivo
-  }, [velocidad, audioActivo, srcAudio])
+    if (audio) {
+      audio.playbackRate = velocidad
+      audio.muted = !audioActivo
+    }
+    const {
+      modoAudio: modoActual,
+      reproduciendo: repActual,
+      enPausaTransicion: enTransActual,
+      escenaActual: escActual,
+    } = estadoRef.current
+    if (modoActual === 'speech') {
+      if (!audioActivo) {
+        detenerVoz()
+        vozPausadaRef.current = false
+        vozIniciadaEscenaRef.current = null
+      } else if (repActual && !enTransActual && vozIniciadaEscenaRef.current !== escActual.id) {
+        hablarNarracion(escActual.narracion, velocidad, programarSiguienteEscena)
+        vozIniciadaEscenaRef.current = escActual.id
+        vozPausadaRef.current = false
+      }
+    }
+  }, [velocidad, audioActivo, programarSiguienteEscena])
 
+  // Efecto 1 (único responsable de cambiar la pista): solo corre al cambiar módulo o escena
   useEffect(() => {
+    const escenasMod = LECCIONES_VIDEO[modulo].escenas
+    const esc = escenasMod[escenaIdx] ?? escenasMod[0]
+    const meta = AUDIOS_MANIFEST[esc.id]
+    const nuevaSrc = meta ? urlAudioEscena(meta.ruta) : null
+
+    detenerVoz()
+    vozPausadaRef.current = false
+    vozIniciadaEscenaRef.current = null
+
+    const audio = audioRef.current
+    if (audio && nuevaSrc && ultimaSrcCargadaRef.current !== nuevaSrc) {
+      ultimaSrcCargadaRef.current = nuevaSrc
+      try {
+        audio.setAttribute('src', nuevaSrc)
+        if (seekPendienteRef.current === null) {
+          audio.currentTime = 0
+        }
+        audio.playbackRate = estadoRef.current.velocidad
+        audio.muted = !estadoRef.current.audioActivo
+        audio.load()
+      } catch {
+        // jsdom no implementa load() nativamente
+      }
+    }
+
+    if (estadoRef.current.reproduciendo && !estadoRef.current.enPausaTransicion) {
+      if (estadoRef.current.modoAudio === 'mp3') {
+        intentarReproducirAudio()
+      } else if (estadoRef.current.modoAudio === 'speech' && estadoRef.current.audioActivo) {
+        hablarNarracion(esc.narracion, estadoRef.current.velocidad, programarSiguienteEscena)
+        vozIniciadaEscenaRef.current = esc.id
+        vozPausadaRef.current = false
+      }
+    }
+  }, [modulo, escenaIdx, intentarReproducirAudio, programarSiguienteEscena])
+
+  // Efecto 2 (reproducción / pausa): nunca toca audio.src, audio.load() ni reinicia audio.currentTime
+  useEffect(() => {
+    const {
+      modoAudio: modoActual,
+      audioActivo: activoActual,
+      velocidad: velActual,
+      escenaActual: escActual,
+    } = estadoRef.current
+
     if (!reproduciendo || enPausaTransicion) {
-      if (modoAudio === 'mp3') {
+      if (modoActual === 'mp3') {
         const audio = audioRef.current
-        if (audio && !audio.paused) {
+        if (audio && (haReproducidoRef.current || !audio.paused)) {
           try {
             audio.pause()
           } catch {
             // jsdom
           }
         }
-      }
-      if (modoAudio === 'speech') {
-        detenerVoz()
+      } else if (modoActual === 'speech') {
+        if (enPausaTransicion) {
+          detenerVoz()
+          vozPausadaRef.current = false
+          vozIniciadaEscenaRef.current = null
+        } else if (vozIniciadaEscenaRef.current === escActual.id) {
+          const pausada = pausarVoz()
+          vozPausadaRef.current = pausada
+          if (!pausada) {
+            vozIniciadaEscenaRef.current = null
+          }
+        }
       }
       return
     }
 
-    if (modoAudio === 'mp3') {
+    haReproducidoRef.current = true
+
+    if (modoActual === 'mp3') {
       intentarReproducirAudio()
       return
     }
 
-    if (modoAudio === 'speech') {
-      if (audioActivo) {
-        hablarNarracion(escenaActual.narracion, velocidad, programarSiguienteEscena)
+    if (modoActual === 'speech') {
+      if (activoActual) {
+        if (
+          vozPausadaRef.current &&
+          vozIniciadaEscenaRef.current === escActual.id &&
+          reanudarVoz()
+        ) {
+          vozPausadaRef.current = false
+        } else if (vozIniciadaEscenaRef.current !== escActual.id) {
+          hablarNarracion(escActual.narracion, velActual, programarSiguienteEscena)
+          vozIniciadaEscenaRef.current = escActual.id
+          vozPausadaRef.current = false
+        }
       } else {
         detenerVoz()
+        vozPausadaRef.current = false
+        vozIniciadaEscenaRef.current = null
       }
-      return () => detenerVoz()
     }
-  }, [
-    reproduciendo,
-    enPausaTransicion,
-    modoAudio,
-    escenaIdx,
-    escenaActual.narracion,
-    audioActivo,
-    velocidad,
-    intentarReproducirAudio,
-    programarSiguienteEscena,
-  ])
+  }, [reproduciendo, enPausaTransicion, modoAudio, intentarReproducirAudio, programarSiguienteEscena])
 
   useEffect(() => {
     if (!reproduciendo || enPausaTransicion) {
@@ -361,6 +497,7 @@ function VideoLeccionReproductor({ modulo }: { modulo: ModuloVideoId }) {
           if (modoAudio === 'mp3' && audio) {
             if (Number.isFinite(audio.duration) && audio.duration > 0) {
               audio.currentTime = pLocal * audio.duration
+              seekPendienteRef.current = null
             } else {
               seekPendienteRef.current = pLocal
             }
@@ -379,66 +516,91 @@ function VideoLeccionReproductor({ modulo }: { modulo: ModuloVideoId }) {
     if (reproduciendo) {
       cancelarTransicion()
       setReproduciendo(false)
-      try {
-        audioRef.current?.pause()
-      } catch {
-        // jsdom
-      }
-      detenerVoz()
       return
     }
     const alFinal = escenaIdx === escenas.length - 1 && progreso >= 0.99
     if (alFinal) {
       progresoRef.current = 0
-      seekPendienteRef.current = 0
-      setEscenaIdx(0)
       setProgreso(0)
+      if (escenaIdx === 0) {
+        seekPendienteRef.current = null
+        const audio = audioRef.current
+        if (audio) {
+          try {
+            audio.currentTime = 0
+          } catch {
+            // jsdom
+          }
+        }
+      } else {
+        seekPendienteRef.current = 0
+        setEscenaIdx(0)
+      }
+      detenerVoz()
+      vozPausadaRef.current = false
+      vozIniciadaEscenaRef.current = null
     }
     ultimoFrameRef.current = null
     setReproduciendo(true)
-    if (!alFinal && modoAudio === 'mp3') {
-      intentarReproducirAudio()
-    }
   }
 
   const reiniciar = () => {
     cancelarTransicion()
     setReproduciendo(false)
-    setEscenaIdx(0)
     progresoRef.current = 0
-    seekPendienteRef.current = 0
     setProgreso(0)
-    const audio = audioRef.current
-    if (audio) {
-      try {
-        audio.pause()
-        audio.currentTime = 0
-      } catch {
-        // jsdom
-      }
-    }
-    detenerVoz()
-  }
-
-  const irAEscena = (idx: number) => {
-    cancelarTransicion()
-    progresoRef.current = 0
-    seekPendienteRef.current = 0
-    setProgreso(0)
-    ultimoFrameRef.current = null
-    if (idx === escenaIdx) {
+    if (escenaIdx === 0) {
+      seekPendienteRef.current = null
       const audio = audioRef.current
       if (audio) {
         try {
+          audio.pause()
           audio.currentTime = 0
         } catch {
           // jsdom
         }
       }
-      if (reproduciendo && modoAudio === 'mp3') {
+    } else {
+      seekPendienteRef.current = 0
+      setEscenaIdx(0)
+    }
+    detenerVoz()
+    vozPausadaRef.current = false
+    vozIniciadaEscenaRef.current = null
+  }
+
+  const irAEscena = (idx: number) => {
+    cancelarTransicion()
+    progresoRef.current = 0
+    setProgreso(0)
+    ultimoFrameRef.current = null
+    if (idx === escenaIdx) {
+      const audio = audioRef.current
+      if (audio) {
+        if (Number.isFinite(audio.duration) && audio.duration > 0) {
+          try {
+            audio.currentTime = 0
+          } catch {
+            // jsdom
+          }
+          seekPendienteRef.current = null
+        } else {
+          seekPendienteRef.current = 0
+        }
+      }
+      if (modoAudio === 'speech') {
+        detenerVoz()
+        vozPausadaRef.current = false
+        vozIniciadaEscenaRef.current = null
+        if (reproduciendo && audioActivo) {
+          hablarNarracion(escenaActual.narracion, velocidad, programarSiguienteEscena)
+          vozIniciadaEscenaRef.current = escenaActual.id
+        }
+      } else if (reproduciendo && modoAudio === 'mp3') {
         intentarReproducirAudio()
       }
     } else {
+      seekPendienteRef.current = 0
       setEscenaIdx(idx)
     }
   }
@@ -458,6 +620,8 @@ function VideoLeccionReproductor({ modulo }: { modulo: ModuloVideoId }) {
     }
     if (!nuevo && modoAudio === 'speech') {
       detenerVoz()
+      vozPausadaRef.current = false
+      vozIniciadaEscenaRef.current = null
     }
   }
 
@@ -504,7 +668,6 @@ function VideoLeccionReproductor({ modulo }: { modulo: ModuloVideoId }) {
     >
       <audio
         ref={audioRef}
-        src={srcAudio ?? undefined}
         preload="auto"
         aria-hidden="true"
         onLoadedMetadata={alCargarMetadatos}

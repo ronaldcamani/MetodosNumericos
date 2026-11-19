@@ -251,4 +251,112 @@ describe('VideoLeccion (reproductor audio-driven + fallback Web Speech API)', ()
     await u.click(botonesMarcador[2])
     expect(screen.getByText(lec.escenas[2].narracion)).toBeVisible()
   })
+
+  it('regresión Pausa → Play: mantiene audio.currentTime en 12.5s, no vuelve a llamar audio.load() y respeta seek en pausa', () => {
+    const playSpy = vi.spyOn(HTMLMediaElement.prototype, 'play').mockResolvedValue(undefined)
+    const pauseSpy = vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(() => {})
+    const loadSpy = vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {})
+
+    const { container } = render(<VideoLeccion modulo="ecuaciones" />)
+    const lec = LECCIONES_VIDEO.ecuaciones
+    const audio = container.querySelector('audio') as HTMLAudioElement
+
+    // Carga inicial única para escena 1
+    expect(loadSpy).toHaveBeenCalledTimes(1)
+    expect(audio.getAttribute('src')).toContain('audios/ecuaciones/escena-1.mp3')
+
+    let tActual = 0
+    Object.defineProperty(audio, 'duration', { configurable: true, get: () => 20 })
+    Object.defineProperty(audio, 'currentTime', {
+      configurable: true,
+      get: () => tActual,
+      set: (v: number) => {
+        tActual = v
+      },
+    })
+
+    // 1. Dar Play
+    fireEvent.click(screen.getByRole('button', { name: /Reproducir/ }))
+    expect(playSpy).toHaveBeenCalledTimes(1)
+    expect(loadSpy).toHaveBeenCalledTimes(1)
+
+    // 2. Avanzar audio.currentTime a 12.5 segundos
+    tActual = 12.5
+    fireEvent(audio, new Event('timeupdate'))
+    const tiempoAntesPausa = container.querySelector('.video-tiempo')?.textContent
+    const palabraAntesPausa = container.querySelector('.sub-actual')?.textContent
+    const pasosActivosAntesPausa = container.querySelectorAll('.video-paso-activo').length
+    expect(palabraAntesPausa).toBeTruthy()
+    expect(pasosActivosAntesPausa).toBeGreaterThanOrEqual(2)
+
+    // 3. Presionar Pausa: se congela el estado y NO se reinicia currentTime ni se recarga el audio
+    fireEvent.click(screen.getByRole('button', { name: /Pausar/ }))
+    expect(pauseSpy).toHaveBeenCalledTimes(1)
+    expect(audio.currentTime).toBe(12.5)
+    expect(loadSpy).toHaveBeenCalledTimes(1)
+    expect(container.querySelector('.video-tiempo')?.textContent).toBe(tiempoAntesPausa)
+    expect(container.querySelector('.sub-actual')?.textContent).toBe(palabraAntesPausa)
+    expect(container.querySelectorAll('.video-paso-activo').length).toBe(pasosActivosAntesPausa)
+
+    // 4. Presionar Play nuevamente: reanuda desde 12.5s sin reiniciar escena ni llamar load()
+    fireEvent.click(screen.getByRole('button', { name: /Reproducir/ }))
+    expect(playSpy).toHaveBeenCalledTimes(2)
+    expect(audio.currentTime).toBe(12.5)
+    expect(loadSpy).toHaveBeenCalledTimes(1)
+    expect(container.querySelector('.video-sub-texto')).toHaveTextContent(lec.escenas[0].narracion)
+    expect(screen.getByText('Escena 1 / 7')).toBeVisible()
+
+    // 5. Caso borde: Pausar, usar −5s en pausa y volver a dar Play → reanuda desde la nueva posición
+    fireEvent.click(screen.getByRole('button', { name: /Pausar/ }))
+    fireEvent.click(screen.getByRole('button', { name: /−5s/ }))
+    const tiempoTrasSeek = audio.currentTime
+    expect(tiempoTrasSeek).toBeGreaterThan(0)
+    expect(tiempoTrasSeek).toBeLessThan(12.5)
+
+    fireEvent.click(screen.getByRole('button', { name: /Reproducir/ }))
+    expect(audio.currentTime).toBeCloseTo(tiempoTrasSeek, 5)
+    expect(loadSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('fallback Web Speech API usa pause() y resume() al pausar y reanudar en lugar de reiniciar la locución', async () => {
+    const speak = vi.fn()
+    const cancel = vi.fn()
+    const pause = vi.fn()
+    const resume = vi.fn()
+    const getVoices = vi.fn(() => [{ lang: 'es-PE', name: 'Camila' } as SpeechSynthesisVoice])
+
+    Object.defineProperty(window, 'speechSynthesis', {
+      configurable: true,
+      value: { speak, cancel, pause, resume, getVoices, speaking: true },
+    })
+    class FakeUtterance {
+      text: string
+      lang = ''
+      rate = 1
+      voice: SpeechSynthesisVoice | null = null
+      onend?: () => void
+      constructor(t: string) {
+        this.text = t
+      }
+    }
+    Object.defineProperty(window, 'SpeechSynthesisUtterance', {
+      configurable: true,
+      value: FakeUtterance,
+    })
+
+    const u = userEvent.setup()
+    const { container } = render(<VideoLeccion modulo="errores" />)
+    const audio = container.querySelector('audio') as HTMLAudioElement
+    fireEvent(audio, new Event('error'))
+
+    await u.click(screen.getByRole('button', { name: /Reproducir/ }))
+    expect(speak).toHaveBeenCalledTimes(1)
+
+    await u.click(screen.getByRole('button', { name: /Pausar/ }))
+    expect(pause).toHaveBeenCalledTimes(1)
+
+    await u.click(screen.getByRole('button', { name: /Reproducir/ }))
+    expect(resume).toHaveBeenCalledTimes(1)
+    expect(speak).toHaveBeenCalledTimes(1)
+  })
 })

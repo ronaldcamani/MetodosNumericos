@@ -1,14 +1,26 @@
-node_modules/
+# Skills y carpetas de agentes IA
+agent/
+.agents/
+.claude/
+skills-lock.json
+
+# Variables de entorno y secretos (protección de claves como ElevenLabs)
+.env
+.env.local
+.env*.local
+
+# Caché de Python y entornos virtuales (referencia/)
 __pycache__/
-*.pyc
-.DS_Store
+*.py[cod]
+.venv/
+venv/
+
+# Build, dependencias, pruebas y archivos temporales del sistema
+node_modules/
 dist/
 docs/
 playwright-report/
 test-results/
-dist/
-playwright-report/
-test-results/
-tsconfig.tsbuildinfo
-# Local secrets written by `elevenlabs onboard`
-/.env.local
+*.tsbuildinfo
+.DS_Store
+Thumbs.db

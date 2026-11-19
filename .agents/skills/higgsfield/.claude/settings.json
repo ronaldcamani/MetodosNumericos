@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Edit(*.py)",
-      "Edit(*.md)",
-      "Edit(db/**)"
-    ]
-  }
-}
