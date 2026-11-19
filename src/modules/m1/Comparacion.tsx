@@ -6,8 +6,19 @@ import MensajeEstado from '../../components/MensajeEstado'
 import TablaPasos from '../../components/TablaPasos'
 import { useCalculadora, type Errores } from '../../components/useCalculadora'
 import { parseEntero, parseNumero } from '../../core/entrada'
-import { biseccion, falsaPosicion, newton, secante } from '../../core/m1'
+import {
+  analizarConvergenciaBiseccion,
+  analizarConvergenciaFalsa,
+  analizarConvergenciaNewton,
+  analizarConvergenciaSecante,
+  biseccion,
+  falsaPosicion,
+  newton,
+  secante,
+  type AnalisisConvergencia,
+} from '../../core/m1'
 import type { ResultadoMetodo } from '../../core/tipos'
+import { PanelConvergenciaEjecucion } from './AnalisisConvergenciaUI'
 import { CASO_FUNCION, EditorFuncion, leerFuncion } from './funcion'
 
 const CASO = { ...CASO_FUNCION, a: '1', b: '2', x0: '1.5', tol: '0.000001', maxIter: '100' }
@@ -19,6 +30,7 @@ interface Fila {
   res: ResultadoMetodo<{ raiz: number; iteraciones: number; residuo: number }, unknown>
   /** Residuo |f| tras cada iteración, para comparar la velocidad. */
   residuos: number[]
+  analisis: AnalisisConvergencia
 }
 
 function ejecutar(v: F) {
@@ -43,10 +55,10 @@ function ejecutar(v: F) {
   const new_ = newton({ f: modelo.f, df: modelo.df, x0: X0, tol: T, maxIter: N })
   const sec = secante({ f: modelo.f, x0: A, x1: B, tol: T, maxIter: N })
   const filas: Fila[] = [
-    { metodo: 'Bisección', familia: 'cerrado', res: bis, residuos: bis.pasos.map((p) => Math.abs(p.fMedio)) },
-    { metodo: 'Falsa posición', familia: 'cerrado', res: fal, residuos: fal.pasos.map((p) => Math.abs(p.fc)) },
-    { metodo: 'Newton', familia: 'abierto', res: new_, residuos: new_.pasos.map((p) => p.residuo) },
-    { metodo: 'Secante', familia: 'abierto', res: sec, residuos: sec.pasos.map((p) => p.residuo) },
+    { metodo: 'Bisección', familia: 'cerrado', res: bis, residuos: bis.pasos.map((p) => Math.abs(p.fMedio)), analisis: analizarConvergenciaBiseccion(bis) },
+    { metodo: 'Falsa posición', familia: 'cerrado', res: fal, residuos: fal.pasos.map((p) => Math.abs(p.fc)), analisis: analizarConvergenciaFalsa(fal) },
+    { metodo: 'Newton', familia: 'abierto', res: new_, residuos: new_.pasos.map((p) => p.residuo), analisis: analizarConvergenciaNewton(new_) },
+    { metodo: 'Secante', familia: 'abierto', res: sec, residuos: sec.pasos.map((p) => p.residuo), analisis: analizarConvergenciaSecante(sec) },
   ]
   return { salida: { filas, modelo: modelo.expresion } }
 }
@@ -77,7 +89,9 @@ export default function Comparacion() {
           {s.filas.map((f) => <div key={f.metodo}><strong>{f.metodo}</strong><MensajeEstado estado={f.res.estado} mensaje={f.res.mensaje} /></div>)}
           <TablaPasos titulo="Resumen comparativo" archivoCSV="comparacion-raices.csv" pasos={s.filas} columnas={[
             { clave: 'm', titulo: 'método', valor: (f) => f.metodo }, { clave: 'f', titulo: 'familia', valor: (f) => f.familia }, { clave: 'e', titulo: 'estado', valor: (f) => f.res.estado },
-            { clave: 'r', titulo: 'raíz', valor: (f) => f.res.resultado?.raiz }, { clave: 'i', titulo: 'iteraciones', valor: (f) => f.res.resultado?.iteraciones }, { clave: 'res', titulo: 'residuo |f(r)|', valor: (f) => f.res.resultado?.residuo },
+            { clave: 'r', titulo: 'raíz', valor: (f) => f.res.resultado?.raiz }, { clave: 'i', titulo: 'iteraciones', valor: (f) => f.res.resultado?.iteraciones },
+            { clave: 'p', titulo: 'orden p estimado', valor: (f) => (f.analisis.ordenEmpirico !== null ? Number(f.analisis.ordenEmpirico.toFixed(3)) : '—') },
+            { clave: 'res', titulo: 'residuo |f(r)|', valor: (f) => f.res.resultado?.residuo },
           ]} />
           <p className="aviso">
             Bisección y falsa posición usan el intervalo [a, b]; la secante parte de a y b como puntos iniciales; Newton parte de x₀. El residuo no es el error de la raíz: sirve aquí para comparar la <em>velocidad</em> con la que cada método se acerca. Si un método falla, los demás conservan su resultado.
@@ -86,6 +100,14 @@ export default function Comparacion() {
             <Grafico titulo="Residuo |f| por iteración (escala logarítmica)" ejeX="Iteración" ejeY="|f(xₙ)|" datos={datos} layout={{ yaxis: { type: 'log' } }}
               descripcion="Cuanto más rápido baja la curva, más rápido converge el método. Newton y la secante caen de forma casi vertical cerca de la raíz; la bisección baja a un ritmo constante y la falsa posición se frena si un extremo queda fijo. Los marcadores distinguen cada método sin depender solo del color." />
           )}
+          <div className="conv-cmp-bloque">
+            <h3>Análisis y Criterios de Convergencia</h3>
+            <div className="conv-lab-resultados">
+              {s.filas.map((f) => (
+                <PanelConvergenciaEjecucion key={f.metodo} analisis={f.analisis} />
+              ))}
+            </div>
+          </div>
         </>
       )}
     >

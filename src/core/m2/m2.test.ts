@@ -1,4 +1,4 @@
-import { eliminacionGauss, gaussSeidel, dominanciaDiagonalEstricta, determinante, permutacionDominante } from '.'
+import { eliminacionGauss, esSingular, gaussSeidel, dominanciaDiagonalEstricta, determinante, permutacionDominante } from '.'
 import referencia from './referencia.json'
 
 const A = [[4, 1, 1], [1, 5, 1], [1, 1, 6]]
@@ -184,10 +184,16 @@ describe('Ejercicios de práctica (referencia numpy)', () => {
   })
 })
 
-describe('determinante', () => {
+describe('determinante y singularidad', () => {
   it('2×2, 3×3 y 4×4', () => {
     expect(determinante([[1, 2], [3, 4]])).toBe(-2)
     expect(determinante([[2, 0, 0], [0, 3, 0], [0, 0, 4]])).toBe(24)
     expect(determinante([[1, -1, 0, 0], [0, 1, 1, 0], [0, 0, 1, 2], [2, 0, 0, -3]])).toBeCloseTo(1, 12)
+  })
+  it('no da falso positivo en matrices bien invertibles pero mal escaladas', () => {
+    expect(esSingular([[1e5, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]])).toBe(false)
+    expect(esSingular([[1e6, 0, 0], [0, 1e-4, 0], [0, 0, 1e-4]])).toBe(false)
+    expect(esSingular([[0, 0], [1, 2]])).toBe(true)
+    expect(esSingular([[1, 2], [2, 4]])).toBe(true)
   })
 })

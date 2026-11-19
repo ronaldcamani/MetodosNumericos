@@ -7,6 +7,7 @@ import { INTERPOLACION } from './interpolacion'
 import { SISTEMAS } from './sistemas'
 
 export * from './base'
+export * from './bancoGuiado'
 
 /** Catálogo de generadores por tema (clave = id del registro de temas). */
 export const CATALOGOS: Record<string, CatalogoTema> = {

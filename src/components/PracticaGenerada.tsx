@@ -1,11 +1,13 @@
 import { useMemo, useState } from 'react'
 import { parseNumero } from '../core/entrada'
-import { CATALOGOS, evaluarCampo, generarProblemas, NIVELES, PUNTOS_NIVEL, ROTULO_NIVEL, type Nivel, type Problema } from '../core/practica'
+import { CATALOGOS, crearTutorDesdeProblema, evaluarCampo, generarProblemas, NIVELES, PUNTOS_NIVEL, ROTULO_NIVEL, type Nivel, type Problema } from '../core/practica'
 import { estrellas } from '../core/practica/progreso'
+import CaritaEstado, { type EstadoCarita } from './CaritaEstado'
 import Estrellas from './Estrellas'
 import PasosOcultos from './PasosOcultos'
 import ProgresoTema from './ProgresoTema'
 import Texto from './Texto'
+import TutorPasoAPaso from './TutorPasoAPaso'
 import { useProgreso } from './useProgreso'
 
 const DESCRIPCION: Record<Nivel, string> = {
@@ -21,7 +23,9 @@ function Tarjeta({ p, n }: { p: Problema; n: number }) {
   const [veredictos, setVeredictos] = useState<('correcto' | 'incorrecto')[] | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
   const [verPasos, setVerPasos] = useState(false)
+  const [verTutor, setVerTutor] = useState(false)
   const [vio, setVio] = useState(false)
+  const [intentos, setIntentos] = useState(0)
   const acerto = veredictos !== null && veredictos.every((v) => v === 'correcto')
 
   const comprobar = (e: React.FormEvent) => {
@@ -29,15 +33,33 @@ function Tarjeta({ p, n }: { p: Problema; n: number }) {
     const nums = entradas.map(parseNumero)
     if (nums.some((x) => x === null)) { setAviso('Escribe un número en cada campo (puedes usar coma o punto decimal).'); setVeredictos(null); return }
     setAviso(null)
+    setIntentos((k) => k + 1)
     const v = p.campos.map((c, i) => evaluarCampo(c, nums[i]) as 'correcto' | 'incorrecto')
     setVeredictos(v)
     registrar({ id: p.id, nivel: p.nivel, correcto: v.every((x) => x === 'correcto'), vioSolucion: vio })
   }
   const abrirPasos = () => { setVerPasos(true); if (!acerto) setVio(true) }
+  const alternarTutor = () => {
+    setVerTutor((prev) => !prev)
+    if (!verTutor && !acerto) setVio(true)
+  }
+
+  const estadoCarita: EstadoCarita = acerto
+    ? vio
+      ? 'aprendiendo'
+      : intentos <= 1
+        ? 'excelente'
+        : 'bien'
+    : veredictos
+      ? 'trampa'
+      : 'analizando'
 
   return (
     <li className="problema-generado">
-      <h3>Problema {n}: {p.titulo}</h3>
+      <div className="problema-cabecera">
+        <h3>Problema {n}: {p.titulo}</h3>
+        <CaritaEstado estado={estadoCarita} compacto />
+      </div>
       <p><Texto texto={p.enunciado} /></p>
       <form onSubmit={comprobar} noValidate>
         {p.campos.map((c, i) => (
@@ -50,6 +72,9 @@ function Tarjeta({ p, n }: { p: Problema; n: number }) {
         <div className="acciones">
           <button type="submit" disabled={acerto}>Comprobar mi respuesta</button>
           {!verPasos && <button type="button" onClick={abrirPasos}>Ver el desarrollo paso a paso</button>}
+          <button type="button" onClick={alternarTutor}>
+            {verTutor ? 'Ocultar tutor socrático' : 'Tutor socrático interactivo'}
+          </button>
         </div>
       </form>
       <div role="status">
@@ -61,10 +86,17 @@ function Tarjeta({ p, n }: { p: Problema; n: number }) {
             </ul>
             {acerto
               ? <p><strong>¡Correcto!</strong> {vio ? 'Como viste el desarrollo antes de acertar, este problema no suma puntos.' : `+${PUNTOS_NIVEL[p.nivel]} puntos.`}</p>
-              : <p>Revisa tu desarrollo y vuelve a intentarlo. No se muestra la respuesta: si lo necesitas, abre el desarrollo (ese problema ya no sumará puntos).</p>}
+              : <p>Revisa tu desarrollo y vuelve a intentarlo. No se muestra la respuesta: si lo necesitas, abre el desarrollo o el tutor socrático (ese problema ya no sumará puntos).</p>}
           </div>
         )}
       </div>
+      {verTutor && (
+        <TutorPasoAPaso
+          pasos={p.tutor ?? crearTutorDesdeProblema(p)}
+          titulo={`Tutor socrático · Problema ${n}`}
+          onCerrar={() => setVerTutor(false)}
+        />
+      )}
       {verPasos && (
         <>
           {!acerto && <p className="aviso">Cada paso queda oculto hasta que lo pidas: intenta adelantarte mentalmente antes de revelarlo.</p>}

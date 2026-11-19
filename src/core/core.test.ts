@@ -1,5 +1,5 @@
 import { aCSV } from './csv'
-import { parseEntero, parseNumero } from './entrada'
+import { parseEntero, parseListaNumeros, parseNumero } from './entrada'
 import { fmt } from './formato'
 import { esExito } from './tipos'
 
@@ -29,6 +29,21 @@ describe('parseNumero', () => {
   it('parseEntero rechaza decimales', () => {
     expect(parseEntero('4')).toBe(4)
     expect(parseEntero('4.5')).toBeNull()
+  })
+})
+
+describe('parseListaNumeros', () => {
+  it('acepta listas separadas por coma, punto y coma y espacios respetando coma decimal', () => {
+    expect(parseListaNumeros('1, 0, -1, -2')).toEqual([1, 0, -1, -2])
+    expect(parseListaNumeros('1,5; -2,25; 3')).toEqual([1.5, -2.25, 3])
+    expect(parseListaNumeros('1,5;2,5;3,5')).toEqual([1.5, 2.5, 3.5])
+    expect(parseListaNumeros('1,5 2,5 3')).toEqual([1.5, 2.5, 3])
+    expect(parseListaNumeros('1000 0.4 0.4')).toEqual([1000, 0.4, 0.4])
+  })
+  it('rechaza listas vacías o con tokens inválidos', () => {
+    expect(parseListaNumeros('')).toBeNull()
+    expect(parseListaNumeros(' ; ')).toBeNull()
+    expect(parseListaNumeros('1,5; abc; 3')).toBeNull()
   })
 })
 

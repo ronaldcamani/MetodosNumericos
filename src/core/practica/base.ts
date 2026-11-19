@@ -11,6 +11,17 @@ export interface Campo {
   tol: number
 }
 
+/** Micro-pregunta intermedia del solucionario socrático interactivo. */
+export interface MicroPasoSocratico {
+  regla: string
+  pregunta: string
+  opciones: string[]
+  correcta: number
+  exito: string
+  trampa: string
+  revelacion: string
+}
+
 export interface Problema {
   id: string
   tema: string
@@ -21,6 +32,8 @@ export interface Problema {
   campos: Campo[]
   /** Desarrollo: cada elemento es una tarjeta que el estudiante revela por separado. */
   pasos: string[]
+  /** Micro-preguntas socráticas opcionales para guiar al estudiante antes de revelar. */
+  tutor?: MicroPasoSocratico[]
 }
 
 export type Borrador = Omit<Problema, 'id' | 'tema' | 'nivel'>

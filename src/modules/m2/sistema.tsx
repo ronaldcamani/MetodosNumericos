@@ -58,7 +58,9 @@ interface Props {
 export function EditorSistema({ valores, errores, set }: Props) {
   const n = Number(valores.tam)
   const idx = Array.from({ length: n }, (_, i) => i + 1)
-  const mensajes = Object.values(errores).filter(Boolean)
+  const hayErrorMatriz = idx.some(
+    (i) => Boolean(errores[`b${i}` as keyof FSistema]) || idx.some((j) => Boolean(errores[`a${i}${j}` as keyof FSistema])),
+  )
   return (
     <>
       <Selector etiqueta="Tamaño del sistema" valor={valores.tam} onChange={(x) => set('tam', x)} opciones={[{ valor: '2', texto: '2 × 2' }, { valor: '3', texto: '3 × 3' }, { valor: '4', texto: '4 × 4' }]} />
@@ -69,7 +71,7 @@ export function EditorSistema({ valores, errores, set }: Props) {
             <FilaEditor key={i} i={i} idx={idx} valores={valores} errores={errores} set={set} />
           ))}
         </div>
-        {mensajes.length > 0 && <p className="campo-error" role="alert">✖ Revisa los coeficientes marcados: deben ser números.</p>}
+        {hayErrorMatriz && <p className="campo-error" role="alert">✖ Revisa los coeficientes marcados: deben ser números.</p>}
       </fieldset>
     </>
   )

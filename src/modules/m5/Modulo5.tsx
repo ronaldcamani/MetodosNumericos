@@ -8,6 +8,7 @@ import ModuloConIndice from "../../components/IndiceLateral";
 import Matematica from "../../components/Matematica";
 import { ConPanelCalculadora } from "../../components/PanelCalculadora";
 import SubNavegacion from "../../components/SubNavegacion";
+import VideoLeccion from "../../components/VideoLeccion";
 import { CASO_ENFRIAMIENTO } from "../../core/m5";
 import Comparacion from "./Comparacion";
 import { INICIAL_EDO, PREGUNTAS_EDO, recomendarEdo, type RespuestasEdo } from "./decision";
@@ -23,6 +24,7 @@ const SECCIONES = [
   ["mapa", "Mapa de métodos"],
   ["comparacion", "Comparación de los métodos"],
   ["cuidados", "Cuidados"],
+  ["video-leccion", "Video-lección"],
   ["ejercicios", "Ejercicios: elige tu método"],
   ["autoevaluacion", "Autoevaluación"],
   ["practica", "Práctica por niveles"],
@@ -180,6 +182,11 @@ export default function Modulo5() {
               <li><strong>Estable ≠ preciso ≠ físico.</strong> Son tres preguntas distintas.</li>
               <li><strong>Unidades.</strong> Minutos, °C y 1/min: <M tex="k\cdot h" /> es adimensional. Ver <Link to="/errores">Errores y aritmética de computador</Link>.</li>
             </ul>
+          </section>
+
+          <section id="video-leccion" aria-labelledby="h-video">
+            <h2 id="h-video">🎬 Video-Lección Explicada Paso a Paso</h2>
+            <VideoLeccion modulo="diferenciales" />
           </section>
 
           <section id="ejercicios" aria-labelledby="h-ejer">

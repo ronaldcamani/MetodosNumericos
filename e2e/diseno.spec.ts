@@ -64,3 +64,44 @@ test('página de recursos: guía de estudio, código de referencia, fuentes e in
   await page.getByRole('link', { name: /Cómo usar el portal, código de referencia y fuentes/ }).click()
   await expect(page.getByRole('heading', { level: 1 })).toContainText('Cómo usar el portal')
 })
+
+test('al 100% de zoom (1280×720) el reproductor y todos sus controles inferiores caben completos en pantalla', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 720 })
+  for (const ruta of ['#/errores', '#/ecuaciones']) {
+    await page.goto(base + ruta)
+    const reproductor = page.locator('.video-leccion')
+    await expect(reproductor).toBeVisible()
+    await reproductor.evaluate((el) => el.scrollIntoView({ block: 'center', behavior: 'instant' }))
+
+    const boxContenedor = await reproductor.boundingBox()
+    expect(boxContenedor).not.toBeNull()
+    expect(boxContenedor!.height).toBeLessThanOrEqual(650)
+    expect(boxContenedor!.y).toBeGreaterThanOrEqual(0)
+    expect(boxContenedor!.y + boxContenedor!.height).toBeLessThanOrEqual(720)
+
+    const controles = [
+      reproductor.getByRole('button', { name: /Reproducir/ }),
+      reproductor.getByRole('button', { name: 'Escena anterior' }),
+      reproductor.getByRole('button', { name: 'Siguiente escena' }),
+      reproductor.getByRole('button', { name: /−5s/ }),
+      reproductor.getByRole('button', { name: /\+5s/ }),
+      reproductor.getByRole('slider', { name: /Línea de tiempo/ }),
+      reproductor.getByRole('button', { name: '0.75x' }),
+      reproductor.getByRole('button', { name: '1x' }),
+      reproductor.getByRole('button', { name: '1.25x' }),
+      reproductor.getByRole('button', { name: '1.5x' }),
+      reproductor.getByRole('button', { name: /Voz activa/ }),
+      reproductor.getByRole('button', { name: 'Pantalla completa' }),
+    ]
+
+    for (const control of controles) {
+      await expect(control).toBeVisible()
+      const b = await control.boundingBox()
+      expect(b).not.toBeNull()
+      expect(b!.y).toBeGreaterThanOrEqual(0)
+      expect(b!.y + b!.height).toBeLessThanOrEqual(720)
+      expect(b!.x).toBeGreaterThanOrEqual(0)
+      expect(b!.x + b!.width).toBeLessThanOrEqual(1280)
+    }
+  }
+})

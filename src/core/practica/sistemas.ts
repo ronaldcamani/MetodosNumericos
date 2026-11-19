@@ -174,8 +174,27 @@ const luDoolittle: Generador = (r) => {
   }
 }
 
+const residuoSistema: Generador = (r) => {
+  const A: Mat = [[r.entero(3, 5), r.entero(1, 2)], [r.entero(1, 2), r.entero(4, 6)]]
+  const x = [r.entero(1, 3), r.entero(1, 3)]
+  const b = porVector(A, x)
+  const tx = [x[0] + 0.2, x[1] - 0.1]
+  const res = b.map((bi, i) => bi - (A[i][0] * tx[0] + A[i][1] * tx[1]))
+  const nInf = Math.max(Math.abs(res[0]), Math.abs(res[1]))
+  return {
+    titulo: 'Norma infinito del residuo',
+    enunciado: T`Para $A=${matTex(A, 0)}$, $b=(${b[0]},${b[1]})$ y la aproximación $\tilde x=(${fmt(tx[0], 1)},${fmt(tx[1], 1)})$, calcula $\|b-A\tilde x\|_\infty$ (3 decimales).`,
+    campos: [campo('‖b − Ax̃‖∞', nInf, 3)],
+    pasos: [
+      T`**Producto.** $A\tilde x=(${fmt(A[0][0] * tx[0] + A[0][1] * tx[1], 3)},\\ ${fmt(A[1][0] * tx[0] + A[1][1] * tx[1], 3)})$.`,
+      T`**Vector residuo.** $r=b-A\tilde x=(${fmt(res[0], 3)},\\ ${fmt(res[1], 3)})$.`,
+      T`**Norma infinito.** $\|r\|_\infty=\max(|${fmt(res[0], 3)}|,|${fmt(res[1], 3)}|)=${fmt(nInf, 3)}$.`,
+    ],
+  }
+}
+
 export const SISTEMAS: CatalogoTema = {
-  basico: [dosPorDos, triangular],
+  basico: [dosPorDos, triangular, residuoSistema],
   intermedio: [gauss3, jacobi],
   avanzado: [gaussSeidel, luDoolittle],
 }

@@ -8,6 +8,7 @@ import ModuloConIndice from "../../components/IndiceLateral";
 import Matematica from "../../components/Matematica";
 import { ConPanelCalculadora } from "../../components/PanelCalculadora";
 import SubNavegacion from "../../components/SubNavegacion";
+import VideoLeccion from "../../components/VideoLeccion";
 import Comparacion from "./Comparacion";
 import { INICIAL_INTEGRAL, PREGUNTAS_INTEGRAL, recomendarIntegral, type RespuestasIntegral } from "./decision";
 import { EJE_R, EJE_T, trazaTasa } from "./graficos";
@@ -21,6 +22,7 @@ const SECCIONES = [
   ["mapa", "Mapa de métodos"],
   ["comparacion", "Comparación de las reglas"],
   ["limites", "Restricciones y cuidados"],
+  ["video-leccion", "Video-lección"],
   ["ejercicios", "Ejercicios: elige tu regla"],
   ["autoevaluacion", "Autoevaluación"],
   ["practica", "Práctica por niveles"],
@@ -155,6 +157,11 @@ export default function Modulo4() {
               <li><strong>Exactitud.</strong> Que Simpson sea exacto en el caso base es una propiedad de los polinomios de grado ≤ 3, no de la regla.</li>
               <li><strong>Unidades.</strong> (MB/s)·s = MB. Ver <Link to="/errores">Errores y aritmética de computador</Link> para el error absoluto y relativo.</li>
             </ul>
+          </section>
+
+          <section id="video-leccion" aria-labelledby="h-video">
+            <h2 id="h-video">🎬 Video-Lección Explicada Paso a Paso</h2>
+            <VideoLeccion modulo="integracion" />
           </section>
 
           <section id="ejercicios" aria-labelledby="h-ejer">

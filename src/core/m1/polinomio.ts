@@ -107,6 +107,7 @@ const sum = ([a, b]: Complejo, [c, d]: Complejo): Complejo => [a + c, b + d]
 const sub = ([a, b]: Complejo, [c, d]: Complejo): Complejo => [a - c, b - d]
 const div = ([a, b]: Complejo, [c, d]: Complejo): Complejo => {
   const m = c * c + d * d
+  if (m === 0 || !Number.isFinite(m)) return [0, 0]
   return [(a * c + b * d) / m, (b * c - a * d) / m]
 }
 
@@ -135,15 +136,18 @@ function cuadratica([a, b, c]: Coeficientes): Complejo[] {
 }
 
 /** Durand–Kerner: respaldo para un factor sin raíces reales de grado ≥ 3. */
-function durandKerner(coef: Coeficientes): Complejo[] {
+function durandKerner(coef: Coeficientes, tol: number, maxIter: number): { raices: Complejo[]; iteraciones: number } {
   const n = coef.length - 1
   const monico = coef.map((c) => c / coef[0])
+  const meta = Math.min(tol, 1e-12)
   let z: Complejo[] = Array.from({ length: n }, (_, k) => {
     let p: Complejo = [1, 0]
     for (let i = 0; i < k; i++) p = mul(p, [0.4, 0.9])
     return p
   })
-  for (let it = 0; it < 500; it++) {
+  let iteraciones = 0
+  for (let it = 1; it <= maxIter; it++) {
+    iteraciones = it
     let cambio = 0
     z = z.map((zi, i) => {
       let den: Complejo = [1, 0]
@@ -154,9 +158,9 @@ function durandKerner(coef: Coeficientes): Complejo[] {
       cambio = Math.max(cambio, Math.hypot(delta[0], delta[1]))
       return sub(zi, delta)
     })
-    if (cambio < 1e-14) break
+    if (cambio <= meta) break
   }
-  return z
+  return { raices: z, iteraciones }
 }
 
 const INICIOS = (cota: number) => [cota, -cota, cota / 2, -cota / 2, 0, 1, -1, 0.5, -0.5]
@@ -178,8 +182,8 @@ export function raicesPolinomio({ coef, tol, maxIter }: { coef: Coeficientes; to
   const advertencias: string[] = []
   const original = coef
   const cotaOriginal = cotaCauchy(original)
-  const complejas = (zs: Complejo[], metodo: string) =>
-    zs.forEach(([re, im]) => raices.push({ re, im, metodo, iteraciones: 0, residuoRelativo: residuoRelativo(original, [re, im]), verificada: false }))
+  const complejas = (zs: Complejo[], metodo: string, iteraciones = 0) =>
+    zs.forEach(([re, im]) => raices.push({ re, im, metodo, iteraciones, residuoRelativo: residuoRelativo(original, [re, im]), verificada: false }))
 
   let actual = coef
   while (actual.length - 1 >= 3) {
@@ -205,7 +209,8 @@ export function raicesPolinomio({ coef, tol, maxIter }: { coef: Coeficientes; to
   else if (restante === 1) complejas([[-actual[1] / actual[0], 0]], 'Despeje lineal')
   else if (restante >= 3) {
     advertencias.push(`El factor restante de grado ${restante} no tiene raíces reales que Newton–Horner encuentre; sus raíces (complejas) se calcularon con Durand–Kerner.`)
-    complejas(durandKerner(actual), 'Durand–Kerner')
+    const dk = durandKerner(actual, tol, maxIter)
+    complejas(dk.raices, 'Durand–Kerner', dk.iteraciones)
   }
   for (const r of raices) r.verificada = r.residuoRelativo <= UMBRAL_RESIDUO_REL
   raices.sort((p, q) => p.re - q.re || p.im - q.im)

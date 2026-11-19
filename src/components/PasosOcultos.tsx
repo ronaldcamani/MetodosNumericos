@@ -6,15 +6,24 @@ export default function PasosOcultos({ pasos, nombre, alCompletar }: { pasos: Re
   const ultimo = useRef<HTMLLIElement>(null)
   const volver = useRef<HTMLButtonElement>(null)
   const siguiente = useRef<HTMLButtonElement>(null)
-  const montado = useRef(false)
+  const anteriorN = useRef(n)
+  const yaMontoRef = useRef(false)
   const completo = n >= pasos.length
 
   useEffect(() => {
-    if (!montado.current) { montado.current = true; return }
-    // El foco sigue al contenido nuevo; al terminar, pasa al botón que sigue disponible.
-    if (n >= pasos.length) volver.current?.focus()
-    else if (n > 0) ultimo.current?.focus()
-    else siguiente.current?.focus()
+    yaMontoRef.current = true
+    return () => {
+      yaMontoRef.current = false
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!yaMontoRef.current || anteriorN.current === n) return
+    anteriorN.current = n
+    // El foco solo cambia tras una interacción real del usuario, nunca en el montaje inicial ni desplazando el scroll.
+    if (n >= pasos.length) volver.current?.focus({ preventScroll: true })
+    else if (n > 0) ultimo.current?.focus({ preventScroll: true })
+    else siguiente.current?.focus({ preventScroll: true })
     if (n >= pasos.length) alCompletar?.()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [n])

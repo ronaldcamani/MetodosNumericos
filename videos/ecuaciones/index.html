@@ -1,0 +1,253 @@
+<!doctype html>
+<html
+  lang="es"
+  data-composition-variables='[
+    {"id":"titulo","type":"string","label":"Título del módulo","default":"Ecuaciones no lineales y convergencia de métodos abiertos"},
+    {"id":"acento","type":"color","label":"Color acento","default":"#38bdf8"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, initial-scale=1.0" />
+    <title>Lección 1 · Ecuaciones no lineales (HyperFrames 60 FPS)</title>
+    <style>
+      :root {
+        --bg-0: #060a14;
+        --bg-1: #0b1324;
+        --panel: rgba(15, 23, 42, 0.86);
+        --border: rgba(148, 163, 184, 0.24);
+        --ink: #f8fafc;
+        --muted: #94a3b8;
+        --acento: #38bdf8;
+        --ok: #34d399;
+        --warn: #f59e0b;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body {
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: var(--bg-0); color: var(--ink); font-family: 'Inter', sans-serif;
+      }
+      #root {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 78% 18%, rgba(56, 189, 248, 0.16), transparent 52%),
+          linear-gradient(145deg, var(--bg-0) 0%, var(--bg-1) 58%, #070e1c 100%);
+      }
+      .grid-bg {
+        position: absolute; inset: 0;
+        background-image: linear-gradient(to right, rgba(30, 41, 59, 0.38) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(30, 41, 59, 0.38) 1px, transparent 1px);
+        background-size: 96px 96px; pointer-events: none;
+      }
+      .hud-top {
+        position: absolute; left: 112px; right: 112px; top: 56px; height: 54px;
+        display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+        border-radius: 14px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border);
+        font-family: 'JetBrains Mono', monospace; font-size: 18px; z-index: 20;
+      }
+      .hud-badge { color: var(--ok); font-weight: 700; }
+      .escena.clip {
+        position: absolute; inset: 0; padding: 136px 112px 104px;
+        display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 44px; align-items: center; z-index: 10;
+      }
+      .escena-inner { display: flex; flex-direction: column; gap: 24px; }
+      .chip {
+        display: inline-block; align-self: flex-start; padding: 8px 18px; border-radius: 999px;
+        background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.38);
+        color: #7dd3fc; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 700;
+      }
+      .titulo-escena { font-family: 'Outfit', sans-serif; font-size: 46px; line-height: 1.12; letter-spacing: -0.025em; }
+      .texto-pedagogico { font-size: 24px; line-height: 1.5; color: #cbd5e1; }
+      .formula-box {
+        padding: 22px 26px; border-radius: 16px; background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.35); font-family: 'JetBrains Mono', monospace;
+        font-size: 25px; color: #7dd3fc;
+      }
+      .panel-visual {
+        padding: 28px; border-radius: 22px; background: var(--panel); border: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 20px;
+      }
+      .tabla-datos { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 18px; }
+      .tabla-datos th { text-align: left; padding: 10px 12px; color: var(--muted); border-bottom: 1px solid var(--border); }
+      .tabla-datos td { padding: 10px 12px; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+      .ok { color: var(--ok); font-weight: 700; }
+      .warn { color: var(--warn); font-weight: 700; }
+      .progress-track {
+        position: absolute; left: 112px; right: 112px; bottom: 52px; height: 8px;
+        border-radius: 999px; background: rgba(148, 163, 184, 0.2); overflow: hidden; z-index: 20;
+      }
+      .progress-fill { width: 100%; height: 100%; background: linear-gradient(90deg, var(--acento), var(--ok)); transform-origin: left center; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="ecuaciones" data-start="0" data-duration="35" data-width="1920" data-height="1080" data-fps="60">
+      <div class="grid-bg"></div>
+      <header class="hud-top">
+        <span data-var-text="titulo">Ecuaciones no lineales y convergencia de métodos abiertos</span>
+        <span class="hud-badge">HYPERFRAMES · 1920×1080 · 60 FPS · 35s</span>
+      </header>
+
+      <!-- Escena 1: 0s - 6s -->
+      <section id="ec-s1" class="escena clip" data-start="0" data-duration="6" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 1 / 5 · TEOREMA DE BOLZANO</span>
+          <h1 class="titulo-escena">Planteo del problema: f(x) = x³ − x − 2 = 0</h1>
+          <p class="texto-pedagogico">
+            Evaluar f(1) = −2 y f(2) = +4 garantiza que existe al menos una raíz real en [1, 2].
+            Sin cambio de signo, ningún método cerrado puede arrancar.
+          </p>
+          <div class="formula-box">f(a) · f(b) &lt; 0 ⇒ ∃ r ∈ (1, 2) : f(r) = 0</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 250" width="100%" height="250" aria-label="Curva cúbica con raíz">
+            <line x1="60" y1="165" x2="620" y2="165" stroke="#475569" stroke-width="2" />
+            <path class="curva-draw" pathLength="1000" d="M 90 225 Q 320 195 570 35" fill="none" stroke="#38bdf8" stroke-width="5" />
+            <circle cx="385" cy="165" r="10" fill="#34d399" />
+            <text x="385" y="142" fill="#6ee7b7" font-family="JetBrains Mono" font-size="18" text-anchor="middle">r ≈ 1.5214</text>
+          </svg>
+          <table class="tabla-datos">
+            <thead><tr><th>x</th><th>f(x) = x³ − x − 2</th><th>Signo</th></tr></thead>
+            <tbody>
+              <tr><td>1.0</td><td>−2.000</td><td class="warn">Negativo</td></tr>
+              <tr><td>1.5214</td><td>0.000</td><td class="ok">Raíz exacta</td></tr>
+              <tr><td>2.0</td><td>+4.000</td><td class="ok">Positivo</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 2: 6s - 13s -->
+      <section id="ec-s2" class="escena clip" data-start="6" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 2 / 5 · BISECCIÓN (p = 1)</span>
+          <h2 class="titulo-escena">Bisección: garantía con orden lineal p = 1</h2>
+          <p class="texto-pedagogico">
+            Dividir siempre el intervalo por la mitad asegura convergencia si f(a)·f(b) &lt; 0,
+            reduciendo el ancho a la mitad en cada paso: constante asintótica C = 0.5.
+          </p>
+          <div class="formula-box">cₖ = (aₖ + bₖ) / 2 · εₖ ≤ (b₀ − a₀) / 2^(k+1)</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>k</th><th>[aₖ, bₖ]</th><th>cₖ</th><th>Ancho</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>[1.000, 2.000]</td><td>1.5000</td><td>1.000</td></tr>
+              <tr><td>1</td><td>[1.500, 2.000]</td><td>1.7500</td><td>0.500</td></tr>
+              <tr><td>2</td><td>[1.500, 1.750]</td><td>1.6250</td><td>0.250</td></tr>
+              <tr><td>20</td><td>≈ r</td><td>1.52138</td><td class="ok">9.5 × 10⁻⁷</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 3: 13s - 21s -->
+      <section id="ec-s3" class="escena clip" data-start="13" data-duration="8" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 3 / 5 · NEWTON-RAPHSON (p = 2)</span>
+          <h2 class="titulo-escena">Newton-Raphson: tangente y orden cuadrático p = 2</h2>
+          <p class="texto-pedagogico">
+            Cada iteración dispara la recta tangente desde (xₖ, f(xₖ)) hasta cortar y = 0.
+            Cuando f′(r) ≠ 0, los dígitos correctos prácticamente se duplican por paso.
+          </p>
+          <div class="formula-box">xₖ₊₁ = xₖ − f(xₖ) / f′(xₖ) · |eₖ₊₁| ≈ C · |eₖ|²</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 240" width="100%" height="240" aria-label="Disparo de tangentes de Newton">
+            <line x1="60" y1="190" x2="620" y2="190" stroke="#475569" stroke-width="2" />
+            <path class="curva-draw" pathLength="1000" d="M 100 220 Q 340 198 575 30" fill="none" stroke="#38bdf8" stroke-width="4.5" />
+            <line class="curva-draw" pathLength="400" x1="560" y1="45" x2="430" y2="190" stroke="#f59e0b" stroke-width="4" />
+            <circle cx="560" cy="45" r="8" fill="#fbbf24" />
+            <circle cx="430" cy="190" r="8" fill="#34d399" />
+            <text x="540" y="34" fill="#fbbf24" font-family="JetBrains Mono" font-size="18">x₀ = 2.0</text>
+            <text x="430" y="220" fill="#6ee7b7" font-family="JetBrains Mono" font-size="18" text-anchor="middle">x₁ = 1.6364</text>
+          </svg>
+          <table class="tabla-datos">
+            <thead><tr><th>k</th><th>xₖ</th><th>|eₖ|</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>1.500000</td><td>2.1 × 10⁻²</td></tr>
+              <tr><td>1</td><td>1.521739</td><td>3.6 × 10⁻⁴</td></tr>
+              <tr><td>2</td><td>1.521380</td><td class="ok">1.0 × 10⁻⁷</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 4: 21s - 28s -->
+      <section id="ec-s4" class="escena clip" data-start="21" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 4 / 5 · SECANTE (φ ≈ 1.618)</span>
+          <h2 class="titulo-escena">Secante: orden superlineal φ ≈ 1.618 sin derivar</h2>
+          <p class="texto-pedagogico">
+            Reemplaza f′(xₖ) por la pendiente de la recta secante entre los dos puntos anteriores.
+            Evita calcular derivadas con apenas 1 evaluación de función por iteración.
+          </p>
+          <div class="formula-box">xₖ₊₁ = xₖ − f(xₖ) · (xₖ − xₖ₋₁) / (f(xₖ) − f(xₖ₋₁))</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>k</th><th>xₖ</th><th>f(xₖ)</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>1.0000</td><td>−2.0000</td></tr>
+              <tr><td>1</td><td>2.0000</td><td>+4.0000</td></tr>
+              <tr><td>2</td><td>1.3333</td><td>−0.9630</td></tr>
+              <tr><td>5</td><td>1.5214</td><td class="ok">≈ 0 (φ = 1.618)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 5: 28s - 35s -->
+      <section id="ec-s5" class="escena clip" data-start="28" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 5 / 5 · SÍNTESIS Y HÍBRIDO</span>
+          <h2 class="titulo-escena">Criterios de convergencia y método híbrido</h2>
+          <p class="texto-pedagogico">
+            Usa Bisección para acotar con seguridad cuando f′(x) es pequeña y cambia a
+            Newton-Raphson dentro del intervalo para cerrar a 10⁻¹² en dos pasos.
+          </p>
+          <div class="formula-box">p = 1 (lineal) &lt; φ ≈ 1.618 (superlineal) &lt; p = 2 (cuadrático)</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Método</th><th>Orden p</th><th>Pasos (tol=10⁻⁶)</th></tr></thead>
+            <tbody>
+              <tr><td>Bisección</td><td>1.0</td><td class="warn">20</td></tr>
+              <tr><td>Secante</td><td>1.618</td><td>6</td></tr>
+              <tr><td>Newton-Raphson</td><td>2.0</td><td class="ok">3</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="progress-track"><div id="global-progress" class="progress-fill"></div></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var tl = gsap.timeline({ paused: true });
+        tl.fromTo('#global-progress', { scaleX: 0 }, { scaleX: 1, duration: 35, ease: 'none' }, 0);
+
+        var escenas = [
+          { sel: '#ec-s1', start: 0, dur: 6 },
+          { sel: '#ec-s2', start: 6, dur: 7 },
+          { sel: '#ec-s3', start: 13, dur: 8 },
+          { sel: '#ec-s4', start: 21, dur: 7 },
+          { sel: '#ec-s5', start: 28, dur: 7 }
+        ];
+
+        escenas.forEach(function (sc) {
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power4.out' }, sc.start);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power4.out' }, sc.start + 0.12);
+          if (document.querySelector(sc.sel + ' .curva-draw')) {
+            tl.fromTo(sc.sel + ' .curva-draw', { strokeDasharray: 1000, strokeDashoffset: 1000 }, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.out' }, sc.start + 0.25);
+          }
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+        });
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines['ecuaciones'] = tl;
+      })();
+    </script>
+  </body>
+</html>

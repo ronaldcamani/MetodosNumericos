@@ -59,16 +59,18 @@ const razon = (previo: number | undefined, actual: number) => (previo === undefi
 /** Aproximaciones de f′(t) con paso h y con h/2, h/4, …: el cociente entre errores revela el orden. */
 export function aproximarDerivada({ derivable, t, h }: { derivable: Derivable; t: number; h: number }): ResultadoMetodo<SalidaDerivada, PasoDerivada> {
   const inv = (mensaje: string): ResultadoMetodo<SalidaDerivada, PasoDerivada> => ({ estado: 'invalido', mensaje, resultado: null, pasos: [] })
+  const noFin = (mensaje: string): ResultadoMetodo<SalidaDerivada, PasoDerivada> => ({ estado: 'no_finito', mensaje, resultado: null, pasos: [] })
   if (![t, h].every(Number.isFinite) || Math.abs(t) > LIMITES_DERIVACION.maxAbs) return inv(`t debe ser un número finito en [−${LIMITES_DERIVACION.maxAbs}, ${LIMITES_DERIVACION.maxAbs}].`)
   if (h < LIMITES_DERIVACION.hMin || h > LIMITES_DERIVACION.hMax) return inv(`El paso h debe estar en [${LIMITES_DERIVACION.hMin}, ${LIMITES_DERIVACION.hMax}].`)
   const { f, df } = derivable
   const exacta = df(t)
-  if (![f(t - h), f(t), f(t + h), exacta].every(Number.isFinite)) return inv('La función no es finita en alguno de los puntos t − h, t o t + h.')
+  if (![f(t - h), f(t), f(t + h), exacta].every(Number.isFinite)) return noFin('La función no es finita en alguno de los puntos t − h, t o t + h.')
   const pasos: PasoDerivada[] = []
   for (let i = 0; i < LIMITES_DERIVACION.niveles; i++) {
     const hi = h / 2 ** i
     const central = derivacionCentral(f, t, hi)
     const progresiva = derivacionProgresiva(f, t, hi)
+    if (!Number.isFinite(central) || !Number.isFinite(progresiva)) return noFin('La aproximación produjo un valor no finito.')
     const errorCentral = Math.abs(central - exacta)
     const errorProgresiva = Math.abs(progresiva - exacta)
     const previo = pasos[pasos.length - 1]
@@ -77,6 +79,7 @@ export function aproximarDerivada({ derivable, t, h }: { derivable: Derivable; t
   const central = derivacionCentral(f, t, h)
   const progresiva = derivacionProgresiva(f, t, h)
   const regresiva = derivacionRegresiva(f, t, h)
+  if (![central, progresiva, regresiva].every(Number.isFinite)) return noFin('La aproximación produjo un valor no finito.')
   const advertencias: string[] = []
   if (h < 1e-5) advertencias.push('Con h tan pequeño f(t + h) y f(t − h) casi coinciden: al restarlos se pierden cifras (cancelación) y el error de redondeo domina sobre el de truncamiento.')
   if (derivable.id === 'tasa' && pasos[0].errorCentral < 1e-9 * Math.max(1, Math.abs(exacta))) advertencias.push('La diferencia central es exacta para polinomios de grado ≤ 2: aquí el error que ves es solo de redondeo.')

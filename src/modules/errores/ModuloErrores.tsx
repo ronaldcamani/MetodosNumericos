@@ -7,6 +7,7 @@ import ModuloConIndice from "../../components/IndiceLateral";
 import Matematica from "../../components/Matematica";
 import { ConPanelCalculadora, type Herramienta } from "../../components/PanelCalculadora";
 import TablaPasos from "../../components/TablaPasos";
+import VideoLeccion from "../../components/VideoLeccion";
 import { epsilonMaquina, erroresAproximacion, operarConPrecision, sumaConPrecision } from "../../core/errores";
 import { fmt } from "../../core/formato";
 import { CalcAproximacion, CalcOperacion, CalcSerie, CalcSuma } from "./Calculadoras";
@@ -18,6 +19,7 @@ const SECCIONES = [
   ["teoria", "Teoría"],
   ["ejemplos", "Ejemplos resueltos"],
   ["tolerancia", "Tolerancia, residuo y error"],
+  ["video-leccion", "Video-lección"],
   ["ejercicios", "Ejercicios propuestos"],
   ["autoevaluacion", "Autoevaluación"],
   ["practica", "Práctica por niveles"],
@@ -165,6 +167,11 @@ export default function ModuloErrores() {
               Por eso el portal distingue «cota del error», «cambio entre iteraciones» y «residuo», y verifica las raíces antes de declararlas.
               Aplicación directa en <Link to="/ecuaciones">Ecuaciones no lineales</Link>.
             </p>
+          </section>
+
+          <section id="video-leccion" aria-labelledby="h-video">
+            <h2 id="h-video">🎬 Video-Lección Explicada Paso a Paso</h2>
+            <VideoLeccion modulo="errores" />
           </section>
 
           <section id="ejercicios" aria-labelledby="h-ejer">

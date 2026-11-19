@@ -1,0 +1,223 @@
+<!doctype html>
+<html
+  lang="es"
+  data-composition-variables='[
+    {"id":"titulo","type":"string","label":"Título del módulo","default":"Sistemas de ecuaciones lineales: directos vs iterativos"},
+    {"id":"acento","type":"color","label":"Color acento","default":"#38bdf8"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, initial-scale=1.0" />
+    <title>Lección 2 · Sistemas lineales (HyperFrames 60 FPS)</title>
+    <style>
+      :root {
+        --bg-0: #060a14; --bg-1: #0b1324; --panel: rgba(15, 23, 42, 0.86);
+        --border: rgba(148, 163, 184, 0.24); --ink: #f8fafc; --muted: #94a3b8;
+        --acento: #38bdf8; --ok: #34d399; --warn: #f59e0b;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg-0); color: var(--ink); font-family: 'Inter', sans-serif; }
+      #root {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 78% 18%, rgba(56, 189, 248, 0.16), transparent 52%),
+          linear-gradient(145deg, var(--bg-0) 0%, var(--bg-1) 58%, #070e1c 100%);
+      }
+      .grid-bg {
+        position: absolute; inset: 0;
+        background-image: linear-gradient(to right, rgba(30, 41, 59, 0.38) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(30, 41, 59, 0.38) 1px, transparent 1px);
+        background-size: 96px 96px; pointer-events: none;
+      }
+      .hud-top {
+        position: absolute; left: 112px; right: 112px; top: 56px; height: 54px;
+        display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+        border-radius: 14px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border);
+        font-family: 'JetBrains Mono', monospace; font-size: 18px; z-index: 20;
+      }
+      .hud-badge { color: var(--ok); font-weight: 700; }
+      .escena.clip {
+        position: absolute; inset: 0; padding: 136px 112px 104px;
+        display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 44px; align-items: center; z-index: 10;
+      }
+      .escena-inner { display: flex; flex-direction: column; gap: 24px; }
+      .chip {
+        display: inline-block; align-self: flex-start; padding: 8px 18px; border-radius: 999px;
+        background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.38);
+        color: #7dd3fc; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 700;
+      }
+      .titulo-escena { font-family: 'Outfit', sans-serif; font-size: 46px; line-height: 1.12; letter-spacing: -0.025em; }
+      .texto-pedagogico { font-size: 24px; line-height: 1.5; color: #cbd5e1; }
+      .formula-box {
+        padding: 22px 26px; border-radius: 16px; background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.35); font-family: 'JetBrains Mono', monospace;
+        font-size: 25px; color: #7dd3fc;
+      }
+      .panel-visual {
+        padding: 28px; border-radius: 22px; background: var(--panel); border: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 20px;
+      }
+      .tabla-datos { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 18px; }
+      .tabla-datos th { text-align: left; padding: 10px 12px; color: var(--muted); border-bottom: 1px solid var(--border); }
+      .tabla-datos td { padding: 10px 12px; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+      .ok { color: var(--ok); font-weight: 700; }
+      .warn { color: var(--warn); font-weight: 700; }
+      .progress-track {
+        position: absolute; left: 112px; right: 112px; bottom: 52px; height: 8px;
+        border-radius: 999px; background: rgba(148, 163, 184, 0.2); overflow: hidden; z-index: 20;
+      }
+      .progress-fill { width: 100%; height: 100%; background: linear-gradient(90deg, var(--acento), var(--ok)); transform-origin: left center; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="sistemas" data-start="0" data-duration="35" data-width="1920" data-height="1080" data-fps="60">
+      <div class="grid-bg"></div>
+      <header class="hud-top">
+        <span data-var-text="titulo">Sistemas de ecuaciones lineales: directos vs iterativos</span>
+        <span class="hud-badge">HYPERFRAMES · 1920×1080 · 60 FPS · 35s</span>
+      </header>
+
+      <!-- Escena 1: 0s - 6s -->
+      <section id="sis-s1" class="escena clip" data-start="0" data-duration="6" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 1 / 5 · PLANTEO MATRICIAL</span>
+          <h1 class="titulo-escena">Sistema 3×3 y planteo matricial Ax = b</h1>
+          <p class="texto-pedagogico">
+            Cada fila de [A|b] representa un hiperplano en ℝ³. Resolver el sistema consiste
+            en hallar la intersección única donde todas las ecuaciones se cumplen exactamente.
+          </p>
+          <div class="formula-box">x₁ = 1, x₂ = 2, x₃ = 3 ⇒ Ax = b</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Ecuación</th><th>Fila aumentada [A | b]</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td>Fila 1</td><td>[ 4, −1,  1 |  5 ]</td><td class="ok">Activa</td></tr>
+              <tr><td>Fila 2</td><td>[−1,  5,  2 | 15 ]</td><td class="ok">Activa</td></tr>
+              <tr><td>Fila 3</td><td>[ 1,  1,  6 | 21 ]</td><td class="ok">Activa</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 2: 6s - 13s -->
+      <section id="sis-s2" class="escena clip" data-start="6" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 2 / 5 · ELIMINACIÓN DIRECTA</span>
+          <h2 class="titulo-escena">Eliminación gaussiana con pivoteo parcial</h2>
+          <p class="texto-pedagogico">
+            Elegir como pivote el mayor elemento en valor absoluto por columna reduce los
+            factores multiplicadores y bloquea la amplificación de errores de redondeo.
+          </p>
+          <div class="formula-box">A → U (triangular superior) ⇒ sustitución hacia atrás</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Etapa</th><th>Pivote |aₖₖ|</th><th>Operación</th></tr></thead>
+            <tbody>
+              <tr><td>Paso 1</td><td>|4| (máx col 1)</td><td class="ok">Anula a₂₁ y a₃₁</td></tr>
+              <tr><td>Paso 2</td><td>|4.75|</td><td class="ok">Anula a₃₂</td></tr>
+              <tr><td>Retrosust.</td><td>u₃₃ ≠ 0</td><td class="ok">x = (1, 2, 3)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 3: 13s - 20s -->
+      <section id="sis-s3" class="escena clip" data-start="13" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 3 / 5 · CONDICIÓN ITERATIVA</span>
+          <h2 class="titulo-escena">Dominancia diagonal estricta y reordenamiento</h2>
+          <p class="texto-pedagogico">
+            Para garantizar que Gauss-Seidel converja desde cualquier semilla inicial, cada elemento
+            diagonal debe superar estrictamente la suma del resto de su fila.
+          </p>
+          <div class="formula-box">|aᵢᵢ| &gt; Σ(j≠i) |aᵢⱼ|  ∀ i = 1..n</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Fila</th><th>|aᵢᵢ|</th><th>Σ |aᵢⱼ|</th><th>Cumple</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>4</td><td>|−1|+|1| = 2</td><td class="ok">4 &gt; 2 ✓</td></tr>
+              <tr><td>2</td><td>5</td><td>|−1|+|2| = 3</td><td class="ok">5 &gt; 3 ✓</td></tr>
+              <tr><td>3</td><td>6</td><td>|1|+|1| = 2</td><td class="ok">6 &gt; 2 ✓</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 4: 20s - 28s -->
+      <section id="sis-s4" class="escena clip" data-start="20" data-duration="8" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 4 / 5 · GAUSS-SEIDEL 2D</span>
+          <h2 class="titulo-escena">Iteración de Gauss-Seidel paso a paso</h2>
+          <p class="texto-pedagogico">
+            Gauss-Seidel actualiza xᵢ⁽ᵏ⁺¹⁾ reutilizando inmediatamente los valores recién
+            calculados de la misma iteración, acelerando el descenso hacia la intersección.
+          </p>
+          <div class="formula-box">xᵢ⁽ᵏ⁺¹⁾ = (bᵢ − Σⱼ&lt;ᵢ aᵢⱼxⱼ⁽ᵏ⁺¹⁾ − Σⱼ&gt;ᵢ aᵢⱼxⱼ⁽ᵏ⁾) / aᵢᵢ</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 230" width="100%" height="230" aria-label="Trayectoria ortogonal de Gauss-Seidel">
+            <line x1="80" y1="200" x2="600" y2="200" stroke="#475569" stroke-width="2" />
+            <line x1="80" y1="20" x2="80" y2="200" stroke="#475569" stroke-width="2" />
+            <path class="curva-draw" pathLength="1000" d="M 80 200 L 420 200 L 420 95 L 365 95 L 365 78 L 352 78" fill="none" stroke="#34d399" stroke-width="4.5" />
+            <circle cx="352" cy="78" r="9" fill="#34d399" />
+            <text x="368" y="72" fill="#6ee7b7" font-family="JetBrains Mono" font-size="18">Intersección exacta</text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Escena 5: 28s - 35s -->
+      <section id="sis-s5" class="escena clip" data-start="28" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 5 / 5 · VALIDACIÓN DE PARADA</span>
+          <h2 class="titulo-escena">Verificación con el residuo y singularidad</h2>
+          <p class="texto-pedagogico">
+            Nunca confíes solo en el cambio entre iterados; evalúa la norma infinito del
+            residuo r = b − Ax̃ y vigila matrices mal condicionadas con det(A) ≈ 0.
+          </p>
+          <div class="formula-box">||r⁽ᵏ⁾||_∞ = ||b − Ax⁽ᵏ⁾||_∞ ≤ tol</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Iteración k</th><th>||b − Ax⁽ᵏ⁾||_∞</th><th>Estado</th></tr></thead>
+            <tbody>
+              <tr><td>k = 1</td><td>3.2500</td><td class="warn">Iterando</td></tr>
+              <tr><td>k = 4</td><td>0.0412</td><td class="warn">Cercano</td></tr>
+              <tr><td>k = 9</td><td>2.4 × 10⁻⁷</td><td class="ok">Convergencia ✓</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="progress-track"><div id="global-progress" class="progress-fill"></div></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var tl = gsap.timeline({ paused: true });
+        tl.fromTo('#global-progress', { scaleX: 0 }, { scaleX: 1, duration: 35, ease: 'none' }, 0);
+        var escenas = [
+          { sel: '#sis-s1', start: 0, dur: 6 },
+          { sel: '#sis-s2', start: 6, dur: 7 },
+          { sel: '#sis-s3', start: 13, dur: 7 },
+          { sel: '#sis-s4', start: 20, dur: 8 },
+          { sel: '#sis-s5', start: 28, dur: 7 }
+        ];
+        escenas.forEach(function (sc) {
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power4.out' }, sc.start);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power4.out' }, sc.start + 0.12);
+          if (document.querySelector(sc.sel + ' .curva-draw')) {
+            tl.fromTo(sc.sel + ' .curva-draw', { strokeDasharray: 1000, strokeDashoffset: 1000 }, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.out' }, sc.start + 0.25);
+          }
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+        });
+        window.__timelines = window.__timelines || {};
+        window.__timelines['sistemas'] = tl;
+      })();
+    </script>
+  </body>
+</html>

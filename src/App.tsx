@@ -1,4 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary'
 import Layout from './components/Layout'
 import Inicio from './pages/Inicio'
 import Recursos from './pages/Recursos'
@@ -25,31 +26,33 @@ import './styles.css'
 
 export default function App() {
   return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route index element={<Inicio />} />
-        <Route path="recursos" element={<Recursos />} />
-        <Route path="errores" element={<ModuloErrores />} />
-        <Route path="ecuaciones" element={<Modulo1 />} />
-        <Route path="ecuaciones/cerrados" element={<MetodosCerrados />} />
-        <Route path="ecuaciones/abiertos" element={<MetodosAbiertos />} />
-        <Route path="ecuaciones/polinomios" element={<RaicesPolinomios />} />
-        <Route path="sistemas" element={<Modulo2 />} />
-        <Route path="sistemas/directos" element={<MetodosDirectos />} />
-        <Route path="sistemas/iterativos" element={<MetodosIterativos />} />
-        <Route path="interpolacion" element={<Modulo3 />} />
-        <Route path="interpolacion/lagrange" element={<PaginaLagrange />} />
-        <Route path="interpolacion/regresion" element={<PaginaRegresion />} />
-        <Route path="integracion" element={<Modulo4 />} />
-        <Route path="integracion/trapecio" element={<PaginaTrapecio />} />
-        <Route path="integracion/simpson" element={<PaginaSimpson />} />
-        <Route path="integracion/derivacion" element={<PaginaDerivacion />} />
-        <Route path="diferenciales" element={<Modulo5 />} />
-        <Route path="diferenciales/euler" element={<PaginaEuler />} />
-        <Route path="diferenciales/rk4" element={<PaginaRK4 />} />
-        <Route path="diferenciales/estabilidad" element={<PaginaEstabilidad />} />
-        <Route path="*" element={<p>Página no encontrada.</p>} />
-      </Route>
-    </Routes>
+    <ErrorBoundary titulo="Ocurrió un error inesperado en esta vista">
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<Inicio />} />
+          <Route path="recursos" element={<Recursos />} />
+          <Route path="errores" element={<ModuloErrores />} />
+          <Route path="ecuaciones" element={<Modulo1 />} />
+          <Route path="ecuaciones/cerrados" element={<MetodosCerrados />} />
+          <Route path="ecuaciones/abiertos" element={<MetodosAbiertos />} />
+          <Route path="ecuaciones/polinomios" element={<RaicesPolinomios />} />
+          <Route path="sistemas" element={<Modulo2 />} />
+          <Route path="sistemas/directos" element={<MetodosDirectos />} />
+          <Route path="sistemas/iterativos" element={<MetodosIterativos />} />
+          <Route path="interpolacion" element={<Modulo3 />} />
+          <Route path="interpolacion/lagrange" element={<PaginaLagrange />} />
+          <Route path="interpolacion/regresion" element={<PaginaRegresion />} />
+          <Route path="integracion" element={<Modulo4 />} />
+          <Route path="integracion/trapecio" element={<PaginaTrapecio />} />
+          <Route path="integracion/simpson" element={<PaginaSimpson />} />
+          <Route path="integracion/derivacion" element={<PaginaDerivacion />} />
+          <Route path="diferenciales" element={<Modulo5 />} />
+          <Route path="diferenciales/euler" element={<PaginaEuler />} />
+          <Route path="diferenciales/rk4" element={<PaginaRK4 />} />
+          <Route path="diferenciales/estabilidad" element={<PaginaEstabilidad />} />
+          <Route path="*" element={<p>Página no encontrada.</p>} />
+        </Route>
+      </Routes>
+    </ErrorBoundary>
   )
 }

@@ -138,8 +138,26 @@ const cancelacion: Generador = (r) => {
   }
 }
 
+const ordenSumaExactitud: Generador = (r) => {
+  const grande = r.elegir([100, 1000])
+  const chico = grande === 1000 ? 0.6 : 0.06
+  const t = 4
+  const s1 = truncar(truncar(grande + chico, t) + chico, t)
+  const s2 = truncar(grande + truncar(chico + chico, t), t)
+  return {
+    titulo: 'Orden de la suma en precisión finita',
+    enunciado: T`Con ${t} cifras significativas por truncamiento suma ${grande} + ${chico} + ${chico} de izquierda a derecha $(a+b)+c$ y agrupando los pequeños $a+(b+c)$. Da ambos resultados.`,
+    campos: [{ etiqueta: '(a + b) + c', valor: s1, tol: 1e-6 }, { etiqueta: 'a + (b + c)', valor: s2, tol: 1e-6 }],
+    pasos: [
+      T`**De izquierda a derecha.** $${grande}+${chico}=${fmt(grande + chico, 2)}$, que al truncar a ${t} cifras queda $${s1}$; al sumar el segundo $${chico}$ vuelve a truncarse a $${s1}$.`,
+      T`**Agrupando pequeños.** $${chico}+${chico}=${fmt(2 * chico, 2)}$ antes de sumarse a $${grande}$.`,
+      T`**Resultado.** $${grande}+${fmt(2 * chico, 2)}=${fmt(grande + 2 * chico, 2)}$, truncado a ${t} cifras da $${s2}$ (valor exacto $${fmt(grande + 2 * chico, 2)}$).`,
+    ],
+  }
+}
+
 export const ERRORES: CatalogoTema = {
   basico: [errorAbsRel, redondeoDecimales],
-  intermedio: [cifrasCorrectas, sumaTCifras],
+  intermedio: [cifrasCorrectas, sumaTCifras, ordenSumaExactitud],
   avanzado: [taylorExp, cancelacion],
 }

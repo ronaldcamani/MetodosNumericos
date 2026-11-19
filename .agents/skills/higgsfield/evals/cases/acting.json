@@ -1,0 +1,49 @@
+{
+  "skill": "higgsfield-scene-engine",
+  "cases": [
+    {
+      "id": "scene-engine-routes-flat-sequence",
+      "description": "'Generates cleanly but lands flat' routes to the scene-engine structural audit (not to prompt rewriting), flags an inert reversal, and asks for the story goal instead of passing Goal on an invented one (§ Audit procedure step 1)",
+      "request": "My heist sequence generates cleanly but lands flat and nobody can say why. Is this scene working? Outline: she cracks the safe, the alarm trips, she escapes over the roof.",
+      "response": "Routing to higgsfield-scene-engine (§ Audit procedure) — a structural audit on text, before any more credits go into renders.\n\n```\nSCENE/SEQUENCE: the safe → alarm → roof escape\n\nCHAIN CHECK\n• Goal — the scene goal reads as \"get what is in the safe out tonight\". The story goal is not given, so the removal test cannot run yet: what is she ultimately fighting for? Unconfirmed until you say.\n• Obstacle — the alarm jeopardizes the whole goal (global). Holds.\n• Tactic — the roof is a reasonable guess, but its outcome returns no new information. Weak.\n• Reversal — the alarm tripping is a turn of plot. Present.\n• Value Shift — before-verdict \"she is careful\" → after-verdict \"she is careful\". No shift: INERT.\n\nWEAKEST POINT: the reversal moves the plot but not the audience's verdict of her.\n\nWHAT IF…\n1. (Minimal) The alarm trips because she stopped to take one thing she did not come for — the audience re-judges her from careful to compromised.\n2. (Clean) Her partner trips it deliberately; she escapes knowing it.\n```",
+      "assertions": [
+        {
+          "type": "regex_present",
+          "pattern": "^Routing to higgsfield-scene-engine"
+        },
+        {
+          "type": "sections_present",
+          "names": [
+            "Goal",
+            "Obstacle",
+            "Tactic",
+            "Reversal",
+            "Value Shift",
+            "WEAKEST POINT",
+            "(Minimal)"
+          ]
+        },
+        {
+          "type": "regex_present",
+          "pattern": "\\bINERT\\b"
+        },
+        {
+          "type": "regex_absent",
+          "pattern": "^Routing to higgsfield-(prompt|seedance)\\b"
+        },
+        {
+          "type": "regex_present",
+          "pattern": "(?i)(story goal (is|was)n?'?t? (not )?(given|stated|known)|what is (she|he|the hero|your hero) (ultimately )?(fighting for|after))"
+        },
+        {
+          "type": "regex_absent",
+          "pattern": "(?i)^•\\s*Goal\\b[^\\n]*\\b(Holds|Strong|Solid|Passes|Works|Clear|Fine|OK|Sound|Good)\\b"
+        },
+        {
+          "type": "regex_present",
+          "pattern": "(?i)\\bwhat is (she|he|the hero|your hero|your character|the protagonist) (ultimately |really )?(fighting for|after|trying to (get|achieve))\\?"
+        }
+      ]
+    }
+  ]
+}

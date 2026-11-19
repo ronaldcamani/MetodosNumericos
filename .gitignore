@@ -10,3 +10,5 @@ dist/
 playwright-report/
 test-results/
 tsconfig.tsbuildinfo
+# Local secrets written by `elevenlabs onboard`
+/.env.local

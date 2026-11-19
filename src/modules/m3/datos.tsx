@@ -68,7 +68,9 @@ const OPCIONES_TAM = Array.from({ length: LIMITES_M3.maxNodos - LIMITES_M3.minNo
 export function EditorDatos({ valores, errores, set }: Props) {
   const n = Number(valores.tam)
   const filas = Array.from({ length: n }, (_, i) => i + 1)
-  const hayError = Object.values(errores).some(Boolean)
+  const hayErrorNodos = filas.some(
+    (i) => Boolean(errores[`x${i}` as keyof FDatos]) || Boolean(errores[`y${i}` as keyof FDatos]),
+  )
   return (
     <>
       <Selector etiqueta="Cantidad de puntos" valor={valores.tam} onChange={(v) => set('tam', v)} opciones={OPCIONES_TAM} />
@@ -87,7 +89,7 @@ export function EditorDatos({ valores, errores, set }: Props) {
             )
           })}
         </div>
-        {hayError && <p className="campo-error" role="alert">✖ Revisa los valores marcados: deben ser números.</p>}
+        {hayErrorNodos && <p className="campo-error" role="alert">✖ Revisa los valores marcados: deben ser números.</p>}
       </fieldset>
     </>
   )

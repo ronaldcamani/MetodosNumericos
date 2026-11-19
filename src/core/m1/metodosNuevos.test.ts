@@ -223,6 +223,13 @@ describe('Raíces de polinomios', () => {
     expect(raicesPolinomio({ coef: [1, -1], tol: 0, maxIter: 50 }).estado).toBe('invalido')
     expect(raicesPolinomio({ coef: [1, -1], tol: 1e-8, maxIter: 0 }).estado).toBe('invalido')
   })
+  it('Durand–Kerner respeta maxIter y registra iteraciones sin NaN', () => {
+    const corto = raicesPolinomio({ coef: [1, 0, 0, 0, 4], tol: 1e-10, maxIter: 1 })
+    expect(corto.estado).toBe('no_converge')
+    const ok = raicesPolinomio({ coef: [1, 0, 0, 0, 4], tol: 1e-10, maxIter: 50 })
+    expect(ok.estado).toBe('ok')
+    expect(ok.resultado!.raices.every((r) => r.iteraciones >= 1 && Number.isFinite(r.re) && Number.isFinite(r.im))).toBe(true)
+  })
 })
 
 describe('Contraste con la referencia independiente', () => {

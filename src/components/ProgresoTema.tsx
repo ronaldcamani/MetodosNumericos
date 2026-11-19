@@ -1,5 +1,6 @@
 import { NIVELES, ROTULO_NIVEL } from '../core/practica/base'
 import { POR_ESTRELLA, MAX_ESTRELLAS, dominio, estrellas, etiquetaDominio } from '../core/practica/progreso'
+import { BarraComprension } from './CaritaEstado'
 import Estrellas from './Estrellas'
 import { useProgreso } from './useProgreso'
 
@@ -7,6 +8,8 @@ import { useProgreso } from './useProgreso'
 export default function ProgresoTema({ tema }: { tema: string }) {
   const { progreso: p } = useProgreso(tema)
   const pct = dominio(p)
+  const sinGuia = NIVELES.reduce((acc, n) => acc + p.correctas[n], 0)
+  const conGuia = p.estudiados.length
   return (
     <section className="progreso" aria-label="Tu progreso en este tema">
       <p className="progreso-resumen">
@@ -16,6 +19,7 @@ export default function ProgresoTema({ tema }: { tema: string }) {
       <div className="barra" role="progressbar" aria-label="Dominio del tema" aria-valuemin={0} aria-valuemax={100} aria-valuenow={pct}>
         <span style={{ width: `${pct}%` }} />
       </div>
+      <BarraComprension porcentaje={pct} sinGuia={sinGuia} conGuia={conGuia} total={sinGuia + conGuia} />
       <ul className="progreso-niveles">
         {NIVELES.map((n) => (
           <li key={n}>

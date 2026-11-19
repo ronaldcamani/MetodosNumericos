@@ -137,8 +137,26 @@ const diferenciaCentral: Generador = (r) => {
   }
 }
 
+const derivadaAtras: Generador = (r) => {
+  const fn = r.elegir(POTENCIAS)
+  const x0 = r.entero(2, 5)
+  const h = r.elegir([0.1, 0.2])
+  const D = (fn.f(x0) - fn.f(x0 - h)) / h
+  const ex = fn.df!(x0)
+  return {
+    titulo: 'Derivada por diferencia regresiva',
+    enunciado: T`Para $f(x)=${fn.tex}$ estima $f'(${x0})$ con diferencia hacia atrás y $h=${h}$. Da la estimación y su error absoluto (5 decimales).`,
+    campos: [campo("Estimación de f'", D, 5), campo('Error absoluto', Math.abs(D - ex), 5)],
+    pasos: [
+      T`**Fórmula.** $f'(x_0)\approx\dfrac{f(x_0)-f(x_0-h)}{h}$.`,
+      T`**Evaluación.** $\dfrac{${fmt(fn.f(x0), 5)}-${fmt(fn.f(x0 - h), 5)}}{${h}}=${fmt(D, 5)}$.`,
+      T`**Error.** Valor exacto $${fmt(ex, 5)}$, error absoluto $${fmt(Math.abs(D - ex), 5)}$ (orden $O(h)$).`,
+    ],
+  }
+}
+
 export const INTEGRACION: CatalogoTema = {
-  basico: [trapecioSimple, derivadaAdelante],
+  basico: [trapecioSimple, derivadaAdelante, derivadaAtras],
   intermedio: [trapecioCompuestoP, simpsonSimple],
   avanzado: [simpsonCompuestoP, diferenciaCentral],
 }

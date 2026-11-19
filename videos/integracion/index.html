@@ -1,0 +1,222 @@
+<!doctype html>
+<html
+  lang="es"
+  data-composition-variables='[
+    {"id":"titulo","type":"string","label":"Título del módulo","default":"Integración y derivación numérica"},
+    {"id":"acento","type":"color","label":"Color acento","default":"#38bdf8"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, initial-scale=1.0" />
+    <title>Lección 4 · Integración y derivación numérica (HyperFrames 60 FPS)</title>
+    <style>
+      :root {
+        --bg-0: #060a14; --bg-1: #0b1324; --panel: rgba(15, 23, 42, 0.86);
+        --border: rgba(148, 163, 184, 0.24); --ink: #f8fafc; --muted: #94a3b8;
+        --acento: #38bdf8; --ok: #34d399; --warn: #f59e0b; --bad: #f87171;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg-0); color: var(--ink); font-family: 'Inter', sans-serif; }
+      #root {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 78% 18%, rgba(56, 189, 248, 0.16), transparent 52%),
+          linear-gradient(145deg, var(--bg-0) 0%, var(--bg-1) 58%, #070e1c 100%);
+      }
+      .grid-bg {
+        position: absolute; inset: 0;
+        background-image: linear-gradient(to right, rgba(30, 41, 59, 0.38) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(30, 41, 59, 0.38) 1px, transparent 1px);
+        background-size: 96px 96px; pointer-events: none;
+      }
+      .hud-top {
+        position: absolute; left: 112px; right: 112px; top: 56px; height: 54px;
+        display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+        border-radius: 14px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border);
+        font-family: 'JetBrains Mono', monospace; font-size: 18px; z-index: 20;
+      }
+      .hud-badge { color: var(--ok); font-weight: 700; }
+      .escena.clip {
+        position: absolute; inset: 0; padding: 136px 112px 104px;
+        display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 44px; align-items: center; z-index: 10;
+      }
+      .escena-inner { display: flex; flex-direction: column; gap: 24px; }
+      .chip {
+        display: inline-block; align-self: flex-start; padding: 8px 18px; border-radius: 999px;
+        background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.38);
+        color: #7dd3fc; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 700;
+      }
+      .titulo-escena { font-family: 'Outfit', sans-serif; font-size: 46px; line-height: 1.12; letter-spacing: -0.025em; }
+      .texto-pedagogico { font-size: 24px; line-height: 1.5; color: #cbd5e1; }
+      .formula-box {
+        padding: 22px 26px; border-radius: 16px; background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.35); font-family: 'JetBrains Mono', monospace;
+        font-size: 25px; color: #7dd3fc;
+      }
+      .panel-visual {
+        padding: 28px; border-radius: 22px; background: var(--panel); border: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 20px;
+      }
+      .tabla-datos { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 18px; }
+      .tabla-datos th { text-align: left; padding: 10px 12px; color: var(--muted); border-bottom: 1px solid var(--border); }
+      .tabla-datos td { padding: 10px 12px; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+      .ok { color: var(--ok); font-weight: 700; }
+      .warn { color: var(--warn); font-weight: 700; }
+      .bad { color: var(--bad); font-weight: 700; }
+      .progress-track {
+        position: absolute; left: 112px; right: 112px; bottom: 52px; height: 8px;
+        border-radius: 999px; background: rgba(148, 163, 184, 0.2); overflow: hidden; z-index: 20;
+      }
+      .progress-fill { width: 100%; height: 100%; background: linear-gradient(90deg, var(--acento), var(--ok)); transform-origin: left center; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="integracion" data-start="0" data-duration="34" data-width="1920" data-height="1080" data-fps="60">
+      <div class="grid-bg"></div>
+      <header class="hud-top">
+        <span data-var-text="titulo">Integración y derivación numérica</span>
+        <span class="hud-badge">HYPERFRAMES · 1920×1080 · 60 FPS · 34s</span>
+      </header>
+
+      <!-- Escena 1: 0s - 6s -->
+      <section id="ig-s1" class="escena clip" data-start="0" data-duration="6" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 1 / 5 · MALLA DE CUADRATURA</span>
+          <h1 class="titulo-escena">Planteo: acumular una tasa r(t) = t² + 1</h1>
+          <p class="texto-pedagogico">
+            Partimos el intervalo [0, 2] en n = 4 subintervalos de paso h = 0.5 para sumar áreas
+            elementales frente al valor analítico exacto ∫₀² (t² + 1) dt = 14/3 ≈ 4.6667.
+          </p>
+          <div class="formula-box">h = (b − a) / n = 0.5 · nodos t = {0, 0.5, 1, 1.5, 2}</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>i</th><th>tᵢ</th><th>r(tᵢ) = tᵢ² + 1</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0.0</td><td>1.00</td></tr>
+              <tr><td>1</td><td>0.5</td><td>1.25</td></tr>
+              <tr><td>2</td><td>1.0</td><td>2.00</td></tr>
+              <tr><td>3</td><td>1.5</td><td>3.25</td></tr>
+              <tr><td>4</td><td>2.0</td><td class="ok">5.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 2: 6s - 13s -->
+      <section id="ig-s2" class="escena clip" data-start="6" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 2 / 5 · TRAPECIO O(h²)</span>
+          <h2 class="titulo-escena">Regla del Trapecio compuesto (orden O(h²))</h2>
+          <p class="texto-pedagogico">
+            Conecta puntos consecutivos con cuerdas rectas aplicando pesos (1, 2, 2, 2, 1).
+            Como t² + 1 es convexa, sus segmentos rectos sobrestiman ligeramente el área exacta.
+          </p>
+          <div class="formula-box">T₄ = (h/2)·[1 + 2(1.25 + 2 + 3.25) + 5] = 4.7500</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 230" width="100%" height="230" aria-label="Trapecios compuestos bajo parabola">
+            <polygon points="80,200 80,175 210,165 210,200" fill="rgba(56,189,248,0.22)" stroke="#38bdf8" stroke-width="2" />
+            <polygon points="210,200 210,165 340,140 340,200" fill="rgba(56,189,248,0.22)" stroke="#38bdf8" stroke-width="2" />
+            <polygon points="340,200 340,140 470,98 470,200" fill="rgba(56,189,248,0.22)" stroke="#38bdf8" stroke-width="2" />
+            <polygon points="470,200 470,98 600,40 600,200" fill="rgba(56,189,248,0.22)" stroke="#38bdf8" stroke-width="2" />
+            <path class="curva-draw" pathLength="1000" d="M 80 175 Q 340 165 600 40" fill="none" stroke="#f59e0b" stroke-width="4" />
+          </svg>
+        </div>
+      </section>
+
+      <!-- Escena 3: 13s - 20s -->
+      <section id="ig-s3" class="escena clip" data-start="13" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 3 / 5 · SIMPSON 1/3 O(h⁴)</span>
+          <h2 class="titulo-escena">Regla de Simpson 1/3 compuesto (orden O(h⁴))</h2>
+          <p class="texto-pedagogico">
+            Requiere n par y reemplaza pares de subintervalos por arcos parabólicos con pesos
+            (1, 4, 2, 4, 1). Para cualquier cúbica, su error de truncamiento es idénticamente cero.
+          </p>
+          <div class="formula-box">S₄ = (h/3)·[1 + 4(1.25 + 3.25) + 2(2) + 5] = 4.6667</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 230" width="100%" height="230" aria-label="Arcos parabolicos de Simpson 1/3">
+            <path d="M 80 200 L 80 175 Q 210 170 340 140 L 340 200 Z" fill="rgba(52,211,153,0.25)" stroke="#34d399" stroke-width="2.5" />
+            <path d="M 340 200 L 340 140 Q 470 104 600 40 L 600 200 Z" fill="rgba(16,185,129,0.22)" stroke="#34d399" stroke-width="2.5" />
+            <path class="curva-draw" pathLength="1000" d="M 80 175 Q 340 165 600 40" fill="none" stroke="#f59e0b" stroke-width="4" />
+            <text x="210" y="130" fill="#6ee7b7" font-family="JetBrains Mono" font-size="18" text-anchor="middle">×4</text>
+            <text x="470" y="74" fill="#6ee7b7" font-family="JetBrains Mono" font-size="18" text-anchor="middle">×4</text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Escena 4: 20s - 27s -->
+      <section id="ig-s4" class="escena clip" data-start="20" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 4 / 5 · CONVERGENCIA AL DUPLICAR n</span>
+          <h2 class="titulo-escena">Efecto de duplicar n en funciones generales</h2>
+          <p class="texto-pedagogico">
+            Al partir h a la mitad, el error del Trapecio O(h²) cae entre 4, mientras que
+            el error de Simpson O(h⁴) se desploma por un factor de 16 en cada refinamiento.
+          </p>
+          <div class="formula-box">h ÷ 2 ⇒ Trapecio error ÷ 4 · Simpson error ÷ 16</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Subintervalos n</th><th>Error Trapecio O(h²)</th><th>Error Simpson O(h⁴)</th></tr></thead>
+            <tbody>
+              <tr><td>n = 4</td><td class="warn">2.08 × 10⁻²</td><td class="ok">5.21 × 10⁻⁴</td></tr>
+              <tr><td>n = 8</td><td>5.21 × 10⁻³ (÷4)</td><td class="ok">3.26 × 10⁻⁵ (÷16)</td></tr>
+              <tr><td>n = 16</td><td>1.30 × 10⁻³ (÷4)</td><td class="ok">2.03 × 10⁻⁶ (÷16)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 5: 27s - 34s -->
+      <section id="ig-s5" class="escena clip" data-start="27" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 5 / 5 · DERIVACIÓN FINITA</span>
+          <h2 class="titulo-escena">Diferencia central vs paso h diminuto</h2>
+          <p class="texto-pedagogico">
+            Reducir h en exceso amplifica el error de redondeo ~ ε_maq / h por cancelación
+            al restar f(t+h) − f(t−h). La curva en "U" muestra el h óptimo alrededor de 10⁻⁵.
+          </p>
+          <div class="formula-box">D_c = [f(t+h) − f(t−h)] / (2h) = O(h²) + O(ε / h)</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 230" width="100%" height="230" aria-label="Curva en U compromiso truncamiento redondeo">
+            <path class="curva-draw" pathLength="1000" d="M 80 45 Q 320 215 600 50" fill="none" stroke="#34d399" stroke-width="5" />
+            <circle cx="330" cy="148" r="10" fill="#38bdf8" />
+            <text x="330" y="190" fill="#7dd3fc" font-family="JetBrains Mono" font-size="18" text-anchor="middle">Óptimo h ≈ 10⁻⁵</text>
+          </svg>
+        </div>
+      </section>
+
+      <div class="progress-track"><div id="global-progress" class="progress-fill"></div></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var tl = gsap.timeline({ paused: true });
+        tl.fromTo('#global-progress', { scaleX: 0 }, { scaleX: 1, duration: 34, ease: 'none' }, 0);
+        var escenas = [
+          { sel: '#ig-s1', start: 0, dur: 6 },
+          { sel: '#ig-s2', start: 6, dur: 7 },
+          { sel: '#ig-s3', start: 13, dur: 7 },
+          { sel: '#ig-s4', start: 20, dur: 7 },
+          { sel: '#ig-s5', start: 27, dur: 7 }
+        ];
+        escenas.forEach(function (sc) {
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power4.out' }, sc.start);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power4.out' }, sc.start + 0.12);
+          if (document.querySelector(sc.sel + ' .curva-draw')) {
+            tl.fromTo(sc.sel + ' .curva-draw', { strokeDasharray: 1000, strokeDashoffset: 1000 }, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.out' }, sc.start + 0.25);
+          }
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+        });
+        window.__timelines = window.__timelines || {};
+        window.__timelines['integracion'] = tl;
+      })();
+    </script>
+  </body>
+</html>

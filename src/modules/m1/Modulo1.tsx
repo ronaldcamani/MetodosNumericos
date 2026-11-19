@@ -7,6 +7,7 @@ import ModuloConIndice from "../../components/IndiceLateral";
 import Matematica from "../../components/Matematica";
 import { ConPanelCalculadora } from "../../components/PanelCalculadora";
 import SubNavegacion from "../../components/SubNavegacion";
+import VideoLeccion from "../../components/VideoLeccion";
 import { crearModelo } from "../../core/m1";
 import Comparacion from "./Comparacion";
 import Decisor, { type ProblemaPlanteado } from "../../components/Decisor";
@@ -21,6 +22,7 @@ const SECCIONES = [
   ["mapa", "Mapa de métodos"],
   ["comparacion", "Comparación de los métodos"],
   ["errores", "Errores y verificación"],
+  ["video-leccion", "Video-lección"],
   ["ejercicios", "Ejercicios: elige tu método"],
   ["autoevaluacion", "Autoevaluación"],
   ["practica", "Práctica por niveles"],
@@ -210,6 +212,11 @@ export default function Modulo1() {
               redondeo y truncamiento tienen su propio módulo:{" "}
               <Link to="/errores">Errores y aritmética de computador</Link>.
             </p>
+          </section>
+
+          <section id="video-leccion" aria-labelledby="h-video">
+            <h2 id="h-video">🎬 Video-Lección Explicada Paso a Paso</h2>
+            <VideoLeccion modulo="ecuaciones" />
           </section>
 
           <section id="ejercicios" aria-labelledby="h-ejer">

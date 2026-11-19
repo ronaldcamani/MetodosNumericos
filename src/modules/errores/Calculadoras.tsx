@@ -7,7 +7,7 @@ import { useAplicarPreset, type PresetActivo } from '../../components/PanelCalcu
 import Selector from '../../components/Selector'
 import TablaPasos from '../../components/TablaPasos'
 import { useCalculadora, type Errores } from '../../components/useCalculadora'
-import { parseEntero, parseNumero } from '../../core/entrada'
+import { parseEntero, parseListaNumeros, parseNumero } from '../../core/entrada'
 import { erroresAproximacion, operarConPrecision, serieExponencial, sumaConPrecision, type ModoRedondeo, type Operacion } from '../../core/errores'
 import { fmt } from '../../core/formato'
 
@@ -112,13 +112,12 @@ type FSuma = typeof CASO_SUMA
 
 function ejecutarSuma(v: FSuma) {
   const errores: Errores<FSuma> = {}
-  const partes = v.lista.split(/[\s,;]+/).filter(Boolean)
-  const valores = partes.map(parseNumero)
+  const valores = parseListaNumeros(v.lista)
   const t = parseEntero(v.t)
-  if (!partes.length || valores.some((x) => x === null)) errores.lista = 'Escribe números separados por comas.'
+  if (!valores) errores.lista = 'Escribe números separados por comas, punto y coma (;) o espacios.'
   if (t === null) errores.t = 'Ingresa un entero.'
   if (errores.lista || errores.t) return { errores }
-  return { salida: { res: sumaConPrecision({ valores: valores as number[], t: t!, modo: v.modo as ModoRedondeo }) } }
+  return { salida: { res: sumaConPrecision({ valores: valores!, t: t!, modo: v.modo as ModoRedondeo }) } }
 }
 
 export function CalcSuma({ preset }: { preset: PresetActivo | null }) {
@@ -151,7 +150,7 @@ export function CalcSuma({ preset }: { preset: PresetActivo | null }) {
           )}
         </>
       )}>
-      <Campo etiqueta="Números a sumar (2 a 6)" valor={c.valores.lista} onChange={(x) => c.set('lista', x)} error={c.errores.lista} ayuda="Separados por comas, en el orden dado." />
+      <Campo etiqueta="Números a sumar (2 a 6)" valor={c.valores.lista} onChange={(x) => c.set('lista', x)} error={c.errores.lista} ayuda="Separados por comas, punto y coma (;) o espacios (usa ; o espacios si escribes coma decimal)." />
       <Campo etiqueta="Cifras significativas t" valor={c.valores.t} onChange={(x) => c.set('t', x)} error={c.errores.t} />
       <Selector etiqueta="Modo" valor={c.valores.modo} onChange={(x) => c.set('modo', x)} opciones={MODOS} />
     </Calculadora>

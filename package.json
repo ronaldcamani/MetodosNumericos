@@ -8,11 +8,13 @@
     "dev": "vite --host",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
+    "lint": "eslint src",
     "typecheck": "tsc -b --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:ref": "python3 -I -m unittest discover -s referencia -p 'test_*.py'"
+    "test:ref": "python3 -I -m unittest discover -s referencia -p 'test_*.py'",
+    "voces:generar": "node scripts/generar_voces.mjs"
   },
   "dependencies": {
     "katex": "^0.19.0",

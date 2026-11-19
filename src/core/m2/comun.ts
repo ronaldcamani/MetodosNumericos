@@ -47,9 +47,19 @@ export function determinante(A: Matriz): number {
   return A[0].reduce((suma, a, j) => suma + (j % 2 ? -1 : 1) * a * determinante(A.slice(1).map((f) => f.filter((_, k) => k !== j))), 0)
 }
 
-/** Singular si |det A| ≤ EPS_SINGULAR · escala^n (criterio relativo a la magnitud de los coeficientes). */
+/** Singular si tiene fila o columna nula, o si |det(A_normalizada)| ≤ EPS_SINGULAR tras equilibrar filas por su norma ∞. */
 export function esSingular(A: Matriz): boolean {
-  return Math.abs(determinante(A)) <= EPS_SINGULAR * escalaMatriz(A) ** A.length
+  const n = A.length
+  if (n === 0) return true
+  const normas = A.map((fila) => normaInf(fila))
+  if (normas.some((r) => r === 0 || !Number.isFinite(r))) return true
+  const normalizada = A.map((fila, i) => fila.map((v) => v / normas[i]))
+  for (let j = 0; j < n; j++) {
+    let maxCol = 0
+    for (let i = 0; i < n; i++) maxCol = Math.max(maxCol, Math.abs(normalizada[i][j]))
+    if (maxCol === 0) return true
+  }
+  return Math.abs(determinante(normalizada)) <= EPS_SINGULAR
 }
 
 function permutaciones(n: number): number[][] {

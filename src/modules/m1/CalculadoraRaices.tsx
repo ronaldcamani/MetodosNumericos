@@ -9,11 +9,13 @@ import { useCalculadora, type Errores } from '../../components/useCalculadora'
 import { parseEntero, parseNumero } from '../../core/entrada'
 import { fmt } from '../../core/formato'
 import {
+  analizarConvergenciaBiseccion, analizarConvergenciaFalsa, analizarConvergenciaNewton, analizarConvergenciaSecante,
   biseccion, falsaPosicion, newton, polinomioTexto, raicesPolinomio, secante, UMBRAL_DERIVADA,
   type Modelo, type PasoBiseccion, type PasoFalsaPosicion, type PasoNewton, type PasoPolinomio, type PasoSecante,
   type SalidaBiseccion, type SalidaFalsaPosicion, type SalidaNewton, type SalidaPolinomio, type SalidaSecante, type VerificacionRaiz,
 } from '../../core/m1'
 import type { ResultadoMetodo } from '../../core/tipos'
+import { PanelConvergenciaEjecucion, PanelFichaConvergencia } from './AnalisisConvergenciaUI'
 import { CASO_FUNCION, EditorFuncion, leerCoeficientes, leerFuncion } from './funcion'
 import { datosBiseccion, datosFalsaPosicion, datosNewton, datosPolinomio, datosSecante } from './graficos'
 
@@ -100,10 +102,12 @@ function Vista({ s }: { s: Salida }) {
   const aviso = <MensajeEstado estado={s.res.estado} mensaje={s.res.mensaje} />
   if (s.m === 'biseccion') {
     const r = s.res.resultado
+    const analisis = analizarConvergenciaBiseccion(s.res)
     return (
       <>
         {aviso}
         {r && <Resumen r={r} extra={[['Cota del error', fmt(r.cotaError, 8)]]} />}
+        <PanelConvergenciaEjecucion analisis={analisis} />
         {s.res.pasos.length > 0 && (
           <>
             <TablaPasos titulo="Iteraciones de la bisección" archivoCSV="biseccion.csv" pasos={s.res.pasos} columnas={[
@@ -119,10 +123,12 @@ function Vista({ s }: { s: Salida }) {
   }
   if (s.m === 'falsa') {
     const r = s.res.resultado
+    const analisis = analizarConvergenciaFalsa(s.res)
     return (
       <>
         {aviso}
         {r && <Resumen r={r} extra={[['Último cambio', fmt(r.ultimoCambio, 8)]]} />}
+        <PanelConvergenciaEjecucion analisis={analisis} />
         {s.res.pasos.length > 0 && (
           <>
             <TablaPasos titulo="Iteraciones de la falsa posición" archivoCSV="falsa-posicion.csv" pasos={s.res.pasos} columnas={[
@@ -138,10 +144,12 @@ function Vista({ s }: { s: Salida }) {
   }
   if (s.m === 'newton') {
     const r = s.res.resultado
+    const analisis = analizarConvergenciaNewton(s.res)
     return (
       <>
         {aviso}
         {r && <Resumen r={r} extra={[['Último cambio', fmt(r.ultimoCambio, 8)]]} />}
+        <PanelConvergenciaEjecucion analisis={analisis} />
         {s.res.pasos.length > 0 && (
           <>
             <TablaPasos titulo="Iteraciones de Newton" archivoCSV="newton.csv" pasos={s.res.pasos} columnas={[
@@ -157,10 +165,12 @@ function Vista({ s }: { s: Salida }) {
   }
   if (s.m === 'secante') {
     const r = s.res.resultado
+    const analisis = analizarConvergenciaSecante(s.res)
     return (
       <>
         {aviso}
         {r && <Resumen r={r} extra={[['Último cambio', fmt(r.ultimoCambio, 8)]]} />}
+        <PanelConvergenciaEjecucion analisis={analisis} />
         {s.res.pasos.length > 0 && (
           <>
             <TablaPasos titulo="Iteraciones de la secante" archivoCSV="secante.csv" pasos={s.res.pasos} columnas={[
@@ -180,6 +190,7 @@ function Vista({ s }: { s: Salida }) {
     <>
       {aviso}
       {r?.advertencias.map((a) => <p key={a} className="advertencia" role="note">⚠ {a}</p>)}
+      <PanelFichaConvergencia metodo="polinomio" />
       {r && (
         <>
           <dl className="resumen">

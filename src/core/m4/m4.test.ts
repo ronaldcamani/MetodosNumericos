@@ -186,4 +186,9 @@ describe('Derivación numérica', () => {
   it.each([[NaN, 0.1], [1, 0], [1, 11], [1, 1e-13], [2000, 0.1]])('inválido: t = %s, h = %s', (t, h) => {
     expect(aproximarDerivada({ derivable: tasa, t, h }).estado).toBe('invalido')
   })
+  it('evaluación no finita retorna estado no_finito', () => {
+    const r = aproximarDerivada({ derivable: crearDerivable('exponencial'), t: 800, h: 0.1 })
+    expect(r.estado).toBe('no_finito')
+    expect(r.resultado).toBeNull()
+  })
 })

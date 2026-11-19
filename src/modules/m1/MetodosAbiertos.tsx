@@ -8,6 +8,7 @@ import { ConPanelCalculadora } from "../../components/PanelCalculadora";
 import SubNavegacion from "../../components/SubNavegacion";
 import TablaPasos from "../../components/TablaPasos";
 import { crearModelo, newton, secante } from "../../core/m1";
+import { SeccionConvergenciaAbiertos } from "./AnalisisConvergenciaUI";
 import { herramientasRaices, PAGINAS_M1 } from "./paginas";
 import { EJERCICIOS_ABIERTOS, PREGUNTAS_ABIERTOS } from "./practicaAbiertos";
 
@@ -15,6 +16,7 @@ const M = Matematica;
 const SECCIONES = [
   ["idea", "La idea: seguir la tangente"],
   ["teoria", "Teoría"],
+  ["convergencia", "Análisis y criterios de convergencia"],
   ["ejemplos", "Ejemplos resueltos"],
   ["fallos", "Cuándo fallan"],
   ["ejercicios", "Ejercicios propuestos"],
@@ -100,6 +102,10 @@ export default function MetodosAbiertos() {
                 </ul>
               </div>
             </div>
+          </section>
+
+          <section id="convergencia" aria-labelledby="h-conv">
+            <SeccionConvergenciaAbiertos />
           </section>
 
           <section id="ejemplos" aria-labelledby="h-ejemplos">

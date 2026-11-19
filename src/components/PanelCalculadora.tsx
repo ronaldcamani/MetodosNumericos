@@ -39,11 +39,21 @@ export function ConPanelCalculadora({ herramientas, children }: { herramientas: 
   const [preset, setPreset] = useState<PresetActivo | null>(null)
   const panel = useRef<HTMLElement>(null)
   const boton = useRef<HTMLButtonElement>(null)
+  const yaMontoRef = useRef(false)
+
+  useEffect(() => {
+    yaMontoRef.current = true
+    return () => {
+      yaMontoRef.current = false
+    }
+  }, [])
 
   /** Cierra y devuelve el foco al botón (cuando ya es visible: se oculta mientras el panel está abierto). */
   const cerrar = useCallback(() => {
     setAbierto(false)
-    requestAnimationFrame(() => boton.current?.focus())
+    requestAnimationFrame(() => {
+      if (yaMontoRef.current) boton.current?.focus({ preventScroll: true })
+    })
   }, [])
 
   const abrir = useCallback((p?: PresetCalculadora) => {
@@ -53,7 +63,9 @@ export function ConPanelCalculadora({ herramientas, children }: { herramientas: 
     }
     setAbierto(true)
     // el foco pasa al panel para que teclado y lector de pantalla encuentren el resultado
-    requestAnimationFrame(() => panel.current?.focus())
+    requestAnimationFrame(() => {
+      if (yaMontoRef.current) panel.current?.focus({ preventScroll: true })
+    })
   }, [])
 
   useEffect(() => {

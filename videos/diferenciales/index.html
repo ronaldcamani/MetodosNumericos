@@ -1,0 +1,223 @@
+<!doctype html>
+<html
+  lang="es"
+  data-composition-variables='[
+    {"id":"titulo","type":"string","label":"Título del módulo","default":"Ecuaciones diferenciales ordinarias: Euler, RK4 y estabilidad"},
+    {"id":"acento","type":"color","label":"Color acento","default":"#38bdf8"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, initial-scale=1.0" />
+    <title>Lección 5 · Ecuaciones diferenciales ordinarias (HyperFrames 60 FPS)</title>
+    <style>
+      :root {
+        --bg-0: #060a14; --bg-1: #0b1324; --panel: rgba(15, 23, 42, 0.86);
+        --border: rgba(148, 163, 184, 0.24); --ink: #f8fafc; --muted: #94a3b8;
+        --acento: #38bdf8; --ok: #34d399; --warn: #f59e0b; --bad: #f87171;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg-0); color: var(--ink); font-family: 'Inter', sans-serif; }
+      #root {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 78% 18%, rgba(56, 189, 248, 0.16), transparent 52%),
+          linear-gradient(145deg, var(--bg-0) 0%, var(--bg-1) 58%, #070e1c 100%);
+      }
+      .grid-bg {
+        position: absolute; inset: 0;
+        background-image: linear-gradient(to right, rgba(30, 41, 59, 0.38) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(30, 41, 59, 0.38) 1px, transparent 1px);
+        background-size: 96px 96px; pointer-events: none;
+      }
+      .hud-top {
+        position: absolute; left: 112px; right: 112px; top: 56px; height: 54px;
+        display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+        border-radius: 14px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border);
+        font-family: 'JetBrains Mono', monospace; font-size: 18px; z-index: 20;
+      }
+      .hud-badge { color: var(--ok); font-weight: 700; }
+      .escena.clip {
+        position: absolute; inset: 0; padding: 136px 112px 104px;
+        display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 44px; align-items: center; z-index: 10;
+      }
+      .escena-inner { display: flex; flex-direction: column; gap: 24px; }
+      .chip {
+        display: inline-block; align-self: flex-start; padding: 8px 18px; border-radius: 999px;
+        background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.38);
+        color: #7dd3fc; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 700;
+      }
+      .titulo-escena { font-family: 'Outfit', sans-serif; font-size: 46px; line-height: 1.12; letter-spacing: -0.025em; }
+      .texto-pedagogico { font-size: 24px; line-height: 1.5; color: #cbd5e1; }
+      .formula-box {
+        padding: 22px 26px; border-radius: 16px; background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.35); font-family: 'JetBrains Mono', monospace;
+        font-size: 24px; color: #7dd3fc;
+      }
+      .panel-visual {
+        padding: 28px; border-radius: 22px; background: var(--panel); border: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 20px;
+      }
+      .tabla-datos { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 18px; }
+      .tabla-datos th { text-align: left; padding: 10px 12px; color: var(--muted); border-bottom: 1px solid var(--border); }
+      .tabla-datos td { padding: 10px 12px; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+      .ok { color: var(--ok); font-weight: 700; }
+      .warn { color: var(--warn); font-weight: 700; }
+      .bad { color: var(--bad); font-weight: 700; }
+      .progress-track {
+        position: absolute; left: 112px; right: 112px; bottom: 52px; height: 8px;
+        border-radius: 999px; background: rgba(148, 163, 184, 0.2); overflow: hidden; z-index: 20;
+      }
+      .progress-fill { width: 100%; height: 100%; background: linear-gradient(90deg, var(--acento), var(--ok)); transform-origin: left center; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="diferenciales" data-start="0" data-duration="35" data-width="1920" data-height="1080" data-fps="60">
+      <div class="grid-bg"></div>
+      <header class="hud-top">
+        <span data-var-text="titulo">Ecuaciones diferenciales ordinarias: Euler, RK4 y estabilidad</span>
+        <span class="hud-badge">HYPERFRAMES · 1920×1080 · 60 FPS · 35s</span>
+      </header>
+
+      <!-- Escena 1: 0s - 6s -->
+      <section id="ed-s1" class="escena clip" data-start="0" data-duration="6" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 1 / 5 · CAMPO DE DIRECCIONES</span>
+          <h1 class="titulo-escena">Modelo de enfriamiento y solución exacta</h1>
+          <p class="texto-pedagogico">
+            Con temperatura inicial T(0) = 80 °C, ambiente Tₐ = 20 °C y constante k = 0.5 min⁻¹,
+            el campo de direcciones guía un decaimiento exponencial asintótico hacia 20 °C.
+          </p>
+          <div class="formula-box">dT/dt = −0.5(T − 20) ⇒ T(t) = 20 + 60e^(−0.5t)</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 230" width="100%" height="230" aria-label="Curva exponencial de enfriamiento">
+            <line x1="70" y1="190" x2="620" y2="190" stroke="#64748b" stroke-dasharray="6 4" stroke-width="2" />
+            <path class="curva-draw" pathLength="1000" d="M 80 35 Q 240 145 600 185" fill="none" stroke="#34d399" stroke-width="5" />
+            <text x="515" y="176" fill="#94a3b8" font-family="JetBrains Mono" font-size="18">Tₐ = 20°C</text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Escena 2: 6s - 13s -->
+      <section id="ed-s2" class="escena clip" data-start="6" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 2 / 5 · EULER EXPLÍCITO O(h)</span>
+          <h2 class="titulo-escena">Método de Euler explícito (orden global 1)</h2>
+          <p class="texto-pedagogico">
+            Congela la pendiente inicial k₁ durante todo el paso h = 0.5 min: T₁ = 80 − 30(0.5) = 65 °C.
+            Como solo toma la tangente inicial de una curva cóncava hacia arriba, subestima siempre.
+          </p>
+          <div class="formula-box">Tₙ₊₁ = Tₙ + h · f(tₙ, Tₙ) · Error global O(h)</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>t</th><th>Euler (h=0.5)</th><th>Exacta</th><th>|Error|</th></tr></thead>
+            <tbody>
+              <tr><td>0.0</td><td>80.000</td><td>80.000</td><td>0.000</td></tr>
+              <tr><td>0.5</td><td>65.000</td><td>66.728</td><td class="warn">1.728 °C</td></tr>
+              <tr><td>1.0</td><td>53.750</td><td>56.392</td><td class="warn">2.642 °C</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 3: 13s - 21s -->
+      <section id="ed-s3" class="escena clip" data-start="13" data-duration="8" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 3 / 5 · RUNGE-KUTTA 4 O(h⁴)</span>
+          <h2 class="titulo-escena">RK4: cuatro pendientes y orden 4</h2>
+          <p class="texto-pedagogico">
+            Promedia cuatro pendientes ponderadas (k₁ + 2k₂ + 2k₃ + k₄) / 6 evaluadas en el inicio,
+            dos puntos medios y el final del paso, alcanzando precisión milimétrica con el mismo h.
+          </p>
+          <div class="formula-box">T₁_RK4 = 66.7285 °C · |Error| = 0.0005 °C</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Pendiente</th><th>t evaluado</th><th>Valor kᵢ</th></tr></thead>
+            <tbody>
+              <tr><td>k₁</td><td>0.00</td><td>−30.000</td></tr>
+              <tr><td>k₂</td><td>0.25</td><td>−26.250</td></tr>
+              <tr><td>k₃</td><td>0.25</td><td>−26.719</td></tr>
+              <tr><td>k₄</td><td>0.50</td><td class="ok">−23.320</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 4: 21s - 28s -->
+      <section id="ed-s4" class="escena clip" data-start="21" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 4 / 5 · INESTABILIDAD |R| &gt; 1</span>
+          <h2 class="titulo-escena">Inestabilidad numérica con paso grande</h2>
+          <p class="texto-pedagogico">
+            Con h = 5 min el factor de amplificación R = 1 − k·h = −1.5 supera 1 en magnitud.
+            El esquema diverge explotando en oscilaciones alternantes cada vez mayores.
+          </p>
+          <div class="formula-box">|1 − k·h| &gt; 1 (h &gt; 4 min) ⇒ explosión numérica</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Paso t (h=5)</th><th>Euler R=−1.5</th><th>Diagnóstico</th></tr></thead>
+            <tbody>
+              <tr><td>t = 0</td><td>80.0 °C</td><td>Inicial</td></tr>
+              <tr><td>t = 5</td><td>−70.0 °C</td><td class="bad">Invierte signo</td></tr>
+              <tr><td>t = 10</td><td>155.0 °C</td><td class="bad">Divergencia |R|=1.5</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 5: 28s - 35s -->
+      <section id="ed-s5" class="escena clip" data-start="28" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 5 / 5 · ESTABILIDAD VS FÍSICA</span>
+          <h2 class="titulo-escena">Estable no equivale a físicamente válido</h2>
+          <p class="texto-pedagogico">
+            Con h = 3 min tenemos |R| = 0.5 &lt; 1: los errores decaen a Tₐ, pero como R = −0.5 es
+            negativo, la solución cruza falsamente bajo 20 °C. Exige R ≥ 0 (h ≤ 2 min).
+          </p>
+          <div class="formula-box">No oscilatorio y físico ⇒ 0 ≤ 1 − k·h ⇒ h ≤ 1/k = 2 min</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Paso h</th><th>R = 1 − 0.5h</th><th>Validez física</th></tr></thead>
+            <tbody>
+              <tr><td>h = 5</td><td>−1.5</td><td class="bad">Inestable</td></tr>
+              <tr><td>h = 3</td><td>−0.5</td><td class="warn">Oscila &lt; 20 °C</td></tr>
+              <tr><td>h = 0.5</td><td>+0.75</td><td class="ok">Monótono y válido ✓</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="progress-track"><div id="global-progress" class="progress-fill"></div></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var tl = gsap.timeline({ paused: true });
+        tl.fromTo('#global-progress', { scaleX: 0 }, { scaleX: 1, duration: 35, ease: 'none' }, 0);
+        var escenas = [
+          { sel: '#ed-s1', start: 0, dur: 6 },
+          { sel: '#ed-s2', start: 6, dur: 7 },
+          { sel: '#ed-s3', start: 13, dur: 8 },
+          { sel: '#ed-s4', start: 21, dur: 7 },
+          { sel: '#ed-s5', start: 28, dur: 7 }
+        ];
+        escenas.forEach(function (sc) {
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power4.out' }, sc.start);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power4.out' }, sc.start + 0.12);
+          if (document.querySelector(sc.sel + ' .curva-draw')) {
+            tl.fromTo(sc.sel + ' .curva-draw', { strokeDasharray: 1000, strokeDashoffset: 1000 }, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.out' }, sc.start + 0.25);
+          }
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+        });
+        window.__timelines = window.__timelines || {};
+        window.__timelines['diferenciales'] = tl;
+      })();
+    </script>
+  </body>
+</html>

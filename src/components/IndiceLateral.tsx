@@ -38,6 +38,7 @@ export default function ModuloConIndice({ secciones, children }: { secciones: re
           Secciones del módulo {abierto ? '▲' : '▼'}
         </button>
         <nav aria-label="Secciones del módulo" id="indice-lista" data-abierto={abierto}>
+          <p className="indice-titulo">En este módulo</p>
           <ol>
             {secciones.map(([id, t]) => (
               <li key={id}>

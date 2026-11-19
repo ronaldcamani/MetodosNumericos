@@ -133,8 +133,28 @@ const hornerDeflacion: Generador = (r) => {
   }
 }
 
+const falsaPosUnPaso: Generador = (r) => {
+  const N = r.elegir(RAICES_DE)
+  const a = Math.floor(Math.sqrt(N))
+  const b = a + 1
+  const fa = a * a - N
+  const fb = b * b - N
+  const c = (a * fb - b * fa) / (fb - fa)
+  const fc = c * c - N
+  return {
+    titulo: 'Primer corte de falsa posición',
+    enunciado: T`Para $f(x)=x^2-${N}$ en $[${a},${b}]$, aplica un paso de falsa posición. Da el corte $c_1$ y $f(c_1)$ (4 decimales).`,
+    campos: [campo('c₁', c, 4), campo('f(c₁)', fc, 4)],
+    pasos: [
+      T`**Extremos.** $f(${a})=${fa}$ y $f(${b})=${fb}$ tienen signos opuestos.`,
+      T`**Fórmula de la cuerda.** $c_1=\dfrac{${a}\cdot ${fb}-${b}\cdot(${fa})}{${fb}-(${fa})}=${fmt(c, 4)}$.`,
+      T`**Evaluación.** $f(c_1)=${fmt(c, 4)}^2-${N}=${fmt(fc, 4)}$.`,
+    ],
+  }
+}
+
 export const ECUACIONES: CatalogoTema = {
   basico: [biseccionUnPaso, iteracionesNecesarias],
-  intermedio: [biseccionTres, newtonDos],
+  intermedio: [biseccionTres, newtonDos, falsaPosUnPaso],
   avanzado: [secanteDos, hornerDeflacion],
 }

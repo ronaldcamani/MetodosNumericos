@@ -8,6 +8,7 @@ import ModuloConIndice from "../../components/IndiceLateral";
 import Matematica from "../../components/Matematica";
 import { ConPanelCalculadora } from "../../components/PanelCalculadora";
 import SubNavegacion from "../../components/SubNavegacion";
+import VideoLeccion from "../../components/VideoLeccion";
 import Comparacion from "./Comparacion";
 import { INICIAL_SISTEMA, PREGUNTAS_SISTEMA, recomendarSistema, type RespuestasSistema } from "./decision";
 import { herramientasSistemas, PAGINAS_SISTEMAS, presetSistema } from "./paginas";
@@ -20,6 +21,7 @@ const SECCIONES = [
   ["mapa", "Mapa de métodos"],
   ["comparacion", "Comparación de los métodos"],
   ["residuo", "Residuo y verificación"],
+  ["video-leccion", "Video-lección"],
   ["ejercicios", "Ejercicios: elige tu método"],
   ["autoevaluacion", "Autoevaluación"],
   ["practica", "Práctica por niveles"],
@@ -163,6 +165,11 @@ export default function Modulo2() {
             <p className="aviso">
               La diferencia entre tolerancia, residuo y error se explica en <Link to="/errores">Errores y aritmética de computador</Link>.
             </p>
+          </section>
+
+          <section id="video-leccion" aria-labelledby="h-video">
+            <h2 id="h-video">🎬 Video-Lección Explicada Paso a Paso</h2>
+            <VideoLeccion modulo="sistemas" />
           </section>
 
           <section id="ejercicios" aria-labelledby="h-ejer">

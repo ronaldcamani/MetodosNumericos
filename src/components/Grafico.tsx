@@ -1,4 +1,5 @@
 import { lazy, Suspense } from 'react'
+import ErrorBoundary from './ErrorBoundary'
 import { useOscuro } from './SelectorTema'
 import type { Data, Layout } from 'plotly.js'
 
@@ -22,15 +23,19 @@ export default function Grafico({ titulo, ejeX, ejeY, datos, descripcion, layout
   const eje = { gridcolor: rejilla, zerolinecolor: oscuro ? '#6b7480' : '#9a9a9a', linecolor: rejilla }
   return (
     <figure className="grafico">
-      <Suspense fallback={<div style={{ height: '360px', display: 'grid', placeItems: 'center' }}>Cargando gráfico…</div>}>
-        <Plot
-          data={datos}
-          layout={{ title: { text: titulo }, xaxis: { title: { text: ejeX }, ...eje, ...xaxis }, yaxis: { title: { text: ejeY }, ...eje, ...yaxis }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { color: tinta }, autosize: true, margin: { t: 40, r: 20, b: 60, l: 60 }, legend: { orientation: 'h', y: -0.3 }, ...resto }}
-          useResizeHandler
-          style={{ width: '100%', height: '360px' }}
-          config={{ responsive: true, displaylogo: false }}
-        />
-      </Suspense>
+      <div className="grafico-marco">
+        <ErrorBoundary titulo="No se pudo mostrar el gráfico" compacto>
+          <Suspense fallback={<div className="grafico-cargando">Cargando gráfico…</div>}>
+            <Plot
+              data={datos}
+              layout={{ title: { text: titulo }, xaxis: { title: { text: ejeX }, ...eje, ...xaxis }, yaxis: { title: { text: ejeY }, ...eje, ...yaxis }, paper_bgcolor: 'rgba(0,0,0,0)', plot_bgcolor: 'rgba(0,0,0,0)', font: { color: tinta }, autosize: true, margin: { t: 40, r: 20, b: 60, l: 60 }, legend: { orientation: 'h', y: -0.3 }, ...resto }}
+              useResizeHandler
+              style={{ width: '100%', height: '360px' }}
+              config={{ responsive: true, displaylogo: false }}
+            />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
       <figcaption>{descripcion}</figcaption>
     </figure>
   )

@@ -130,8 +130,26 @@ const estabilidadEuler: Generador = (r) => {
   }
 }
 
+const eulerEnfriamientoP: Generador = (r) => {
+  const k = r.elegir([0.4, 0.5])
+  const T0 = r.elegir([70, 80, 90])
+  const h = 0.5
+  const T1 = T0 + h * (-k * (T0 - 20))
+  const ex = 20 + (T0 - 20) * Math.exp(-k * h)
+  return {
+    titulo: 'Enfriamiento con un paso de Euler',
+    enunciado: T`Para $T'=-${k}(T-20)$ con $T(0)=${T0}$ °C y $h=${h}$ min, calcula $T_1$ y la temperatura exacta $T(${h})$ (4 decimales).`,
+    campos: [campo('T₁', T1, 4), campo(`T(${h}) exacta`, ex, 4)],
+    pasos: [
+      T`**Pendiente inicial.** $T'(0)=-${k}(${T0}-20)=${fmt(-k * (T0 - 20), 4)}$ °C/min.`,
+      T`**Paso de Euler.** $T_1=${T0}+${h}\cdot(${fmt(-k * (T0 - 20), 4)})=${fmt(T1, 4)}$ °C.`,
+      T`**Solución exacta.** $T(${h})=20+${T0 - 20}e^{-${fmt(k * h, 2)}}=${fmt(ex, 4)}$ °C.`,
+    ],
+  }
+}
+
 export const DIFERENCIALES: CatalogoTema = {
-  basico: [eulerUnPaso, eulerDosPasos],
+  basico: [eulerUnPaso, eulerDosPasos, eulerEnfriamientoP],
   intermedio: [eulerTresPasos, rk4Lineal],
   avanzado: [rk4Mixto, estabilidadEuler],
 }

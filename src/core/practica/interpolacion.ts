@@ -128,8 +128,28 @@ const calidadAjuste: Generador = (r) => {
   }
 }
 
+const extrapolacionLineal: Generador = (r) => {
+  const x0 = r.entero(1, 3)
+  const x1 = x0 + r.entero(2, 4)
+  const y0 = r.entero(2, 6)
+  const y1 = y0 + r.entero(2, 6)
+  const xq = x1 + r.entero(1, 2)
+  const m = (y1 - y0) / (x1 - x0)
+  const yq = y0 + m * (xq - x0)
+  return {
+    titulo: 'Extrapolación lineal fuera del rango',
+    enunciado: T`Con los puntos $(${x0},${y0})$ y $(${x1},${y1})$, estima por recta en $x=${xq}$ (fuera de $[${x0},${x1}]$). Da la pendiente $m$ y la predicción (3 decimales).`,
+    campos: [campo('Pendiente m', m, 3), campo(`y(${xq})`, yq, 3)],
+    pasos: [
+      T`**Pendiente.** $m=\dfrac{${y1}-${y0}}{${x1}-${x0}}=${fmt(m, 4)}$.`,
+      T`**Recta.** $y(${xq})=${y0}+${fmt(m, 4)}(${xq}-${x0})=${fmt(yq, 3)}$.`,
+      T`**Cuidado.** Como $x=${xq}>${x1}$, es una extrapolación y asume que la tendencia lineal continúa.`,
+    ],
+  }
+}
+
 export const INTERPOLACION: CatalogoTema = {
-  basico: [lineal, regresion3],
+  basico: [lineal, regresion3, extrapolacionLineal],
   intermedio: [lagrange3, regresion4],
   avanzado: [lagrange4, calidadAjuste],
 }

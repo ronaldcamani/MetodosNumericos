@@ -1,0 +1,227 @@
+<!doctype html>
+<html
+  lang="es"
+  data-composition-variables='[
+    {"id":"titulo","type":"string","label":"Título del módulo","default":"Interpolación de Lagrange y ajuste por mínimos cuadrados"},
+    {"id":"acento","type":"color","label":"Color acento","default":"#38bdf8"}
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, initial-scale=1.0" />
+    <title>Lección 3 · Interpolación y regresión (HyperFrames 60 FPS)</title>
+    <style>
+      :root {
+        --bg-0: #060a14; --bg-1: #0b1324; --panel: rgba(15, 23, 42, 0.86);
+        --border: rgba(148, 163, 184, 0.24); --ink: #f8fafc; --muted: #94a3b8;
+        --acento: #38bdf8; --ok: #34d399; --warn: #f59e0b; --bad: #f87171;
+      }
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg-0); color: var(--ink); font-family: 'Inter', sans-serif; }
+      #root {
+        position: absolute; inset: 0;
+        background: radial-gradient(circle at 78% 18%, rgba(56, 189, 248, 0.16), transparent 52%),
+          linear-gradient(145deg, var(--bg-0) 0%, var(--bg-1) 58%, #070e1c 100%);
+      }
+      .grid-bg {
+        position: absolute; inset: 0;
+        background-image: linear-gradient(to right, rgba(30, 41, 59, 0.38) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(30, 41, 59, 0.38) 1px, transparent 1px);
+        background-size: 96px 96px; pointer-events: none;
+      }
+      .hud-top {
+        position: absolute; left: 112px; right: 112px; top: 56px; height: 54px;
+        display: flex; align-items: center; justify-content: space-between; padding: 0 24px;
+        border-radius: 14px; background: rgba(15, 23, 42, 0.8); border: 1px solid var(--border);
+        font-family: 'JetBrains Mono', monospace; font-size: 18px; z-index: 20;
+      }
+      .hud-badge { color: var(--ok); font-weight: 700; }
+      .escena.clip {
+        position: absolute; inset: 0; padding: 136px 112px 104px;
+        display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 44px; align-items: center; z-index: 10;
+      }
+      .escena-inner { display: flex; flex-direction: column; gap: 24px; }
+      .chip {
+        display: inline-block; align-self: flex-start; padding: 8px 18px; border-radius: 999px;
+        background: rgba(56, 189, 248, 0.14); border: 1px solid rgba(56, 189, 248, 0.38);
+        color: #7dd3fc; font-family: 'JetBrains Mono', monospace; font-size: 17px; font-weight: 700;
+      }
+      .titulo-escena { font-family: 'Outfit', sans-serif; font-size: 46px; line-height: 1.12; letter-spacing: -0.025em; }
+      .texto-pedagogico { font-size: 24px; line-height: 1.5; color: #cbd5e1; }
+      .formula-box {
+        padding: 22px 26px; border-radius: 16px; background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(56, 189, 248, 0.35); font-family: 'JetBrains Mono', monospace;
+        font-size: 25px; color: #7dd3fc;
+      }
+      .panel-visual {
+        padding: 28px; border-radius: 22px; background: var(--panel); border: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 20px;
+      }
+      .tabla-datos { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 18px; }
+      .tabla-datos th { text-align: left; padding: 10px 12px; color: var(--muted); border-bottom: 1px solid var(--border); }
+      .tabla-datos td { padding: 10px 12px; border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+      .ok { color: var(--ok); font-weight: 700; }
+      .warn { color: var(--warn); font-weight: 700; }
+      .bad { color: var(--bad); font-weight: 700; }
+      .progress-track {
+        position: absolute; left: 112px; right: 112px; bottom: 52px; height: 8px;
+        border-radius: 999px; background: rgba(148, 163, 184, 0.2); overflow: hidden; z-index: 20;
+      }
+      .progress-fill { width: 100%; height: 100%; background: linear-gradient(90deg, var(--acento), var(--ok)); transform-origin: left center; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="interpolacion" data-start="0" data-duration="35" data-width="1920" data-height="1080" data-fps="60">
+      <div class="grid-bg"></div>
+      <header class="hud-top">
+        <span data-var-text="titulo">Interpolación de Lagrange y ajuste por mínimos cuadrados</span>
+        <span class="hud-badge">HYPERFRAMES · 1920×1080 · 60 FPS · 35s</span>
+      </header>
+
+      <!-- Escena 1: 0s - 6s -->
+      <section id="int-s1" class="escena clip" data-start="0" data-duration="6" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 1 / 5 · OBJETIVO DEL MODELO</span>
+          <h1 class="titulo-escena">Dos preguntas opuestas sobre los mismos datos</h1>
+          <p class="texto-pedagogico">
+            Si los nodos son exactos, interpola para pasar por cada punto. Si tienen ruido
+            experimental, ajusta una curva simple que capture la tendencia global sin sobreajustar.
+          </p>
+          <div class="formula-box">Datos exactos → P(xᵢ) = yᵢ · Datos ruidosos → min Σ(yᵢ − ŷᵢ)²</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>xᵢ</th><th>yᵢ</th><th>Interpolación</th><th>Regresión ŷ</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>1</td><td>1.000</td><td>0.900</td></tr>
+              <tr><td>1</td><td>2</td><td>2.000</td><td>1.800</td></tr>
+              <tr><td>2</td><td>2</td><td>2.000</td><td>2.700</td></tr>
+              <tr><td>3</td><td>4</td><td>4.000</td><td class="ok">3.600</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Escena 2: 6s - 14s -->
+      <section id="int-s2" class="escena clip" data-start="6" data-duration="8" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 2 / 5 · POLINOMIO DE LAGRANGE</span>
+          <h2 class="titulo-escena">Polinomio de Lagrange y bases Lᵢ(x)</h2>
+          <p class="texto-pedagogico">
+            Cada polinomio base Lᵢ(x) vale 1 en su nodo xᵢ y se anula en todos los demás.
+            Combinarlos linealmente produce un polinomio único de grado ≤ n − 1.
+          </p>
+          <div class="formula-box">P(x) = Σ yᵢ Lᵢ(x) · P(1.5) = 1.9375</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 230" width="100%" height="230" aria-label="Curva de interpolacion cubica">
+            <line x1="60" y1="200" x2="620" y2="200" stroke="#475569" stroke-width="2" />
+            <path class="curva-draw" pathLength="1000" d="M 100 165 C 210 100, 320 120, 405 120 C 490 120, 535 75, 580 40" fill="none" stroke="#f8fafc" stroke-width="4.5" />
+            <circle cx="100" cy="165" r="8" fill="#38bdf8" />
+            <circle cx="260" cy="120" r="8" fill="#38bdf8" />
+            <circle cx="420" cy="120" r="8" fill="#38bdf8" />
+            <circle cx="580" cy="40" r="8" fill="#38bdf8" />
+          </svg>
+        </div>
+      </section>
+
+      <!-- Escena 3: 14s - 21s -->
+      <section id="int-s3" class="escena clip" data-start="14" data-duration="7" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 3 / 5 · LÍMITES DEL GRADO ALTO</span>
+          <h2 class="titulo-escena">Fenómeno de Runge y abscisas repetidas</h2>
+          <p class="texto-pedagogico">
+            Elevar el grado en nodos equiespaciados dispara oscilaciones artificiales cerca de los
+            extremos, y nodos repetidos rompen la división por (xᵢ − xⱼ).
+          </p>
+          <div class="formula-box">xᵢ = xⱼ ⇒ denominador nulo · grado alto ≠ mayor precisión</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 230" width="100%" height="230" aria-label="Oscilacion de Runge">
+            <line x1="60" y1="195" x2="620" y2="195" stroke="#475569" stroke-width="2" />
+            <path d="M 80 185 Q 250 180 340 45 Q 430 180 600 185" fill="none" stroke="#34d399" stroke-width="3.5" />
+            <path class="curva-draw" pathLength="1000" d="M 80 185 C 120 40, 185 225, 240 165 C 295 105, 315 45, 340 45 C 365 45, 385 105, 440 165 C 495 225, 560 40, 600 185" fill="none" stroke="#f87171" stroke-width="3.5" />
+            <text x="480" y="34" fill="#fca5a5" font-family="JetBrains Mono" font-size="18">Oscilación en bordes</text>
+          </svg>
+        </div>
+      </section>
+
+      <!-- Escena 4: 21s - 29s -->
+      <section id="int-s4" class="escena clip" data-start="21" data-duration="8" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 4 / 5 · MÍNIMOS CUADRADOS</span>
+          <h2 class="titulo-escena">Regresión lineal por mínimos cuadrados</h2>
+          <p class="texto-pedagogico">
+            Las ecuaciones normales encuentran la pendiente β₁ y el intercepto β₀ que minimizan la
+            suma cuadrática de residuos verticales eᵢ² = (yᵢ − ŷᵢ)².
+          </p>
+          <div class="formula-box">ŷ = 0.9 + 0.9x · SSE = 0.90 · R² ≈ 0.853</div>
+        </div>
+        <div class="panel-visual">
+          <svg viewBox="0 0 680 230" width="100%" height="230" aria-label="Recta de regresion y residuos">
+            <line x1="80" y1="185" x2="580" y2="55" stroke="#f59e0b" stroke-width="4.5" />
+            <line x1="120" y1="162" x2="120" y2="174" stroke="#f87171" stroke-width="3" />
+            <line x1="270" y1="110" x2="270" y2="136" stroke="#f87171" stroke-width="3" />
+            <line x1="420" y1="138" x2="420" y2="96" stroke="#f87171" stroke-width="3" />
+            <line x1="560" y1="42" x2="560" y2="60" stroke="#f87171" stroke-width="3" />
+            <circle cx="120" cy="162" r="8" fill="#38bdf8" />
+            <circle cx="270" cy="110" r="8" fill="#38bdf8" />
+            <circle cx="420" cy="138" r="8" fill="#38bdf8" />
+            <circle cx="560" cy="42" r="8" fill="#38bdf8" />
+          </svg>
+        </div>
+      </section>
+
+      <!-- Escena 5: 29s - 35s -->
+      <section id="int-s5" class="escena clip" data-start="29" data-duration="6" data-track-index="1">
+        <div class="escena-inner">
+          <span class="chip">ESCENA 5 / 5 · CRITERIO DE DECISIÓN</span>
+          <h2 class="titulo-escena">Criterio final: cuándo elegir cada uno</h2>
+          <p class="texto-pedagogico">
+            No fuerces un polinomio de grado alto sobre mediciones con ruido ni extrapoles fuera
+            del dominio observado: verifica siempre el contexto físico del problema.
+          </p>
+          <div class="formula-box">Tabla certificada → Lagrange / Splines · Experimento ruidoso → Mínimos cuadrados</div>
+        </div>
+        <div class="panel-visual">
+          <table class="tabla-datos">
+            <thead><tr><th>Situación</th><th>Modelo ideal</th><th>Razón</th></tr></thead>
+            <tbody>
+              <tr><td>Pocos datos sin ruido</td><td class="ok">Lagrange</td><td>Exacto en nodos</td></tr>
+              <tr><td>Muchos datos con ruido</td><td class="ok">Mín. cuadrados</td><td>Suaviza dispersión</td></tr>
+              <tr><td>Muchos nodos exactos</td><td class="warn">Splines</td><td>Sin oscilación Runge</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <div class="progress-track"><div id="global-progress" class="progress-fill"></div></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+    <script>
+      (function () {
+        var tl = gsap.timeline({ paused: true });
+        tl.fromTo('#global-progress', { scaleX: 0 }, { scaleX: 1, duration: 35, ease: 'none' }, 0);
+        var escenas = [
+          { sel: '#int-s1', start: 0, dur: 6 },
+          { sel: '#int-s2', start: 6, dur: 8 },
+          { sel: '#int-s3', start: 14, dur: 7 },
+          { sel: '#int-s4', start: 21, dur: 8 },
+          { sel: '#int-s5', start: 29, dur: 6 }
+        ];
+        escenas.forEach(function (sc) {
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.45, ease: 'power4.out' }, sc.start);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 0, y: 32 }, { opacity: 1, y: 0, duration: 0.55, ease: 'power4.out' }, sc.start + 0.12);
+          if (document.querySelector(sc.sel + ' .curva-draw')) {
+            tl.fromTo(sc.sel + ' .curva-draw', { strokeDasharray: 1000, strokeDashoffset: 1000 }, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.out' }, sc.start + 0.25);
+          }
+          tl.fromTo(sc.sel + ' .escena-inner', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+          tl.fromTo(sc.sel + ' .panel-visual', { opacity: 1 }, { opacity: 0, duration: 0.25, ease: 'power2.in' }, sc.start + sc.dur - 0.3);
+        });
+        window.__timelines = window.__timelines || {};
+        window.__timelines['interpolacion'] = tl;
+      })();
+    </script>
+  </body>
+</html>

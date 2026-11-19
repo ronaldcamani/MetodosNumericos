@@ -7,6 +7,7 @@ import ModuloConIndice from "../../components/IndiceLateral";
 import Matematica from "../../components/Matematica";
 import { ConPanelCalculadora } from "../../components/PanelCalculadora";
 import SubNavegacion from "../../components/SubNavegacion";
+import VideoLeccion from "../../components/VideoLeccion";
 import { Link } from "react-router-dom";
 import Comparacion from "./Comparacion";
 import { INICIAL_DATOS, PREGUNTAS_DATOS, recomendarDatos, type RespuestasDatos } from "./decision";
@@ -21,6 +22,7 @@ const SECCIONES = [
   ["mapa", "Mapa de métodos"],
   ["comparacion", "Comparación de los modelos"],
   ["cuidados", "Cuidados"],
+  ["video-leccion", "Video-lección"],
   ["ejercicios", "Ejercicios: elige tu modelo"],
   ["autoevaluacion", "Autoevaluación"],
   ["practica", "Práctica por niveles"],
@@ -157,6 +159,11 @@ export default function Modulo3() {
               <li><strong>Grado alto.</strong> Con 5 o 6 nodos el polinomio puede oscilar.</li>
               <li><strong>Interpolar no elimina el error de medición</strong>: lo traslada a la curva. Ver <Link to="/errores">Errores y aritmética de computador</Link>.</li>
             </ul>
+          </section>
+
+          <section id="video-leccion" aria-labelledby="h-video">
+            <h2 id="h-video">🎬 Video-Lección Explicada Paso a Paso</h2>
+            <VideoLeccion modulo="interpolacion" />
           </section>
 
           <section id="ejercicios" aria-labelledby="h-ejer">
