@@ -29,8 +29,9 @@ export default function MetodosIterativos() {
   const gs = gaussSeidel({ A, b, tol: 1e-6, maxIter: 100 });
   return (
     <ConPanelCalculadora herramientas={herramientasSistemas()}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="sistemas">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad II · Cap. III · Tema 07: Métodos Iterativos, Matrices Especiales y Gauss-Seidel</p>
           <h1>Sistemas de ecuaciones lineales · Métodos iterativos</h1>
           <SubNavegacion enlaces={PAGINAS_SISTEMAS} etiqueta="Páginas de sistemas de ecuaciones lineales" />
           <p>

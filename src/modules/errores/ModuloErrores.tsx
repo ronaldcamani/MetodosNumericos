@@ -39,8 +39,9 @@ export default function ModuloErrores() {
   const eps = epsilonMaquina();
   return (
     <ConPanelCalculadora herramientas={HERRAMIENTAS}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="errores">
         <article className="modulo">
+          <p className="silabo-etiqueta">Primera Unidad · Capítulo I: Teoría de Errores · Temas 01 y 02 (Sílabo 2026-B)</p>
           <h1>Fundamentos: Errores y aritmética de computador</h1>
           <p>
             <strong>Objetivo:</strong> distinguir los tipos de error, medirlos

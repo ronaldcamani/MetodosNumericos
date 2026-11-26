@@ -27,8 +27,9 @@ export default function PaginaLagrange() {
   const lag = lagrange({ x: [0, 1, 2, 3], y: [1, 2, 2, 4], consulta: 1.5 });
   return (
     <ConPanelCalculadora herramientas={herramientasInterpolacion()}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="interpolacion">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad III · Cap. IV · Tema 10: Polinomios de Interpolación de Lagrange</p>
           <h1>Interpolación y ajuste de curvas · Interpolación de Lagrange</h1>
           <SubNavegacion enlaces={PAGINAS_INTERPOLACION} etiqueta="Páginas de interpolación y ajuste de curvas" />
           <p>

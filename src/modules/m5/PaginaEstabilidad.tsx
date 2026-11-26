@@ -25,8 +25,9 @@ const SECCIONES = [
 export default function PaginaEstabilidad() {
   return (
     <ConPanelCalculadora herramientas={herramientasEdo("estabilidad")}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="diferenciales">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad V · Cap. VI · Estabilidad y Tamaño de Paso (Temas 14 y 15)</p>
           <h1>Ecuaciones diferenciales · Estabilidad y tamaño de paso</h1>
           <SubNavegacion enlaces={PAGINAS_EDO} etiqueta="Páginas de ecuaciones diferenciales" />
           <p>

@@ -252,10 +252,16 @@ function VideoLeccionReproductor({ modulo }: { modulo: ModuloVideoId }) {
   useEffect(() => {
     if (typeof document === 'undefined') return
     const onFullscreen = () => {
-      setEnPantallaCompleta(document.fullscreenElement === contenedorRef.current)
+      const doc = document as Document & { webkitFullscreenElement?: Element | null }
+      const fsEl = document.fullscreenElement ?? doc.webkitFullscreenElement ?? null
+      setEnPantallaCompleta(fsEl === contenedorRef.current)
     }
     document.addEventListener('fullscreenchange', onFullscreen)
-    return () => document.removeEventListener('fullscreenchange', onFullscreen)
+    document.addEventListener('webkitfullscreenchange', onFullscreen)
+    return () => {
+      document.removeEventListener('fullscreenchange', onFullscreen)
+      document.removeEventListener('webkitfullscreenchange', onFullscreen)
+    }
   }, [])
 
   // Sincroniza velocidad y silencio sin reiniciar la pista ni tocar currentTime
@@ -626,16 +632,26 @@ function VideoLeccionReproductor({ modulo }: { modulo: ModuloVideoId }) {
   }
 
   const togglePantallaCompleta = async () => {
-    const el = contenedorRef.current
-    if (!el || typeof el.requestFullscreen !== 'function') {
+    const el = contenedorRef.current as (HTMLElement & { webkitRequestFullscreen?: () => Promise<void> | void }) | null
+    const doc = document as Document & {
+      webkitFullscreenElement?: Element | null
+      webkitExitFullscreen?: () => Promise<void> | void
+    }
+    const pedirFs = el?.requestFullscreen?.bind(el) ?? el?.webkitRequestFullscreen?.bind(el)
+    if (!el || !pedirFs) {
       setModoCine((v) => !v)
       return
     }
     try {
-      if (document.fullscreenElement === el && typeof document.exitFullscreen === 'function') {
-        await document.exitFullscreen()
+      const fsActual = document.fullscreenElement ?? doc.webkitFullscreenElement ?? null
+      if (fsActual === el) {
+        if (typeof document.exitFullscreen === 'function') {
+          await document.exitFullscreen()
+        } else if (typeof doc.webkitExitFullscreen === 'function') {
+          await doc.webkitExitFullscreen()
+        }
       } else {
-        await el.requestFullscreen()
+        await pedirFs()
       }
     } catch {
       setModoCine((v) => !v)

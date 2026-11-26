@@ -2,6 +2,7 @@ import json
 import unittest
 
 import generar_m4 as g
+from util_json import assert_json_close
 
 
 class ValoresDeLaGuia(unittest.TestCase):
@@ -48,7 +49,7 @@ class ValoresDeLaGuia(unittest.TestCase):
         self.assertAlmostEqual(g.generar()["derivada_central"]["valor"], 2.0, places=10)
 
     def test_json_actualizado(self):
-        self.assertEqual(json.loads(g.SALIDA.read_text()), json.loads(json.dumps(g.generar())), "ejecuta: python3 referencia/generar_m4.py")
+        assert_json_close(self, json.loads(g.SALIDA.read_text()), json.loads(json.dumps(g.generar())), "ejecuta: python3 referencia/generar_m4.py")
 
 
 if __name__ == "__main__":

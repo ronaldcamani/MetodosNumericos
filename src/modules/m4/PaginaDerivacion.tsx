@@ -31,8 +31,9 @@ export default function PaginaDerivacion() {
   const exp = aproximarDerivada({ derivable: crearDerivable("exponencial"), t: 1, h: 0.5 });
   return (
     <ConPanelCalculadora herramientas={herramientasIntegracion("derivacion")}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="integracion">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad IV · Cap. V · Tema 13: Derivación Numérica y Evaluación de Derivadas</p>
           <h1>Integración y derivación numérica · Derivación numérica</h1>
           <SubNavegacion enlaces={PAGINAS_INTEGRACION} etiqueta="Páginas de integración y derivación numérica" />
           <p>

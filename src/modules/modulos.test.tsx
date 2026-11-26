@@ -37,12 +37,12 @@ describe('Ecuaciones: calculadora lateral de raíces', () => {
     expect(within(raices()).getByRole('table', { name: /falsa posición/i })).toBeInTheDocument()
     expect(within(raices()).getByRole('status')).toHaveTextContent('convergio')
   })
-  it('cada página ofrece solo sus métodos: abiertos → Newton y secante', async () => {
+  it('cada página ofrece solo sus métodos: abiertos → Newton, secante y punto fijo', async () => {
     const u = userEvent.setup()
     irA('/ecuaciones/abiertos')
     await abrirPanel(u)
     const opciones = within(within(raices()).getByLabelText('Método')).getAllByRole('option').map((o) => o.textContent)
-    expect(opciones).toEqual(['Newton (abierto)', 'Secante (abierto)'])
+    expect(opciones).toEqual(['Newton (abierto)', 'Secante (abierto)', 'Punto fijo (abierto)'])
   })
   it('editar un campo descarta el resultado previo', async () => {
     const u = userEvent.setup()

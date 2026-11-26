@@ -28,8 +28,9 @@ export default function PaginaTrapecio() {
   const trap = integrarTasa("trapecio", entrada);
   return (
     <ConPanelCalculadora herramientas={herramientasIntegracion("trapecio")}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="integracion">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad IV · Cap. V · Tema 12: Reglas de Simpson y Trapezoidal</p>
           <h1>Integración y derivación numérica · Trapecio compuesto</h1>
           <SubNavegacion enlaces={PAGINAS_INTEGRACION} etiqueta="Páginas de integración y derivación numérica" />
           <p>

@@ -31,8 +31,9 @@ export default function RaicesPolinomios() {
   const r1 = raicesPolinomio({ coef: COEF_BASE, tol: 1e-10, maxIter: 100 });
   return (
     <ConPanelCalculadora herramientas={herramientasRaices(["todas", "biseccion", "falsa", "newton", "secante"])}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="ecuaciones">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad II · Cap. II · Tema 05: Raíces de Polinomios (Horner, Deflación, Durand-Kerner)</p>
           <h1>Ecuaciones no lineales · Raíces de polinomios</h1>
           <SubNavegacion enlaces={PAGINAS_M1} etiqueta="Páginas de ecuaciones no lineales" />
           <p>

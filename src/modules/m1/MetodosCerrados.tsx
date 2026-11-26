@@ -27,8 +27,9 @@ export default function MetodosCerrados() {
   const fal = falsaPosicion({ f: base.f, a: 1, b: 2, tol: 1e-6, maxIter: 100 });
   return (
     <ConPanelCalculadora herramientas={herramientasRaices(["biseccion", "falsa"])}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="ecuaciones">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad II · Cap. II · Tema 03: Métodos Gráficos y Cerrados (Sílabo 2026-B)</p>
           <h1>Ecuaciones no lineales · Métodos cerrados</h1>
           <SubNavegacion enlaces={PAGINAS_M1} etiqueta="Páginas de ecuaciones no lineales" />
           <p>

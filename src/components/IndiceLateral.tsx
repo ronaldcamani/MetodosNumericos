@@ -1,11 +1,21 @@
 import { useEffect, useState } from 'react'
+import { ETIQUETA_ESTADO_SILABO, obtenerModuloPorId } from '../modules/registro'
 
 export type Seccion = readonly [id: string, titulo: string]
 
 /** Contenedor de módulo: índice lateral fijo (en móvil, desplegable) + contenido. */
-export default function ModuloConIndice({ secciones, children }: { secciones: readonly Seccion[]; children: React.ReactNode }) {
+export default function ModuloConIndice({
+  secciones,
+  moduloId,
+  children,
+}: {
+  secciones: readonly Seccion[]
+  moduloId?: string
+  children: React.ReactNode
+}) {
   const [activa, setActiva] = useState(secciones[0]?.[0] ?? '')
   const [abierto, setAbierto] = useState(false)
+  const infoModulo = moduloId ? obtenerModuloPorId(moduloId) : undefined
 
   useEffect(() => {
     if (typeof IntersectionObserver === 'undefined') return
@@ -38,6 +48,21 @@ export default function ModuloConIndice({ secciones, children }: { secciones: re
           Secciones del módulo {abierto ? '▲' : '▼'}
         </button>
         <nav aria-label="Secciones del módulo" id="indice-lista" data-abierto={abierto}>
+          {infoModulo && (
+            <div className="indice-silabo" aria-label="Ubicación en el Sílabo UNSA 2026-B">
+              <p className="indice-silabo-unidad">{infoModulo.silabo.unidad} · {infoModulo.silabo.capituloCorto}</p>
+              <ul className="indice-silabo-temas">
+                {infoModulo.silabo.temas.map((t) => (
+                  <li key={t.numero}>
+                    <span className="indice-tema-num">{t.numero}</span>
+                    <span className={`silabo-badge silabo-badge-${t.estado}`}>
+                      {ETIQUETA_ESTADO_SILABO[t.estado]}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           <p className="indice-titulo">En este módulo</p>
           <ol>
             {secciones.map(([id, t]) => (

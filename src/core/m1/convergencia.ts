@@ -2,9 +2,10 @@ import type { ResultadoMetodo } from '../tipos'
 import type { PasoBiseccion, SalidaBiseccion } from './biseccion'
 import type { PasoFalsaPosicion, SalidaFalsaPosicion } from './falsaPosicion'
 import type { PasoNewton, SalidaNewton } from './newton'
+import type { PasoPuntoFijo, SalidaPuntoFijo } from './puntoFijo'
 import type { PasoSecante, SalidaSecante } from './secante'
 
-export type MetodoConvergencia = 'biseccion' | 'falsa' | 'newton' | 'secante' | 'polinomio'
+export type MetodoConvergencia = 'biseccion' | 'falsa' | 'punto_fijo' | 'newton' | 'secante' | 'polinomio'
 
 export interface FichaConvergencia {
   metodo: MetodoConvergencia
@@ -101,6 +102,18 @@ export const FICHAS_CONVERGENCIA: Record<MetodoConvergencia, FichaConvergencia> 
     velocidadResumen: 'Mantiene el cambio de signo y suele acelerar al principio, pero puede estancarse con razón lineal cercana a 1.',
     riesgoPrincipal: 'Estancamiento unilateral: en curvas muy convexas o cóncavas un extremo queda fijo y el ancho b − a no tiende a 0.',
     diagnosticoTipico: 'Vigila si un extremo no se mueve durante varias iteraciones consecutivas.',
+  },
+  punto_fijo: {
+    metodo: 'punto_fijo',
+    nombre: 'Iteración de Punto Fijo',
+    familia: 'abierto',
+    ordenTeorico: 1,
+    ordenEtiqueta: 'Lineal con razón |g′(r)| (p = 1)',
+    formulaOrdenTex: String.raw`x_{k+1} = g(x_k), \qquad e_{k+1} \approx |g'(r)|\,e_k`,
+    condicionTex: String.raw`|g'(x)| \le L < 1 \;\text{ en un entorno de }\; r=g(r)`,
+    velocidadResumen: 'Cada iteración multiplica el error por la razón asintótica |g′(r)|: cuanto menor sea |g′(r)|, más rápida es la contracción.',
+    riesgoPrincipal: 'Si |g′(x)| ≥ 1 en el entorno de la raíz, el método diverge (en escalera o en espiral creciente) según la forma elegida de despejar x = g(x).',
+    diagnosticoTipico: '0 ≤ g′(r) < 1 produce convergencia monótona; −1 < g′(r) < 0 produce convergencia oscilatoria (telaraña).',
   },
 }
 
@@ -298,4 +311,50 @@ export function analizarConvergenciaFalsa(res: ResultadoMetodo<SalidaFalsaPosici
       : 'La convergencia depende de la curvatura de f en el intervalo.'
 
   return { metodo: 'falsa', ficha, ordenTeorico: ficha.ordenTeorico, ordenEmpirico, factorAsintotico, razonLineal, clasificacion, resumen, alertas, serie }
+}
+
+export function analizarConvergenciaPuntoFijo(res: ResultadoMetodo<SalidaPuntoFijo, PasoPuntoFijo>): AnalisisConvergencia {
+  const ficha = FICHAS_CONVERGENCIA.punto_fijo
+  const cambios = res.pasos.map((p) => p.errorAbs)
+  const pasosUtiles = res.pasos.map((p) => p.errorAbs > 1e-13)
+  const { ordenEmpirico, factorAsintotico, razonLineal, serie } = estimarOrdenEmpirico(cambios, ficha.ordenTeorico, pasosUtiles)
+  const alertas: string[] = []
+
+  const dg0 = res.pasos[0]?.pendienteDg
+  if (dg0 !== undefined && Math.abs(dg0) >= 1) {
+    alertas.push(`No cumple el criterio suficiente en x₀: |g′(x₀)| = ${Math.abs(dg0).toFixed(3)} ≥ 1; este despeje g(x) tiende a divergir.`)
+  } else if (res.resultado && res.resultado.diagnostico.tipo === 'oscilatoria') {
+    alertas.push(`Convergencia oscilatoria: g′(r) = ${res.resultado.pendienteDg.toFixed(4)} ∈ (−1, 0), por lo que los iterados alternan alrededor de la raíz.`)
+  }
+
+  if (res.resultado && Math.abs(res.resultado.pendienteDg) > 0.8 && Math.abs(res.resultado.pendienteDg) < 1) {
+    alertas.push(`Contracción lenta: |g′(r)| = ${Math.abs(res.resultado.pendienteDg).toFixed(4)} es cercano a 1 y requiere más iteraciones.`)
+  }
+
+  if (res.estado === 'no_finito' || res.estado === 'max_iter' || res.estado === 'no_converge') {
+    alertas.push('El despeje x = g(x) no contrajo hacia el punto fijo; elige una reescritura con |g′(x)| < 1.')
+  }
+
+  const clasificacion =
+    res.estado === 'convergio'
+      ? `Lineal (p ≈ 1, razón |g′| ≈ ${Math.abs(res.resultado?.pendienteDg ?? razonLineal ?? 0).toFixed(3)})`
+      : 'Sin convergencia confirmada (|g′| ≥ 1)'
+
+  const resumen =
+    res.estado === 'convergio' && res.resultado
+      ? `Orden teórico p = 1 con razón de contracción |g′(r)| = ${Math.abs(res.resultado.pendienteDg).toFixed(4)}${ordenEmpirico !== null ? ` (orden empírico p ≈ ${ordenEmpirico.toFixed(3)})` : ''}.`
+      : 'Ejecución divergente o sin convergencia: verifica que |g′(x)| < 1 en el intervalo de interés.'
+
+  return {
+    metodo: 'punto_fijo',
+    ficha,
+    ordenTeorico: ficha.ordenTeorico,
+    ordenEmpirico,
+    factorAsintotico: res.resultado ? Math.abs(res.resultado.pendienteDg) : factorAsintotico,
+    razonLineal,
+    clasificacion,
+    resumen,
+    alertas,
+    serie,
+  }
 }

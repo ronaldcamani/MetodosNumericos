@@ -32,8 +32,9 @@ export default function PaginaRK4() {
   const eu = integrarEnfriamiento("euler", P, 0.5);
   return (
     <ConPanelCalculadora herramientas={herramientasEdo("rk4")}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="diferenciales">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad V · Cap. VI · Tema 15: Métodos de Runge-Kutta (RK4)</p>
           <h1>Ecuaciones diferenciales · Runge-Kutta 4</h1>
           <SubNavegacion enlaces={PAGINAS_EDO} etiqueta="Páginas de ecuaciones diferenciales" />
           <p>

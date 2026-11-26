@@ -1,7 +1,6 @@
 import type { Data } from 'plotly.js'
 import { muestrear } from '../../core/muestreo'
-import type { Modelo } from '../../core/m1'
-import type { PasoBiseccion, PasoFalsaPosicion, PasoNewton, PasoSecante, RaizPolinomio } from '../../core/m1'
+import type { Modelo, ModeloPuntoFijo, PasoBiseccion, PasoFalsaPosicion, PasoNewton, PasoPuntoFijo, PasoSecante, RaizPolinomio } from '../../core/m1'
 
 const curva = (m: Modelo, x0: number, x1: number): Data => {
   const { x, y } = muestrear(m.f, x0, x1)
@@ -89,5 +88,46 @@ export function datosPolinomio(m: Modelo, raices: RaizPolinomio[], cota: number)
     curva(m, lo, hi),
     ejeCero(lo, hi),
     { x: reales, y: reales.map(() => 0), type: 'scatter', mode: 'markers', name: 'Raíces reales', marker: { size: 12, symbol: 'diamond', line: { width: 2, color: '#fff' } } },
+  ]
+}
+
+/** Gráfico de telaraña (cobweb) y = x vs y = g(x) para la Iteración de Punto Fijo. */
+export function datosPuntoFijoCobweb(modelo: ModeloPuntoFijo, x0: number, pasos: PasoPuntoFijo[]): Data[] {
+  const finitos = [x0, ...pasos.flatMap((p) => [p.x, p.gx])].filter((v) => Number.isFinite(v) && Math.abs(v) <= 50)
+  const xs = finitos.length > 0 ? finitos : [x0 - 1, x0 + 1]
+  const loRaw = Math.min(...xs)
+  const hiRaw = Math.max(...xs)
+  const span = Math.max(hiRaw - loRaw, 1)
+  const pad = span * 0.25
+  const lo = loRaw - pad
+  const hi = hiRaw + pad
+
+  const { x: gxX, y: gxY } = muestrear(modelo.g, lo, hi)
+  const cobX: number[] = []
+  const cobY: number[] = []
+  if (pasos.length > 0) {
+    cobX.push(pasos[0].x)
+    cobY.push(0)
+    for (const p of pasos.slice(0, 20)) {
+      if (!Number.isFinite(p.x) || !Number.isFinite(p.gx) || Math.abs(p.gx) > 50) break
+      cobX.push(p.x, p.gx)
+      cobY.push(p.gx, p.gx)
+    }
+  }
+
+  return [
+    { x: gxX, y: gxY, type: 'scatter', mode: 'lines', name: `y = ${modelo.expresionG}`, line: { width: 2.5 } },
+    { x: [lo, hi], y: [lo, hi], type: 'scatter', mode: 'lines', name: 'y = x', line: { dash: 'dash', width: 1.8, color: '#64748b' } },
+    { x: cobX, y: cobY, type: 'scatter', mode: 'lines', name: 'Telaraña (cobweb)', line: { dash: 'dot', width: 1.8 } },
+    {
+      x: pasos.slice(0, 12).map((p) => p.x),
+      y: pasos.slice(0, 12).map((p) => p.gx),
+      type: 'scatter',
+      mode: 'text+markers',
+      text: pasos.slice(0, 12).map((p) => (p.k <= 6 ? String(p.k) : '')),
+      textposition: 'top left',
+      name: '(xₖ, g(xₖ))',
+      marker: { size: 8, symbol: 'diamond' },
+    },
   ]
 }

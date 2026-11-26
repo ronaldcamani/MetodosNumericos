@@ -29,7 +29,7 @@ jobs:
           python-version: '3.12'
       - run: pip install numpy scipy
       - run: npm ci
-      - run: npx eslint .
+      - run: npm run lint
       - run: npm run typecheck
       - run: npm test
       - run: npm run test:ref

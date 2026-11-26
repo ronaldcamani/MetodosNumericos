@@ -93,8 +93,9 @@ const datosGrafico = [
 export default function Modulo2() {
   return (
     <ConPanelCalculadora herramientas={herramientasSistemas()}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="sistemas">
         <article className="modulo">
+          <p className="silabo-etiqueta">Segunda Unidad · Capítulo III: Solución de Sistemas de Ecuaciones · Temas 06 y 07 (Sílabo 2026-B)</p>
           <h1>Sistemas de ecuaciones lineales</h1>
           <SubNavegacion enlaces={PAGINAS_SISTEMAS} etiqueta="Páginas de sistemas de ecuaciones lineales" />
           <p>
@@ -139,8 +140,8 @@ export default function Modulo2() {
                 <caption>Resumen de los métodos</caption>
                 <thead><tr><th scope="col">Método</th><th scope="col">Familia</th><th scope="col">Necesita</th><th scope="col">Garantía</th><th scope="col">Riesgo principal</th></tr></thead>
                 <tbody>
-                  <tr><th scope="row"><Link to="/sistemas/directos">Eliminación con pivoteo parcial</Link></th><td>Directo</td><td>Matriz cuadrada no singular</td><td>Solución en un número fijo de pasos (≈ 2n³/3)</td><td>Pivotes pequeños o nulos; costo en sistemas grandes</td></tr>
-                  <tr><th scope="row"><Link to="/sistemas/iterativos">Gauss-Seidel</Link></th><td>Iterativo</td><td>Diagonal no nula; conviene dominancia</td><td>Converge si hay dominancia diagonal estricta</td><td>Diverge sin dominancia; agotar iteraciones no es convergencia</td></tr>
+                  <tr><th scope="row"><Link to="/sistemas/directos">Eliminación de Gauss, Gauss-Jordan y LU</Link></th><td>Directos (Tema 06)</td><td>Matriz cuadrada no singular</td><td>Solución en pasos fijos; LU reutiliza factores y evalúa κ∞(A)</td><td>Pivotes pequeños o nulos; mal condicionamiento (κ∞ &gt; 10⁴)</td></tr>
+                  <tr><th scope="row"><Link to="/sistemas/iterativos">Gauss-Seidel</Link></th><td>Iterativo (Tema 07)</td><td>Diagonal no nula; conviene dominancia</td><td>Converge si hay dominancia diagonal estricta</td><td>Diverge sin dominancia; agotar iteraciones no es convergencia</td></tr>
                 </tbody>
               </table>
             </div>

@@ -30,8 +30,9 @@ export default function PaginaEuler() {
   const r = integrarEnfriamiento("euler", CASO_ENFRIAMIENTO, 0.5);
   return (
     <ConPanelCalculadora herramientas={herramientasEdo("euler")}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="diferenciales">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad V · Cap. VI · Tema 14: EDO — Método de Euler</p>
           <h1>Ecuaciones diferenciales · Euler explícito</h1>
           <SubNavegacion enlaces={PAGINAS_EDO} etiqueta="Páginas de ecuaciones diferenciales" />
           <p>

@@ -28,8 +28,9 @@ export default function PaginaRegresion() {
   const r = reg.resultado;
   return (
     <ConPanelCalculadora herramientas={herramientasInterpolacion()}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="interpolacion">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad III · Cap. IV · Tema 08: Regresión por Mínimos Cuadrados</p>
           <h1>Interpolación y ajuste de curvas · Ajuste por regresión</h1>
           <SubNavegacion enlaces={PAGINAS_INTERPOLACION} etiqueta="Páginas de interpolación y ajuste de curvas" />
           <p>

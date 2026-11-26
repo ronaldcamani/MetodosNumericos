@@ -28,8 +28,9 @@ export default function PaginaSimpson() {
   const simp = integrarTasa("simpson", entrada);
   return (
     <ConPanelCalculadora herramientas={herramientasIntegracion("simpson")}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="integracion">
         <article className="modulo">
+          <p className="silabo-etiqueta">Unidad IV · Cap. V · Tema 12: Reglas de Simpson y Trapezoidal</p>
           <h1>Integración y derivación numérica · Simpson compuesto</h1>
           <SubNavegacion enlaces={PAGINAS_INTEGRACION} etiqueta="Páginas de integración y derivación numérica" />
           <p>

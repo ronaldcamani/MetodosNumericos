@@ -121,8 +121,9 @@ export default function Modulo1() {
   ];
   return (
     <ConPanelCalculadora herramientas={herramientasRaices(["biseccion", "falsa", "newton", "secante"])}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="ecuaciones">
         <article className="modulo">
+          <p className="silabo-etiqueta">Segunda Unidad · Capítulo II: Ecuaciones No Lineales · Temas 03, 04 y 05 (Sílabo 2026-B)</p>
           <h1>Ecuaciones no lineales</h1>
           <SubNavegacion enlaces={PAGINAS_M1} etiqueta="Páginas de ecuaciones no lineales" />
           <p>
@@ -177,6 +178,7 @@ export default function Modulo1() {
                 <tbody>
                   <tr><th scope="row"><Link to="/ecuaciones/cerrados">Bisección</Link></th><td>Cerrado</td><td>Intervalo con cambio de signo</td><td>Garantizada, lineal (÷2 por paso)</td><td>Lenta; un polo parece raíz</td></tr>
                   <tr><th scope="row"><Link to="/ecuaciones/cerrados">Falsa posición</Link></th><td>Cerrado</td><td>Intervalo con cambio de signo</td><td>Garantizada, suele ser más rápida</td><td>Un extremo se queda fijo y se estanca</td></tr>
+                  <tr><th scope="row"><Link to="/ecuaciones/abiertos">Punto fijo</Link></th><td>Abierto</td><td>Despeje x = g(x) con |g′(x)| &lt; 1</td><td>Lineal con razón |g′(r)|</td><td>Diverge si |g′(x)| ≥ 1</td></tr>
                   <tr><th scope="row"><Link to="/ecuaciones/abiertos">Newton</Link></th><td>Abierto</td><td>f′ y un x₀ cercano</td><td>Cuadrática cerca de una raíz simple</td><td>Derivada nula, ciclos, divergencia</td></tr>
                   <tr><th scope="row"><Link to="/ecuaciones/abiertos">Secante</Link></th><td>Abierto</td><td>Dos puntos iniciales</td><td>Superlineal (≈ 1.62)</td><td>Pendiente nula; sin garantía</td></tr>
                   <tr><th scope="row"><Link to="/ecuaciones/polinomios">Newton–Horner</Link></th><td>Polinomios</td><td>Coeficientes</td><td>Todas las raíces, con deflación</td><td>Raíces múltiples; error acumulado</td></tr>

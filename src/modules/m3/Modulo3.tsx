@@ -87,8 +87,9 @@ const PROBLEMAS: ProblemaPlanteado<RespuestasDatos>[] = [
 export default function Modulo3() {
   return (
     <ConPanelCalculadora herramientas={herramientasInterpolacion()}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="interpolacion">
         <article className="modulo">
+          <p className="silabo-etiqueta">Tercera Unidad · Capítulo IV: Ajuste de Curvas e Interpolación · Temas 08–11 (Sílabo 2026-B)</p>
           <h1>Interpolación y ajuste de curvas</h1>
           <SubNavegacion enlaces={PAGINAS_INTERPOLACION} etiqueta="Páginas de interpolación y ajuste de curvas" />
           <p>

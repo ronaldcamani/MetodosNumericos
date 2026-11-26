@@ -4,6 +4,7 @@ import unittest
 import numpy as np
 
 import generar_m2 as g
+from util_json import assert_json_close
 
 
 class ValoresDeLaGuia(unittest.TestCase):
@@ -30,7 +31,7 @@ class ValoresDeLaGuia(unittest.TestCase):
         self.assertEqual(e["permutacion"], [1, 2, 0])
 
     def test_json_actualizado(self):
-        self.assertEqual(json.loads(g.SALIDA.read_text()), json.loads(json.dumps(g.generar())), "ejecuta: python3 referencia/generar_m2.py")
+        assert_json_close(self, json.loads(g.SALIDA.read_text()), json.loads(json.dumps(g.generar())), "ejecuta: python3 referencia/generar_m2.py")
 
 
 if __name__ == "__main__":

@@ -82,8 +82,9 @@ const PROBLEMAS: ProblemaPlanteado<RespuestasIntegral>[] = [
 export default function Modulo4() {
   return (
     <ConPanelCalculadora herramientas={herramientasIntegracion("trapecio")}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="integracion">
         <article className="modulo">
+          <p className="silabo-etiqueta">Cuarta Unidad · Capítulo V: Integración y Derivación Numérica · Temas 12 y 13 (Sílabo 2026-B)</p>
           <h1>Integración y derivación numérica</h1>
           <SubNavegacion enlaces={PAGINAS_INTEGRACION} etiqueta="Páginas de integración y derivación numérica" />
           <p>

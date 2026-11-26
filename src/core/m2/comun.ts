@@ -28,6 +28,76 @@ export function normaInf(v: number[]): number {
   return v.reduce((m, x) => Math.max(m, Math.abs(x)), 0)
 }
 
+/** Norma infinito matricial ‖A‖∞ = máx_i Σ_j |a_ij|. */
+export function normaMatrizInf(A: Matriz): number {
+  return A.reduce((maxFila, fila) => Math.max(maxFila, fila.reduce((s, a) => s + Math.abs(a), 0)), 0)
+}
+
+/** Matriz de Hilbert H_{ij} = 1 / (i + j + 1) de tamaño n ∈ {2, 3, 4} (referencia clásica de mal condicionamiento). */
+export function matrizHilbert(n: 2 | 3 | 4): Matriz {
+  return Array.from({ length: n }, (_, i) => Array.from({ length: n }, (_, j) => 1 / (i + j + 1)))
+}
+
+/** Inversa A⁻¹ mediante Gauss-Jordan con pivoteo parcial; devuelve null si A es singular. */
+export function invertirMatriz(A: Matriz): Matriz | null {
+  const n = A.length
+  if (n === 0 || A.some((f) => f.length !== n)) return null
+  const escala = escalaMatriz(A)
+  if (escala === 0) return null
+
+  const aug: Matriz = A.map((fila, i) => [
+    ...fila,
+    ...Array.from({ length: n }, (_, j) => (i === j ? 1 : 0)),
+  ])
+
+  for (let k = 0; k < n; k++) {
+    let fp = k
+    for (let i = k + 1; i < n; i++) {
+      if (Math.abs(aug[i][k]) > Math.abs(aug[fp][k])) fp = i
+    }
+    if (Math.abs(aug[fp][k]) <= EPS_SINGULAR * escala) return null
+    if (fp !== k) [aug[k], aug[fp]] = [aug[fp], aug[k]]
+
+    const piv = aug[k][k]
+    for (let j = k; j < 2 * n; j++) aug[k][j] /= piv
+    for (let i = 0; i < n; i++) {
+      if (i === k) continue
+      const factor = aug[i][k]
+      if (factor === 0) continue
+      for (let j = k; j < 2 * n; j++) aug[i][j] -= factor * aug[k][j]
+    }
+  }
+
+  const inv = aug.map((fila) => fila.slice(n))
+  return inv.every((fila) => fila.every(Number.isFinite)) ? inv : null
+}
+
+export interface AnalisisCondicionamiento {
+  normaA: number
+  normaAInv: number
+  kappaInf: number
+  malCondicionado: boolean
+  nivel: 'bien_condicionado' | 'moderado' | 'mal_condicionado'
+  inversa: Matriz
+}
+
+/** Calcula κ∞(A) = ‖A‖∞ · ‖A⁻¹‖∞ para n ∈ {2, 3, 4} y clasifica el condicionamiento (alerta si κ∞ > 10⁴). */
+export function numeroCondicionInf(A: Matriz): AnalisisCondicionamiento | null {
+  const inversa = invertirMatriz(A)
+  if (!inversa) return null
+  const normaA = normaMatrizInf(A)
+  const normaAInv = normaMatrizInf(inversa)
+  const kappaInf = normaA * normaAInv
+  if (!Number.isFinite(kappaInf)) return null
+  const malCondicionado = kappaInf > 1e4
+  const nivel: AnalisisCondicionamiento['nivel'] = malCondicionado
+    ? 'mal_condicionado'
+    : kappaInf > 100
+      ? 'moderado'
+      : 'bien_condicionado'
+  return { normaA, normaAInv, kappaInf, malCondicionado, nivel, inversa }
+}
+
 /** Residuo b − A·x. */
 export function residuo(A: Matriz, b: number[], x: number[]): number[] {
   return A.map((fila, i) => b[i] - fila.reduce((s, a, j) => s + a * x[j], 0))

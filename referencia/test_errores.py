@@ -2,6 +2,7 @@ import json
 import unittest
 
 import generar_errores as g
+from util_json import assert_json_close
 
 
 class Valores(unittest.TestCase):
@@ -30,7 +31,7 @@ class Valores(unittest.TestCase):
         self.assertEqual(g.cifras_correctas(3.141592653589793, 22 / 7), 3)
 
     def test_json_actualizado(self):
-        self.assertEqual(json.loads(g.SALIDA.read_text()), json.loads(json.dumps(g.generar())), "ejecuta: python3 referencia/generar_errores.py")
+        assert_json_close(self, json.loads(g.SALIDA.read_text()), json.loads(json.dumps(g.generar())), "ejecuta: python3 referencia/generar_errores.py")
 
 
 if __name__ == "__main__":

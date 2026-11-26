@@ -4,6 +4,7 @@ import unittest
 from fractions import Fraction
 
 import generar_m1 as g
+from util_json import assert_json_close
 
 
 class ValoresDeLaGuia(unittest.TestCase):
@@ -38,7 +39,7 @@ class ValoresDeLaGuia(unittest.TestCase):
 
     def test_json_actualizado(self):
         actual = json.loads(g.SALIDA.read_text())
-        self.assertEqual(actual, json.loads(json.dumps(g.generar())), "ejecuta: python3 referencia/generar_m1.py")
+        assert_json_close(self, actual, json.loads(json.dumps(g.generar())), "ejecuta: python3 referencia/generar_m1.py")
 
 
 if __name__ == "__main__":

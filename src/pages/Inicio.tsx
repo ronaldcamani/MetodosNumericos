@@ -6,7 +6,7 @@ import { useProgreso, useProgresoTodos } from '../components/useProgreso'
 import { LECCIONES_VIDEO, type ModuloVideoId } from '../core/lecciones'
 import { NIVELES } from '../core/practica/base'
 import { dominio, estrellas, etiquetaDominio, PROGRESO_VACIO } from '../core/practica/progreso'
-import { MODULOS } from '../modules/registro'
+import { ETIQUETA_ESTADO_SILABO, MODULOS, TOTAL_TEMAS_SILABO } from '../modules/registro'
 
 const M = Matematica
 
@@ -290,6 +290,11 @@ export default function Inicio() {
     }, 0) / 60,
   )
 
+  const temasActivosSilabo = MODULOS.reduce(
+    (acc, m) => acc + m.silabo.temas.filter((t) => t.estado === 'implementado').length,
+    0,
+  )
+
   const moduloEnCurso = resumenProgreso.find(
     (x) => (x.pct > 0 && x.pct < 100) || (x.estudiados > 0 && x.pct < 100),
   )
@@ -308,26 +313,26 @@ export default function Inicio() {
         <div className="hero-portal-cuerpo">
           <span className="hero-badge">
             <span className="hero-badge-punto" aria-hidden="true" />
-            UNSA · Ingeniería de Sistemas · Laboratorio Interactivo
+            UNSA · Ingeniería de Sistemas · Sílabo Oficial 2026-B (1703244)
           </span>
           <h1>Portal de Métodos Numéricos</h1>
           <p className="hero-lead">
-            Domina cada algoritmo paso a paso, contrasta su convergencia con datos editables y verifica cada resultado con casos de Ingeniería de Sistemas. ¿Primera vez aquí? Revisa{' '}
+            Organizado al pie de la letra según las 5 Unidades, 6 Capítulos y 16 Temas del sílabo oficial (1703244). Domina cada algoritmo paso a paso, contrasta su convergencia y valida cada método con casos interactivos. ¿Primera vez aquí? Revisa{' '}
             <Link to="/recursos">cómo estudiar un tema</Link>.
           </p>
 
           <dl className="hero-metricas" aria-label="Métricas del laboratorio">
             <div className="hero-metrica">
-              <dt>Módulos</dt>
-              <dd>{MODULOS.length} Interactivos</dd>
+              <dt>Sílabo 2026-B</dt>
+              <dd>5 Unid. · 6 Cap.</dd>
+            </div>
+            <div className="hero-metrica">
+              <dt>Temas oficiales</dt>
+              <dd>{temasActivosSilabo} / {TOTAL_TEMAS_SILABO} activos</dd>
             </div>
             <div className="hero-metrica">
               <dt>Video-lecciones</dt>
               <dd>{MODULOS.length} · {totalVideoMin} min</dd>
-            </div>
-            <div className="hero-metrica">
-              <dt>Laboratorio</dt>
-              <dd>Convergencia</dd>
             </div>
             <div className="hero-metrica">
               <dt>Práctica</dt>
@@ -386,8 +391,8 @@ export default function Inicio() {
             <li key={m.id} className="tarjeta" data-tema={m.id}>
               <div className="tarjeta-cabecera">
                 <div className="tarjeta-identidad">
-                  <span className="tarjeta-numero">{insignia.numero}</span>
-                  <span className="tarjeta-area">{insignia.area}</span>
+                  <span className="tarjeta-numero">{m.silabo.unidadCorta}</span>
+                  <span className="tarjeta-area">{m.silabo.capitulo}</span>
                 </div>
                 <span className="tarjeta-video-badge" title="Incluye video-lección narrada">
                   <IconoPlay />
@@ -405,6 +410,24 @@ export default function Inicio() {
 
               <p className="tarjeta-desc">{m.descripcion}</p>
 
+              <div className="tarjeta-silabo" aria-label={`Temas del sílabo para ${m.titulo}`}>
+                <p className="tarjeta-silabo-titulo">
+                  {m.silabo.unidad} — {m.silabo.capitulo}
+                </p>
+                <ul className="tarjeta-silabo-lista">
+                  {m.silabo.temas.map((tema) => (
+                    <li key={tema.numero} className="tarjeta-silabo-item">
+                      <span className="tarjeta-silabo-tema">
+                        <strong>{tema.numero}:</strong> {tema.titulo}
+                      </span>
+                      <span className={`silabo-badge silabo-badge-${tema.estado}`}>
+                        {ETIQUETA_ESTADO_SILABO[tema.estado]}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               <ul className="tarjeta-chips" aria-label={`Métodos de ${m.titulo}`}>
                 {m.metodos.map((met) => (
                   <li key={met}>{met}</li>
@@ -417,7 +440,7 @@ export default function Inicio() {
                 {m.disponible ? (
                   <Link className="tarjeta-cta" to={m.ruta}>Abrir tema</Link>
                 ) : (
-                  <span className="pendiente">Próximamente</span>
+                  <span className="pendiente">En preparación</span>
                 )}
                 {m.subpaginas && (
                   <ul className="tarjeta-subpaginas" aria-label={`Páginas de ${m.titulo}`}>

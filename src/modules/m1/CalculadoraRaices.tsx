@@ -9,27 +9,29 @@ import { useCalculadora, type Errores } from '../../components/useCalculadora'
 import { parseEntero, parseNumero } from '../../core/entrada'
 import { fmt } from '../../core/formato'
 import {
-  analizarConvergenciaBiseccion, analizarConvergenciaFalsa, analizarConvergenciaNewton, analizarConvergenciaSecante,
-  biseccion, falsaPosicion, newton, polinomioTexto, raicesPolinomio, secante, UMBRAL_DERIVADA,
-  type Modelo, type PasoBiseccion, type PasoFalsaPosicion, type PasoNewton, type PasoPolinomio, type PasoSecante,
-  type SalidaBiseccion, type SalidaFalsaPosicion, type SalidaNewton, type SalidaPolinomio, type SalidaSecante, type VerificacionRaiz,
+  analizarConvergenciaBiseccion, analizarConvergenciaFalsa, analizarConvergenciaNewton, analizarConvergenciaPuntoFijo, analizarConvergenciaSecante,
+  biseccion, falsaPosicion, MODELOS_PUNTO_FIJO, newton, polinomioTexto, puntoFijo, raicesPolinomio, secante, UMBRAL_DERIVADA,
+  type IdModeloPuntoFijo, type Modelo, type ModeloPuntoFijo,
+  type PasoBiseccion, type PasoFalsaPosicion, type PasoNewton, type PasoPolinomio, type PasoPuntoFijo, type PasoSecante,
+  type SalidaBiseccion, type SalidaFalsaPosicion, type SalidaNewton, type SalidaPolinomio, type SalidaPuntoFijo, type SalidaSecante, type VerificacionRaiz,
 } from '../../core/m1'
 import type { ResultadoMetodo } from '../../core/tipos'
 import { PanelConvergenciaEjecucion, PanelFichaConvergencia } from './AnalisisConvergenciaUI'
 import { CASO_FUNCION, EditorFuncion, leerCoeficientes, leerFuncion } from './funcion'
-import { datosBiseccion, datosFalsaPosicion, datosNewton, datosPolinomio, datosSecante } from './graficos'
+import { datosBiseccion, datosFalsaPosicion, datosNewton, datosPolinomio, datosPuntoFijoCobweb, datosSecante } from './graficos'
 
-export type IdMetodo = 'biseccion' | 'falsa' | 'newton' | 'secante' | 'todas'
+export type IdMetodo = 'biseccion' | 'falsa' | 'newton' | 'secante' | 'punto_fijo' | 'todas'
 
 export const METODOS: Record<IdMetodo, { nombre: string; familia: string }> = {
   biseccion: { nombre: 'Bisección', familia: 'cerrado' },
   falsa: { nombre: 'Falsa posición', familia: 'cerrado' },
   newton: { nombre: 'Newton', familia: 'abierto' },
   secante: { nombre: 'Secante', familia: 'abierto' },
+  punto_fijo: { nombre: 'Punto fijo', familia: 'abierto' },
   todas: { nombre: 'Todas las raíces (Newton–Horner)', familia: 'polinomio' },
 }
 
-export const CASO_RAICES = { ...CASO_FUNCION, metodo: 'biseccion', a: '1', b: '2', x0: '1.5', p0: '1', p1: '2', tol: '0.000001', maxIter: '100' }
+export const CASO_RAICES = { ...CASO_FUNCION, metodo: 'biseccion', modeloPF: 'calibracion_cbrt', a: '1', b: '2', x0: '1.5', p0: '1', p1: '2', tol: '0.000001', maxIter: '100' }
 export type FRaices = typeof CASO_RAICES
 
 type Salida =
@@ -37,12 +39,12 @@ type Salida =
   | { m: 'falsa'; modelo: Modelo; a: number; b: number; res: ResultadoMetodo<SalidaFalsaPosicion, PasoFalsaPosicion> }
   | { m: 'newton'; modelo: Modelo; x0: number; res: ResultadoMetodo<SalidaNewton, PasoNewton> }
   | { m: 'secante'; modelo: Modelo; x0: number; x1: number; res: ResultadoMetodo<SalidaSecante, PasoSecante> }
+  | { m: 'punto_fijo'; modeloPF: ModeloPuntoFijo; x0: number; res: ResultadoMetodo<SalidaPuntoFijo, PasoPuntoFijo> }
   | { m: 'todas'; modelo: Modelo; res: ResultadoMetodo<SalidaPolinomio, PasoPolinomio> }
 
 function ejecutar(v: FRaices) {
-  const fn = leerFuncion(v)
-  const errores: Errores<FRaices> = 'errores' in fn ? { ...fn.errores } : {}
   const m = v.metodo as IdMetodo
+  const errores: Errores<FRaices> = {}
   const num = (k: keyof FRaices, etiqueta = 'Ingresa un número.') => {
     const x = parseNumero(v[k])
     if (x === null) errores[k] = etiqueta
@@ -51,6 +53,22 @@ function ejecutar(v: FRaices) {
   const tol = num('tol')
   const maxIter = parseEntero(v.maxIter)
   if (maxIter === null) errores.maxIter = 'Ingresa un entero.'
+  if (m === 'punto_fijo') {
+    const x0 = num('x0')
+    if (Object.keys(errores).length || tol === null || maxIter === null || x0 === null) return { errores }
+    const modeloPF = MODELOS_PUNTO_FIJO[(v.modeloPF as IdModeloPuntoFijo) ?? 'calibracion_cbrt'] ?? MODELOS_PUNTO_FIJO.calibracion_cbrt
+    return {
+      salida: {
+        m,
+        modeloPF,
+        x0,
+        res: puntoFijo({ g: modeloPF.g, dg: modeloPF.dg, x0, tol, maxIter }),
+      } satisfies Salida,
+    }
+  }
+
+  const fn = leerFuncion(v)
+  if ('errores' in fn) Object.assign(errores, fn.errores)
   const a = m === 'biseccion' || m === 'falsa' ? num('a') : 0
   const b = m === 'biseccion' || m === 'falsa' ? num('b') : 0
   const x0 = m === 'newton' ? num('x0') : 0
@@ -185,6 +203,39 @@ function Vista({ s }: { s: Salida }) {
       </>
     )
   }
+  if (s.m === 'punto_fijo') {
+    const r = s.res.resultado
+    const analisis = analizarConvergenciaPuntoFijo(s.res)
+    return (
+      <>
+        {aviso}
+        {r && (
+          <>
+            <Resumen r={r} extra={[
+              ['Último cambio', fmt(r.ultimoCambio, 8)],
+              ['Pendiente g′(r)', fmt(r.pendienteDg, 6)],
+              ['Criterio |g′(x)| < 1', r.diagnostico.cumpleCriterio ? `✔ Cumple (${r.diagnostico.tipo})` : '✖ No cumple'],
+            ]} />
+            <p className="aviso">{r.diagnostico.explicacion}</p>
+          </>
+        )}
+        <PanelConvergenciaEjecucion analisis={analisis} />
+        {s.res.pasos.length > 0 && (
+          <>
+            <TablaPasos titulo="Iteraciones de Punto Fijo" archivoCSV="punto-fijo.csv" pasos={s.res.pasos} columnas={[
+              { clave: 'k', titulo: 'k', valor: (p) => p.k },
+              { clave: 'x', titulo: 'xₖ', valor: (p) => p.x },
+              { clave: 'gx', titulo: 'g(xₖ)', valor: (p) => p.gx },
+              { clave: 'err', titulo: '|g(xₖ) − xₖ|', valor: (p) => p.errorAbs },
+              { clave: 'dg', titulo: 'g′(xₖ)', valor: (p) => p.pendienteDg },
+            ]} />
+            <Grafico titulo="Diagrama de telaraña (cobweb): y = x vs y = g(x)" ejeX={EJE_X} ejeY="y" datos={datosPuntoFijoCobweb(s.modeloPF, s.x0, s.res.pasos)}
+              descripcion="El punto fijo es la intersección de y = g(x) con la diagonal y = x. La telaraña refleja cada valor verticalmente hacia la curva y horizontalmente hacia la diagonal." />
+          </>
+        )}
+      </>
+    )
+  }
   const r = s.res.resultado
   return (
     <>
@@ -229,8 +280,14 @@ const FALLOS: Record<IdMetodo, { texto: string; valores: Partial<FRaices> }> = {
   falsa: { texto: 'Probar fallo: [2, 3]', valores: { modelo: 'calibracion', objetivo: '2', a: '2', b: '3' } },
   newton: { texto: 'Probar fallo: x³ − 1, x₀ = 0', valores: { modelo: 'cubo', objetivo: '1', x0: '0' } },
   secante: { texto: 'Probar fallo: x² − 1 con x₀ = −2, x₁ = 2', valores: { modelo: 'polinomio', coef: '1, 0, -1', p0: '-2', p1: '2' } },
+  punto_fijo: { texto: 'Probar fallo: g(x) = x³ − 2 (|g′| ≥ 1)', valores: { modeloPF: 'divergente', x0: '1.5' } },
   todas: { texto: 'Probar fallo: coeficiente principal 0', valores: { modelo: 'polinomio', coef: '0, 1, 2' } },
 }
+
+const OPCIONES_PUNTO_FIJO = (Object.keys(MODELOS_PUNTO_FIJO) as IdModeloPuntoFijo[]).map((id) => ({
+  valor: id,
+  texto: MODELOS_PUNTO_FIJO[id].nombre,
+}))
 
 /** Calculadora única de raíces: se elige la función y el método; los campos cambian según el método. */
 export default function CalculadoraRaices({ metodos = ['biseccion', 'falsa', 'newton', 'secante'], metodoInicial, preset = null, id = 'raices' }: Props) {
@@ -250,7 +307,20 @@ export default function CalculadoraRaices({ metodos = ['biseccion', 'falsa', 'ne
       salida={c.salida && <Vista s={c.salida} />}
     >
       <Selector etiqueta="Método" valor={c.valores.metodo} onChange={(x) => c.set('metodo', x)} opciones={metodos.map((k) => ({ valor: k, texto: `${METODOS[k].nombre}${METODOS[k].familia === 'polinomio' ? '' : ` (${METODOS[k].familia})`}` }))} />
-      <EditorFuncion valores={c.valores} errores={c.errores} set={c.set} />
+      {m === 'punto_fijo' ? (
+        <Selector
+          etiqueta="Función de iteración g(x)"
+          valor={c.valores.modeloPF}
+          onChange={(x) => {
+            c.set('modeloPF', x)
+            const sug = MODELOS_PUNTO_FIJO[x as IdModeloPuntoFijo]?.x0Sugerido
+            if (sug !== undefined) c.set('x0', String(sug))
+          }}
+          opciones={OPCIONES_PUNTO_FIJO}
+        />
+      ) : (
+        <EditorFuncion valores={c.valores} errores={c.errores} set={c.set} />
+      )}
       {m === 'todas' && c.errores.modelo && <p className="campo-error" role="alert">✖ {c.errores.modelo}</p>}
       {cerrado && (
         <>
@@ -258,7 +328,15 @@ export default function CalculadoraRaices({ metodos = ['biseccion', 'falsa', 'ne
           <Campo etiqueta="Extremo b" valor={c.valores.b} onChange={(x) => c.set('b', x)} error={c.errores.b} ayuda="Debe cumplirse a < b y f(a)·f(b) < 0." />
         </>
       )}
-      {m === 'newton' && <Campo etiqueta="Punto inicial x₀" valor={c.valores.x0} onChange={(x) => c.set('x0', x)} error={c.errores.x0} ayuda={`Se detiene si |f'(x)| < ${UMBRAL_DERIVADA}.`} />}
+      {(m === 'newton' || m === 'punto_fijo') && (
+        <Campo
+          etiqueta="Punto inicial x₀"
+          valor={c.valores.x0}
+          onChange={(x) => c.set('x0', x)}
+          error={c.errores.x0}
+          ayuda={m === 'punto_fijo' ? 'Converge si |g′(x)| < 1 alrededor del punto fijo.' : `Se detiene si |f'(x)| < ${UMBRAL_DERIVADA}.`}
+        />
+      )}
       {m === 'secante' && (
         <>
           <Campo etiqueta="Primer punto x₀" valor={c.valores.p0} onChange={(x) => c.set('p0', x)} error={c.errores.p0} />

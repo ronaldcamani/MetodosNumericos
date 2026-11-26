@@ -5,13 +5,16 @@ import {
   analizarConvergenciaBiseccion,
   analizarConvergenciaFalsa,
   analizarConvergenciaNewton,
+  analizarConvergenciaPuntoFijo,
   analizarConvergenciaSecante,
   biseccion,
   crearModelo,
   crearModeloPolinomio,
   falsaPosicion,
   FICHAS_CONVERGENCIA,
+  MODELOS_PUNTO_FIJO,
   newton,
+  puntoFijo,
   secante,
   type AnalisisConvergencia,
   type FichaConvergencia,
@@ -106,7 +109,7 @@ type IdEscenario = 'simple' | 'doble' | 'estancamiento'
 const ESCENARIOS: Record<IdEscenario, { titulo: string; descripcion: string }> = {
   simple: {
     titulo: 'Raíz simple: x³ − x − 2',
-    descripcion: 'Newton desde x₀ = 1.5 alcanza orden cuadrático p ≈ 2; Secante en (1, 2) muestra orden superlineal ≈ 1.62; Bisección mantiene p = 1.',
+    descripcion: 'Newton desde x₀ = 1.5 alcanza orden cuadrático p ≈ 2; Secante en (1, 2) muestra orden superlineal ≈ 1.62; Punto Fijo con g(x)=∛(x+2) converge linealmente con razón |g′(r)| ≈ 0.144; Bisección mantiene p = 1.',
   },
   doble: {
     titulo: 'Raíz doble: (x − 1)²(x − 2)',
@@ -118,7 +121,7 @@ const ESCENARIOS: Record<IdEscenario, { titulo: string; descripcion: string }> =
   },
 }
 
-const ORDEN_FICHAS: MetodoConvergencia[] = ['newton', 'secante', 'polinomio', 'biseccion', 'falsa']
+const ORDEN_FICHAS: MetodoConvergencia[] = ['newton', 'secante', 'punto_fijo', 'polinomio', 'biseccion', 'falsa']
 
 /** Sección interactiva "Análisis y Criterios de Convergencia" para métodos abiertos vs cerrados. */
 export function SeccionConvergenciaAbiertos() {
@@ -144,9 +147,11 @@ export function SeccionConvergenciaAbiertos() {
       ]
     }
     const base = crearModelo('calibracion', 2)
+    const pf = MODELOS_PUNTO_FIJO.calibracion_cbrt
     return [
       analizarConvergenciaNewton(newton({ f: base.f, df: base.df, x0: 1.5, tol: 1e-6, maxIter: 100 })),
       analizarConvergenciaSecante(secante({ f: base.f, x0: 1, x1: 2, tol: 1e-6, maxIter: 100 })),
+      analizarConvergenciaPuntoFijo(puntoFijo({ g: pf.g, dg: pf.dg, x0: pf.x0Sugerido, tol: 1e-6, maxIter: 100 })),
       analizarConvergenciaBiseccion(biseccion({ f: base.f, a: 1, b: 2, tol: 1e-6, maxIter: 100 })),
       analizarConvergenciaFalsa(falsaPosicion({ f: base.f, a: 1, b: 2, tol: 1e-6, maxIter: 100 })),
     ]

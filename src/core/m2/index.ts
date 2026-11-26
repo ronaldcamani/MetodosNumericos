@@ -1,3 +1,5 @@
 export * from './comun'
 export * from './gauss'
+export * from './gaussJordan'
+export * from './lu'
 export * from './gaussSeidel'

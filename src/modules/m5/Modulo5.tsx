@@ -88,8 +88,9 @@ const ambiente = { x: [0, 12], y: [20, 20], type: "scatter" as const, mode: "lin
 export default function Modulo5() {
   return (
     <ConPanelCalculadora herramientas={herramientasEdo("euler")}>
-      <ModuloConIndice secciones={SECCIONES}>
+      <ModuloConIndice secciones={SECCIONES} moduloId="diferenciales">
         <article className="modulo">
+          <p className="silabo-etiqueta">Quinta Unidad · Capítulo VI: Ecuaciones Diferenciales · Temas 14, 15 y 16 (Sílabo 2026-B)</p>
           <h1>Ecuaciones diferenciales</h1>
           <SubNavegacion enlaces={PAGINAS_EDO} etiqueta="Páginas de ecuaciones diferenciales" />
           <p>

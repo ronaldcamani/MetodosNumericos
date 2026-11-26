@@ -920,6 +920,129 @@
     color: var(--fg);
   }
 
+  /* ===== Etiquetas y Badges del Sílabo UNSA 2026-B ===== */
+  .silabo-etiqueta {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 8px;
+    padding: 4px 11px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 650;
+    letter-spacing: 0.01em;
+    color: var(--acento);
+    background: var(--accent-soft);
+    border: 1px solid var(--accent-border);
+  }
+
+  .tarjeta-silabo {
+    display: grid;
+    gap: 6px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-hairline);
+  }
+
+  .tarjeta-silabo-titulo {
+    margin: 0;
+    font-size: 0.76rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--acento);
+  }
+
+  .tarjeta-silabo-lista {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 5px;
+  }
+
+  .tarjeta-silabo-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.82rem;
+    line-height: 1.35;
+    color: var(--fg);
+  }
+
+  .tarjeta-silabo-tema {
+    min-width: 0;
+  }
+
+  .silabo-badge {
+    flex-shrink: 0;
+    font-family: var(--font-mono);
+    font-size: 0.69rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  .silabo-badge-implementado {
+    background: var(--ok-bg);
+    color: var(--ok);
+    border-color: color-mix(in oklab, var(--ok) 40%, transparent);
+  }
+
+  .silabo-badge-en_progreso {
+    background: color-mix(in oklab, var(--estrella) 15%, var(--card));
+    color: var(--estrella);
+    border-color: color-mix(in oklab, var(--estrella) 42%, transparent);
+  }
+
+  .silabo-badge-planificado {
+    background: var(--card);
+    color: var(--muted);
+    border-color: var(--border-strong);
+  }
+
+  .indice-silabo {
+    margin: 0 0 12px;
+    padding: 9px 10px;
+    border-radius: var(--radius-sm);
+    background: var(--surface-subtle);
+    border: 1px solid var(--border-hairline);
+  }
+
+  .indice-silabo-unidad {
+    margin: 0 0 6px;
+    font-size: 0.73rem;
+    font-weight: 700;
+    color: var(--acento);
+    line-height: 1.3;
+  }
+
+  .indice-silabo-temas {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 4px;
+  }
+
+  .indice-silabo-temas li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    font-size: 0.75rem;
+  }
+
+  .indice-tema-num {
+    font-weight: 600;
+    color: var(--fg);
+  }
+
   .tarjeta-pie {
     margin-top: auto;
     padding-top: 10px;
@@ -2627,7 +2750,13 @@
     box-shadow: 0 24px 64px rgba(2, 6, 23, 0.55);
   }
 
+  .video-leccion::backdrop,
+  .video-leccion::-webkit-backdrop {
+    background: #020617;
+  }
+
   .video-leccion:fullscreen,
+  .video-leccion:-webkit-full-screen,
   .video-leccion.video-leccion-fullscreen {
     height: 100dvh;
     max-height: 100dvh;
@@ -2639,9 +2768,50 @@
     grid-template-rows: auto minmax(0, 1fr) auto;
     gap: 10px;
     overflow: hidden;
-    background: #070b14;
-    color: #e2e8f0;
-    border-color: rgba(148, 163, 184, 0.22);
+  }
+
+  /* Estudio oscuro de alto contraste AAA en Pantalla Completa / Modo Cine (independiente del Top Layer o tema heredado) */
+  .video-leccion:fullscreen,
+  .video-leccion:-webkit-full-screen,
+  .video-leccion.video-leccion-fullscreen,
+  .video-leccion.video-leccion-cine,
+  :root[data-theme="dark"] .video-leccion:fullscreen,
+  :root[data-theme="dark"] .video-leccion:-webkit-full-screen,
+  :root[data-theme="dark"] .video-leccion.video-leccion-fullscreen,
+  :root[data-tema="oscuro"] .video-leccion:fullscreen,
+  :root[data-tema="oscuro"] .video-leccion:-webkit-full-screen,
+  :root[data-tema="oscuro"] .video-leccion.video-leccion-fullscreen {
+    color-scheme: dark;
+    background: #0b1120;
+    background-color: #0b1120;
+    color: #f8fafc;
+    border-color: rgba(148, 163, 184, 0.25);
+    --bg: #0b1120;
+    --fg: #f8fafc;
+    --muted: #cbd5e1;
+    --card: #111827;
+    --surface-subtle: #111827;
+    --surface-elevated: #1e293b;
+    --borde: rgba(148, 163, 184, 0.3);
+    --border-hairline: rgba(148, 163, 184, 0.25);
+    --border-strong: rgba(148, 163, 184, 0.42);
+    --acento: #38bdf8;
+    --accent-soft: rgba(56, 189, 248, 0.18);
+    --accent-border: rgba(56, 189, 248, 0.45);
+    --ok: #34d399;
+    --ok-bg: rgba(16, 185, 129, 0.16);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .video-leccion:fullscreen,
+    :root:not([data-theme="light"]) .video-leccion:-webkit-full-screen,
+    :root:not([data-theme="light"]) .video-leccion.video-leccion-fullscreen {
+      color-scheme: dark;
+      background: #0b1120;
+      background-color: #0b1120;
+      color: #f8fafc;
+      border-color: rgba(148, 163, 184, 0.25);
+    }
   }
 
   .video-cabecera {
@@ -3133,6 +3303,229 @@
   .video-aviso-tts {
     margin: 0;
     font-size: 0.78rem;
+  }
+
+  /* ===== Contraste AAA explícito para Modo Oscuro (vista normal) y Estudio Fullscreen / Cine ===== */
+  :root[data-theme="dark"] .video-leccion,
+  :root[data-tema="oscuro"] .video-leccion {
+    background: #111827;
+    color: #f8fafc;
+    border-color: rgba(148, 163, 184, 0.28);
+  }
+
+  :root[data-theme="dark"] .video-leccion .video-formulas,
+  :root[data-tema="oscuro"] .video-leccion .video-formulas {
+    background: #0f172a;
+    color: #f8fafc;
+    border-color: rgba(148, 163, 184, 0.25);
+  }
+
+  :root[data-theme="dark"] .video-leccion .video-formula-principal,
+  :root[data-theme="dark"] .video-leccion .video-formula-principal .formula-bloque,
+  :root[data-theme="dark"] .video-leccion .video-paso-activo,
+  :root[data-tema="oscuro"] .video-leccion .video-formula-principal,
+  :root[data-tema="oscuro"] .video-leccion .video-formula-principal .formula-bloque,
+  :root[data-tema="oscuro"] .video-leccion .video-paso-activo {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: rgba(148, 163, 184, 0.26);
+  }
+
+  :root[data-theme="dark"] .video-leccion .katex,
+  :root[data-theme="dark"] .video-leccion .katex *,
+  :root[data-tema="oscuro"] .video-leccion .katex,
+  :root[data-tema="oscuro"] .video-leccion .katex * {
+    color: #f8fafc;
+  }
+
+  :root[data-theme="dark"] .video-leccion .video-mini-tabla-wrap,
+  :root[data-theme="dark"] .video-leccion .video-mini-tabla,
+  :root[data-tema="oscuro"] .video-leccion .video-mini-tabla-wrap,
+  :root[data-tema="oscuro"] .video-leccion .video-mini-tabla {
+    background: #0f172a;
+    color: #f8fafc;
+  }
+
+  :root[data-theme="dark"] .video-leccion .video-mini-tabla caption,
+  :root[data-theme="dark"] .video-leccion .video-mini-tabla th,
+  :root[data-tema="oscuro"] .video-leccion .video-mini-tabla caption,
+  :root[data-tema="oscuro"] .video-leccion .video-mini-tabla th {
+    background: #1e293b;
+    color: #f8fafc;
+  }
+
+  :root[data-theme="dark"] .video-leccion .video-mini-tabla td,
+  :root[data-tema="oscuro"] .video-leccion .video-mini-tabla td {
+    background: #0f172a;
+    color: #f8fafc;
+  }
+
+  :root[data-theme="dark"] .video-leccion .video-mini-tabla tbody tr:nth-child(even) td,
+  :root[data-tema="oscuro"] .video-leccion .video-mini-tabla tbody tr:nth-child(even) td {
+    background: #162033;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .video-leccion {
+      background: #111827;
+      color: #f8fafc;
+      border-color: rgba(148, 163, 184, 0.28);
+    }
+    :root:not([data-theme="light"]) .video-leccion .video-formulas {
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    :root:not([data-theme="light"]) .video-leccion .video-formula-principal,
+    :root:not([data-theme="light"]) .video-leccion .video-formula-principal .formula-bloque,
+    :root:not([data-theme="light"]) .video-leccion .video-paso-activo {
+      background: #1e293b;
+      color: #f8fafc;
+    }
+    :root:not([data-theme="light"]) .video-leccion .katex,
+    :root:not([data-theme="light"]) .video-leccion .katex * {
+      color: #f8fafc;
+    }
+    :root:not([data-theme="light"]) .video-leccion .video-mini-tabla-wrap,
+    :root:not([data-theme="light"]) .video-leccion .video-mini-tabla,
+    :root:not([data-theme="light"]) .video-leccion .video-mini-tabla td {
+      background: #0f172a;
+      color: #f8fafc;
+    }
+    :root:not([data-theme="light"]) .video-leccion .video-mini-tabla caption,
+    :root:not([data-theme="light"]) .video-leccion .video-mini-tabla th {
+      background: #1e293b;
+      color: #f8fafc;
+    }
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-cabecera h3 {
+    color: #f8fafc;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-formulas {
+    background: #111827;
+    color: #f8fafc;
+    border-color: rgba(148, 163, 184, 0.25);
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-escena-titulo-panel {
+    color: #7dd3fc;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-formula-principal,
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-formula-principal .formula-bloque,
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-paso-activo {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: rgba(148, 163, 184, 0.25);
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-paso-activo {
+    border-left-color: #38bdf8;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-paso-espera,
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-paso-espera .suave {
+    color: #cbd5e1;
+    opacity: 0.88;
+    border-left-color: rgba(148, 163, 184, 0.45);
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .katex,
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .katex * {
+    color: #f8fafc;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .katex .frac-line,
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .katex .sqrt-line,
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .katex .overline-line,
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .katex .underline-line {
+    border-color: #f8fafc;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-mini-tabla-wrap {
+    background: #0f172a;
+    border-color: rgba(148, 163, 184, 0.25);
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-mini-tabla {
+    color: #f8fafc;
+    background: #0f172a;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-mini-tabla caption {
+    background: #1e293b;
+    color: #f8fafc;
+    border-bottom-color: rgba(148, 163, 184, 0.25);
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-mini-tabla th {
+    background: #1e293b;
+    color: #e2e8f0;
+    border-color: rgba(148, 163, 184, 0.25);
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-mini-tabla td {
+    background: #0f172a;
+    color: #f8fafc;
+    border-color: rgba(148, 163, 184, 0.2);
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-mini-tabla tbody tr:nth-child(even) td {
+    background: #162033;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-mini-tabla .video-mini-fila-destacada td {
+    background: rgba(16, 185, 129, 0.24);
+    color: #ecfdf5;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-nota-clave {
+    background: rgba(16, 185, 129, 0.16);
+    color: #ecfdf5;
+    border-left-color: #34d399;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-nota-clave strong {
+    color: #ffffff;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-barra-inferior {
+    background: #0b1120;
+    border-top-color: rgba(148, 163, 184, 0.25);
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-controles button {
+    background: #1e293b;
+    color: #f8fafc;
+    border-color: rgba(148, 163, 184, 0.35);
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-controles .video-btn-play {
+    background: #0369a1;
+    color: #ffffff;
+    border-color: #38bdf8;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-velocidades button[aria-pressed="true"],
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-controles-izq button[aria-pressed="true"],
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-controles-der button[aria-pressed="true"] {
+    background: rgba(56, 189, 248, 0.24);
+    color: #e0f2fe;
+    border-color: #38bdf8;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-capitulo-marca {
+    border-color: #0b1120;
+    background: #64748b;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-capitulo-marca.marca-activa {
+    background: #38bdf8;
+  }
+
+  :is(.video-leccion:fullscreen, .video-leccion:-webkit-full-screen, .video-leccion.video-leccion-fullscreen, .video-leccion.video-leccion-cine) .video-aviso-tts {
+    color: #cbd5e1;
   }
 }
 
